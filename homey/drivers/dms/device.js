@@ -6,7 +6,7 @@ const { Zaehlerabfrage } = require('../../lib/abfrage');
 const { WERTE, geraetewerte, abstandMs } = require('../../lib/auswertung');
 
 /**
- * Gerät „DMS“: fragt die Zahlen im eingestellten Abstand ab (mit If-None-Match), zeigt sie als Werte und löst die
+ * Gerät „Ablago“: fragt die Zahlen im eingestellten Abstand ab (mit If-None-Match), zeigt sie als Werte und löst die
  * Flow-Karten aus. Fehler stehen als Grund „nicht verfügbar“ am Gerät. Der Schlüssel steht nur in den
  * Einstellungen des Geräts (Feld vom Typ Passwort) und nie im Protokoll.
  */
@@ -117,7 +117,7 @@ module.exports = class DmsDevice extends Homey.Device {
 
   async loeseAus(a) {
     if (a.karte === 'neue_post') await this.driver.karteNeuePost.trigger(this, a.tokens, {});
-    else await this.driver.karteFrist.trigger(this, a.tokens, { art: a.art });
+    else await this.driver.karteFaellig.trigger(this, a.tokens, { art: a.art });
   }
 
   async zeigeFehler(e) {

@@ -2,6 +2,17 @@
 
 Änderungen der Homey-App je Version. Ein Release bekommt den Tag `homey-v<version>`.
 
+## 1.1.0
+
+Die App heißt jetzt **Ablago** und erscheint so zum ersten Mal im Homey App Store (#6, #7). Version 1.0.0 war nicht veröffentlicht.
+
+- **Name, App-ID und Logo:** App und Gerät heißen „Ablago“, die App-ID ist `app.ablago.clients.homey`. Alle Texte sprechen von Ablago statt vom DMS.
+- **Begriffe wie in allen Clients:** Der Wert „Fristen in 7 Tagen“ heißt **„Fällig in 7 Tagen“** (er zählt Fristen, Erinnerungen und Aufgaben mit Datum). Die Flow-Karte heißt **„Etwas wird bald fällig / ist überfällig“**; ihr Hinweis sagt ehrlich, dass sie auch bei neu angelegten Einträgen auslöst. „Neue Post“: „für dich oder für alle“ statt „ohne *Für*“. Kennungen passend dazu (`dms_faellig_7_tage`, Karte `bald_faellig`, Token `faellig_7_tage`).
+- **Wege, wie man klickt:** „Klick oben rechts auf deinen Namen → Mein Konto → Sicherheit → API-Schlüssel“ statt „Profil > Sicherheit > API-Schlüssel“. Stufen immer in Anführungszeichen; englische Texte nennen die deutschen Begriffe einheitlich mit Übersetzung.
+- **Symbole** der vier Werte aus Lucide (ISC-Lizenz, siehe NOTICE).
+- **Wartungsmodus:** Nennt Ablago eine Wartezeit (`Retry-After`), fragt Homey danach wieder – höchstens nach dem eingestellten Abstand.
+- README: Hinweis zum Webhook berichtigt (gibt es in Ablago seit 0.150.0; die App nutzt ihn noch nicht).
+
 ## 1.0.0
 
 Erste Version (#2).

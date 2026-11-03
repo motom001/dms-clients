@@ -11,7 +11,7 @@
 
 ## Regeln für Clients
 
-- **Nur die API v1** des DMS. Fehlt dort etwas, beschreibe es als Wunsch im Repository [motom001/dms](https://github.com/motom001/dms/issues/new/choose) – Clients bauen keine Umwege.
+- **Nur die API v1** von Ablago. Fehlt dort etwas, beschreibe es als Wunsch im Repository [motom001/dms](https://github.com/motom001/dms/issues/new/choose) – Clients bauen keine Umwege.
 - **Engste Schlüssel-Stufe:** Das README des Clients nennt, welche Stufe des API-Schlüssels er braucht und warum.
 - **Keine Telemetrie, keine Werbung, keine Verbindungen zu Dritten**, auch nicht für Absturzberichte. Ausnahme ist nur, was die Plattform selbst zwingend verlangt (etwa ein App Store); das steht dann im README.
 - **Geheimnisse sicher ablegen:** API-Schlüssel nur im sicheren Speicher der Plattform (Schlüsselbund, verschlüsselte Einstellungen), nie in Protokollen.
@@ -19,6 +19,31 @@
 - **Keine echten Daten:** In Beispielen, Tests und Bildschirmfotos nur erfundene Namen (Lena, Jonas …), reservierte Domains wie `dms.example.org` oder `dms.home.arpa` und Dokumentations-IP-Adressen (`192.0.2.x`).
 - **Version und Änderungen:** Version des Clients erhöhen und `CHANGELOG.md` ergänzen. Ein Release bekommt einen Tag `<ordner>-v<version>`.
 
-Fragen gern im Issue. Wie die Arbeit am DMS selbst läuft, steht im [Entwicklerhandbuch](https://motom001.github.io/dms/entwickler/aktuell/).
+## Gleich in allen Clients
+
+Alle Clients sollen aussehen und sich bedienen wie Ablago selbst und wie die anderen Clients.
+
+- **Name:** Das Programm heißt **Ablago** (ein Wort, nur das A groß). „DMS“ nur, wo die Programmart gemeint ist. Interne Kennungen (`dms_…`, Ordner, API-Pfade) bleiben.
+- **App-ID:** `app.ablago.clients.<client>`, z. B. `app.ablago.clients.homey`. Sie ist nach der ersten Veröffentlichung nicht mehr änderbar.
+- **Begriffe aus dem [Glossar](https://help.ablago.app/benutzer/aktuell/begriffe/)**, in der Schreibweise der Oberfläche, Du-Form, kurze Sätze. Die vier Zahlen des Zähler-Endpunkts heißen in jedem Client gleich:
+
+  | Zahl | Name | Beschreibung |
+  | --- | --- | --- |
+  | `neuePost` | Neue Post | Post im Stand Neu, für dich oder für alle |
+  | `zuErledigen` | Zu erledigen | Mappen mit offenen Aufgaben für dich |
+  | `anstehend` | Fällig in 7 Tagen | Fristen, Erinnerungen und Aufgaben mit Datum von heute bis in 7 Tagen |
+  | `ueberfaellig` | Überfällig | offene Fristen, Erinnerungen und Aufgaben mit Datum vor heute |
+
+  Auslöser heißen „Neue Post angekommen“, „Etwas wird bald fällig“, „Etwas ist überfällig“.
+- **Wege so, wie man klickt:** „Klick oben rechts auf deinen Namen → Mein Konto → Sicherheit → API-Schlüssel“, danach kurz „Mein Konto → Sicherheit → API-Schlüssel“. Immer „→“, nie „>“, nie „Profil →“.
+- **Stufen** immer in Anführungszeichen: „nur Zähler“, „nur lesen“, „lesen und schreiben“.
+- **Englisch:** Solange Ablago nur Deutsch spricht, stehen Begriffe der Oberfläche auf Deutsch in Anführungszeichen, beim ersten Vorkommen mit Übersetzung in Klammern: "nur Zähler" (counts only).
+- **Symbole aus [Lucide](https://lucide.dev)** (ISC-Lizenz; nur die SVG-Dateien kopieren, Lizenzhinweis in `NOTICE`). Neue Post `mail`, Zu erledigen `list-todo`, Fällig in 7 Tagen `calendar-clock`, Überfällig `calendar-x`. Lässt eine Plattform nur ihren eigenen Satz zu, das nächstliegende Symbol.
+- **Logo und Farben** nur aus dem Ordner `marke/` im Repository [dms-website](https://github.com/motom001/dms-website). Das App-Symbol ist immer das Logo, nie ein eigenes Zeichen.
+- **Einrichten:** Adresse und API-Schlüssel, engste Stufe vorschlagen und begründen, die Verbindung sofort prüfen (auch beim Ändern und Reparieren), je Person ein Schlüssel.
+- **Meldungen** sagen, warum etwas nicht geht und was zu tun ist, mit dem Weg dorthin; nie den Schlüssel.
+- **Was wo steht:** Alles, was nur diesen Client betrifft, steht in seinem README (mit Abschnitt „Datenschutz“: keine Telemetrie, nur was nötig ist, wo was liegt). Das Handbuch von Ablago beschreibt nur das Allgemeine und verweist auf das README.
+
+Fragen gern im Issue. Wie die Arbeit an Ablago selbst läuft, steht im [Entwicklerhandbuch](https://help.ablago.app/entwickler/aktuell/).
 
 Für den Umgang miteinander gilt unser [Verhaltenskodex](CODE_OF_CONDUCT.md).

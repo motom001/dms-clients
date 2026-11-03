@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * Verbindung zum DMS über die öffentliche API v1 – ohne Homey-Laufzeit, damit sie sich mit `node --test` prüfen lässt.
+ * Verbindung zu Ablago über die öffentliche API v1 – ohne Homey-Laufzeit, damit sie sich mit `node --test` prüfen lässt.
  *
  * Genutzt werden nur zwei Endpunkte:
  * - `GET /api/v1/ich/zaehler` (ab DMS 0.148.0): nur Zahlen, mit ETag; mit `If-None-Match` und gleichem Stand kommt
@@ -130,7 +130,7 @@ class DmsVerbindung {
     this.fetch = o.fetch || globalThis.fetch;
     if (typeof this.fetch !== 'function') throw new Error('fetch fehlt (Node.js 18 oder neuer nötig)');
     this.zeitlimitMs = o.zeitlimitMs || ZEITLIMIT_MS;
-    this.agent = `dms-homey/${o.version || '0'}`;
+    this.agent = `ablago-homey/${o.version || '0'}`;
   }
 
   /**

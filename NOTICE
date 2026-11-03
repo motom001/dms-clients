@@ -1,5 +1,14 @@
-DMS Clients
+Clients für Ablago (Repository dms-clients)
 Copyright 2026 Thomas Meissner
 
 Alle Inhalte dieses Repositorys stehen unter der Apache License, Version 2.0
 (siehe LICENSE), soweit ein Client-Ordner nichts anderes angibt.
+
+Der Name „Ablago“ und das Logo sind von der Lizenz nicht erfasst
+(Apache License 2.0, Abschnitt 6).
+
+Enthaltene Werke Dritter:
+
+- Symbole aus Lucide (https://lucide.dev), lucide-static 1.67.0,
+  Copyright (c) 2026 Lucide Icons and Contributors, ISC-Lizenz.
+  Verwendet in homey/assets/capabilities/; Lizenztext dort in LICENSE-lucide.txt.

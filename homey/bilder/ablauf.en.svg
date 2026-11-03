@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180 300" width="1180" height="300" font-family="DejaVu Sans, Arial, sans-serif">
+  <title>DMS, Homey Pro and Flow: Homey polls the counts and triggers Flows (made-up values)</title>
+  <rect width="1180" height="300" rx="16" fill="#F4F7FA"/>
+  <defs><marker id="p" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#1F4E79"/></marker></defs>
+  <g fill="#fff" stroke="#1F4E79" stroke-width="3">
+    <rect x="20" y="50" width="300" height="200" rx="14"/>
+    <rect x="440" y="50" width="300" height="200" rx="14"/>
+    <rect x="860" y="50" width="300" height="200" rx="14"/>
+  </g>
+  <g fill="#1F4E79" font-size="24" font-weight="bold" text-anchor="middle">
+    <text x="170" y="95">DMS</text>
+    <text x="590" y="95">Homey Pro</text>
+    <text x="1010" y="95">Flow</text>
+  </g>
+  <g fill="#333" font-size="17" text-anchor="middle">
+    <text x="170" y="140">dms.home.arpa</text>
+    <text x="170" y="172">key „nur Zähler“ (counts only)</text>
+    <text x="170" y="204">numbers only, no content</text>
+    <text x="590" y="140">device „DMS“</text>
+    <text x="590" y="172">New mail 2 · To do 5</text>
+    <text x="590" y="204">Deadlines 3 · Overdue 1</text>
+    <text x="1010" y="140">When: New mail arrived</text>
+    <text x="1010" y="172">Then: hallway light on</text>
+    <text x="1010" y="204">or a phone notification</text>
+  </g>
+  <g stroke="#1F4E79" stroke-width="3" fill="none" marker-end="url(#p)">
+    <path d="M436 130 H326"/>
+    <path d="M324 180 H434"/>
+    <path d="M744 155 H854"/>
+  </g>
+  <g fill="#555" font-size="14" text-anchor="middle">
+    <text x="380" y="118">every 5 min</text>
+    <text x="380" y="204">counts / 304</text>
+    <text x="799" y="143">trigger</text>
+  </g>
+</svg>

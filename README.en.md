@@ -12,7 +12,7 @@ Each client lives in **its own folder directly under the root**. A folder is cre
 
 | Area | Folder | What it is | Status |
 | --- | --- | --- | --- |
-| Home automation | `homey/` | App for Homey Pro: new mail, tasks and deadlines as values and flow cards | planned ([#2](https://github.com/motom001/dms-clients/issues/2)) |
+| Home automation | [`homey/`](homey/README.en.md) | App for Homey Pro: new mail, tasks and deadlines as values and flow cards | version 1.0.0, Homey App Store to follow ([#2](https://github.com/motom001/dms-clients/issues/2)) |
 | Home automation | `homeassistant/` | Home Assistant integration (via HACS): the same numbers as sensors | later ([#3](https://github.com/motom001/dms-clients/issues/3)) |
 | Phone and tablet | `ios/`, `android/` (or shared `app/`) | Apps for iPhone, iPad and Android: scanning, share menu, notifications, Face ID | concept ([motom001/dms#340](https://github.com/motom001/dms/issues/340)) |
 | Office | `office/` | Add-ins for Word, Excel and Outlook: file a document or email in the DMS | idea (from [motom001/dms#340](https://github.com/motom001/dms/issues/340)) |

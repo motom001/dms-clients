@@ -1,0 +1,41 @@
+# Homey-App (homey/): Tests gegen einen nachgebauten DMS-Server und Prüfung des Manifests wie
+# „homey app validate --level publish“ – ohne Homey-CLI und ohne Anmeldung (dieselbe Bibliothek homey-lib).
+# Läuft bei jedem Pull Request und auf main (ohne Pfadfilter, damit die Prüfung nie hängen bleibt).
+name: Homey
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  homey:
+    name: Homey (Node ${{ matrix.node }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # 18: älteste Laufzeit, die eine Homey-Pro-Software ab 12.4.0 mitbringen kann; 22: aktuell.
+        node: [18, 22]
+    defaults:
+      run:
+        working-directory: homey
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: ${{ matrix.node }}
+      # Genau die Versionen aus package-lock.json; es sind nur Werkzeuge für die Prüfung.
+      - run: npm ci --no-audit --no-fund
+      - name: Die App selbst hat keine Abhängigkeiten
+        run: |
+          test "$(node -p 'Object.keys(require("./package.json").dependencies || {}).length')" = 0
+          npm audit --omit=dev
+      - run: npm test
+      - name: Manifest prüfen (Stufe publish)
+        run: npm run validieren

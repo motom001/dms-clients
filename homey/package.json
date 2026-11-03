@@ -1,0 +1,23 @@
+{
+  "name": "io.github.motom001.dms",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Homey-App: neue Post, Aufgaben und Fristen aus dem selbst gehosteten DMS",
+  "license": "Apache-2.0",
+  "main": "app.js",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "validieren": "node scripts/validieren.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/motom001/dms-clients.git",
+    "directory": "homey"
+  },
+  "devDependencies": {
+    "homey-lib": "2.53.0"
+  }
+}

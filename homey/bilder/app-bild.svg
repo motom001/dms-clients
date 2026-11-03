@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 700" width="1000" height="700">
+  <!-- Quelle für assets/images/*.png (App Store). Gerendert z. B. mit rsvg-convert (siehe README). -->
+  <rect width="1000" height="700" fill="#1F4E79"/>
+  <circle cx="830" cy="120" r="260" fill="#ffffff" opacity="0.06"/>
+  <circle cx="140" cy="640" r="220" fill="#ffffff" opacity="0.05"/>
+  <g transform="translate(270 120) scale(0.48)" fill="none" stroke="#fff" stroke-width="44" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M250 470 V210 a30 30 0 0 1 30 -30 H560 L710 330 V470"/>
+    <path d="M560 180 V330 H710"/>
+    <path d="M330 300 H480 M330 390 H630"/>
+    <path d="M140 520 H350 L400 610 H560 L610 520 H820 V760 a40 40 0 0 1 -40 40 H180 a40 40 0 0 1 -40 -40 Z"/>
+  </g>
+  <g fill="#fff">
+    <circle cx="690" cy="250" r="54" fill="#E8A33D"/>
+    <text x="690" y="270" font-family="DejaVu Sans, Arial, sans-serif" font-size="56" font-weight="bold" text-anchor="middle" fill="#1F4E79">2</text>
+  </g>
+</svg>

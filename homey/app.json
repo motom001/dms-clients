@@ -1,0 +1,224 @@
+{
+  "id": "io.github.motom001.dms",
+  "version": "1.0.0",
+  "compatibility": ">=12.4.0",
+  "sdk": 3,
+  "runtime": "nodejs",
+  "platforms": ["local"],
+  "name": {
+    "en": "DMS",
+    "de": "DMS"
+  },
+  "description": {
+    "en": "New mail, to-dos and deadlines from your self-hosted DMS",
+    "de": "Neue Post, Aufgaben und Fristen aus deinem selbst gehosteten DMS"
+  },
+  "category": ["tools"],
+  "tags": {
+    "en": ["DMS", "document management", "mail", "letters", "deadlines", "to-do", "paperless"],
+    "de": ["DMS", "Dokumentenmanagement", "Post", "Briefe", "Fristen", "Aufgaben", "papierlos"]
+  },
+  "permissions": [],
+  "brandColor": "#1F4E79",
+  "images": {
+    "small": "/assets/images/small.png",
+    "large": "/assets/images/large.png",
+    "xlarge": "/assets/images/xlarge.png"
+  },
+  "author": {
+    "name": "Thomas Meissner"
+  },
+  "source": "https://github.com/motom001/dms-clients",
+  "homepage": "https://github.com/motom001/dms-clients/tree/main/homey",
+  "support": "https://github.com/motom001/dms-clients/issues",
+  "bugs": {
+    "url": "https://github.com/motom001/dms-clients/issues"
+  },
+  "capabilities": {
+    "dms_neue_post": {
+      "type": "number",
+      "title": { "en": "New mail", "de": "Neue Post" },
+      "desc": { "en": "Mail in state New for you or for no one in particular", "de": "Post im Stand Neu für dich oder ohne Für" },
+      "getable": true,
+      "setable": false,
+      "decimals": 0,
+      "min": 0,
+      "uiComponent": "sensor",
+      "insights": true,
+      "icon": "/assets/capabilities/neue_post.svg"
+    },
+    "dms_zu_erledigen": {
+      "type": "number",
+      "title": { "en": "To do", "de": "Zu erledigen" },
+      "desc": { "en": "Folders with open tasks for you, as in To do", "de": "Mappen mit offenen Aufgaben für dich, wie unter Zu erledigen" },
+      "getable": true,
+      "setable": false,
+      "decimals": 0,
+      "min": 0,
+      "uiComponent": "sensor",
+      "insights": true,
+      "icon": "/assets/capabilities/zu_erledigen.svg"
+    },
+    "dms_fristen_7_tage": {
+      "type": "number",
+      "title": { "en": "Deadlines in 7 days", "de": "Fristen in 7 Tagen" },
+      "desc": { "en": "Deadlines, reminders and tasks dated from today to 7 days ahead", "de": "Fristen, Erinnerungen und Aufgaben mit Datum von heute bis in 7 Tagen" },
+      "getable": true,
+      "setable": false,
+      "decimals": 0,
+      "min": 0,
+      "uiComponent": "sensor",
+      "insights": true,
+      "icon": "/assets/capabilities/fristen.svg"
+    },
+    "dms_ueberfaellig": {
+      "type": "number",
+      "title": { "en": "Overdue", "de": "Überfällig" },
+      "desc": { "en": "Open deadlines, reminders and tasks dated before today", "de": "Offene Fristen, Erinnerungen und Aufgaben mit Datum vor heute" },
+      "getable": true,
+      "setable": false,
+      "decimals": 0,
+      "min": 0,
+      "uiComponent": "sensor",
+      "insights": true,
+      "icon": "/assets/capabilities/ueberfaellig.svg"
+    }
+  },
+  "drivers": [
+    {
+      "id": "dms",
+      "name": { "en": "DMS", "de": "DMS" },
+      "class": "sensor",
+      "capabilities": ["dms_neue_post", "dms_zu_erledigen", "dms_fristen_7_tage", "dms_ueberfaellig"],
+      "platforms": ["local"],
+      "connectivity": ["lan"],
+      "images": {
+        "small": "/drivers/dms/assets/images/small.png",
+        "large": "/drivers/dms/assets/images/large.png",
+        "xlarge": "/drivers/dms/assets/images/xlarge.png"
+      },
+      "pair": [
+        {
+          "id": "login_credentials",
+          "template": "login_credentials",
+          "options": {
+            "title": { "en": "Connect your DMS", "de": "DMS verbinden" },
+            "usernameLabel": { "en": "Address of the DMS", "de": "Adresse des DMS" },
+            "usernamePlaceholder": { "en": "https://dms.home.arpa", "de": "https://dms.home.arpa" },
+            "passwordLabel": { "en": "API key (level nur Zähler)", "de": "API-Schlüssel (Stufe: nur Zähler)" },
+            "passwordPlaceholder": { "en": "dms_…", "de": "dms_…" }
+          },
+          "navigation": { "next": "list_devices" }
+        },
+        {
+          "id": "list_devices",
+          "template": "list_devices",
+          "navigation": { "next": "add_devices" }
+        },
+        {
+          "id": "add_devices",
+          "template": "add_devices"
+        }
+      ],
+      "repair": [
+        {
+          "id": "login_credentials",
+          "template": "login_credentials",
+          "options": {
+            "title": { "en": "Connect your DMS again", "de": "DMS neu verbinden" },
+            "usernameLabel": { "en": "Address of the DMS", "de": "Adresse des DMS" },
+            "usernamePlaceholder": { "en": "https://dms.home.arpa", "de": "https://dms.home.arpa" },
+            "passwordLabel": { "en": "API key (level nur Zähler)", "de": "API-Schlüssel (Stufe: nur Zähler)" },
+            "passwordPlaceholder": { "en": "dms_…", "de": "dms_…" }
+          }
+        }
+      ],
+      "settings": [
+        {
+          "type": "group",
+          "label": { "en": "Connection", "de": "Verbindung" },
+          "children": [
+            {
+              "id": "adresse",
+              "type": "text",
+              "label": { "en": "Address of the DMS", "de": "Adresse des DMS" },
+              "value": "",
+              "hint": { "en": "For example https://dms.home.arpa or http://192.0.2.10:8080. Homey must reach this address on your home network.", "de": "Zum Beispiel https://dms.home.arpa oder http://192.0.2.10:8080. Homey muss die Adresse im Heimnetz erreichen." }
+            },
+            {
+              "id": "schluessel",
+              "type": "password",
+              "label": { "en": "API key", "de": "API-Schlüssel" },
+              "value": "",
+              "hint": { "en": "Create it in the DMS under Profil > Sicherheit > API-Schlüssel with the level nur Zähler (counts only). The key only reads numbers, no titles or content.", "de": "Leg ihn im DMS unter Profil > Sicherheit > API-Schlüssel mit der Stufe nur Zähler an. Der Schlüssel liest nur Zahlen, keine Titel oder Inhalte." }
+            }
+          ]
+        },
+        {
+          "type": "group",
+          "label": { "en": "Polling", "de": "Abfrage" },
+          "children": [
+            {
+              "id": "intervall",
+              "type": "number",
+              "label": { "en": "Polling interval", "de": "Abfrage-Abstand" },
+              "value": 5,
+              "min": 1,
+              "max": 1440,
+              "units": { "en": "min", "de": "Min." },
+              "hint": { "en": "How often Homey asks the DMS. If nothing has changed, the DMS only answers with not modified (304).", "de": "Wie oft Homey beim DMS nachfragt. Hat sich nichts geändert, antwortet das DMS nur mit „nichts Neues“ (304)." }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "flow": {
+    "triggers": [
+      {
+        "id": "neue_post",
+        "title": { "en": "New mail arrived", "de": "Neue Post angekommen" },
+        "hint": { "en": "Fires when the number of new mail in the DMS goes up, at the latest after one polling interval.", "de": "Löst aus, sobald die Zahl der neuen Post im DMS steigt – spätestens nach einem Abfrage-Abstand." },
+        "tokens": [
+          { "name": "neue_post", "type": "number", "title": { "en": "New mail in total", "de": "Neue Post insgesamt" }, "example": 3 },
+          { "name": "dazu", "type": "number", "title": { "en": "Newly arrived", "de": "Neu dazugekommen" }, "example": 1 }
+        ],
+        "args": [
+          { "type": "device", "name": "device", "filter": "driver_id=dms" }
+        ]
+      },
+      {
+        "id": "frist_faellig",
+        "title": { "en": "A deadline becomes due", "de": "Frist wird fällig" },
+        "titleFormatted": { "en": "A deadline [[art]]", "de": "Eine Frist [[art]]" },
+        "hint": { "en": "Fires when a deadline, reminder or task moves into the next 7 days or becomes overdue.", "de": "Löst aus, wenn eine Frist, Erinnerung oder Aufgabe in die nächsten 7 Tage rückt oder überfällig wird." },
+        "tokens": [
+          { "name": "fristen_7_tage", "type": "number", "title": { "en": "Deadlines in 7 days", "de": "Fristen in 7 Tagen" }, "example": 2 },
+          { "name": "ueberfaellig", "type": "number", "title": { "en": "Overdue", "de": "Überfällig" }, "example": 1 }
+        ],
+        "args": [
+          { "type": "device", "name": "device", "filter": "driver_id=dms" },
+          {
+            "type": "dropdown",
+            "name": "art",
+            "title": { "en": "When", "de": "Wann" },
+            "values": [
+              { "id": "anstehend", "label": { "en": "is due within 7 days", "de": "steht in den nächsten 7 Tagen an" } },
+              { "id": "ueberfaellig", "label": { "en": "is overdue", "de": "ist überfällig" } }
+            ]
+          }
+        ]
+      }
+    ],
+    "conditions": [
+      {
+        "id": "neue_post_vorhanden",
+        "title": { "en": "There !{{is|is no}} new mail", "de": "Es liegt !{{neue|keine neue}} Post vor" },
+        "hint": { "en": "Checks the last value Homey received from the DMS.", "de": "Prüft den letzten Wert, den Homey vom DMS bekommen hat." },
+        "args": [
+          { "type": "device", "name": "device", "filter": "driver_id=dms" }
+        ]
+      }
+    ]
+  }
+}

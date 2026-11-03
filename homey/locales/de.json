@@ -1,0 +1,17 @@
+{
+  "fehler": {
+    "nicht_erreichbar": "Das DMS ist nicht erreichbar. Prüfe die Adresse, ob das DMS läuft und ob Homey es im Heimnetz erreicht.",
+    "zertifikat": "Homey vertraut dem Zertifikat des DMS nicht (zum Beispiel selbst signiert oder abgelaufen). Nimm eine Adresse mit gültigem Zertifikat oder, nur im eigenen Heimnetz, die http-Adresse des DMS, z. B. http://192.0.2.10:8080.",
+    "schluessel_ungueltig": "Der API-Schlüssel ist ungültig, gelöscht oder abgelaufen. Leg im DMS unter Profil > Sicherheit > API-Schlüssel einen neuen Schlüssel „nur Zähler“ an und trag ihn hier ein.",
+    "falsche_stufe": "Dieser API-Schlüssel hat die falsche Stufe. Nimm einen Schlüssel „nur Zähler“ (im DMS unter Profil > Sicherheit > API-Schlüssel).",
+    "wartung": "Das DMS ist gerade im Wartungsmodus. Homey fragt im nächsten Abfrage-Abstand wieder.",
+    "kein_dms": "Unter dieser Adresse antwortet kein DMS ab Version 0.148.0. Prüfe die Adresse (z. B. https://dms.home.arpa) und die Version deines DMS.",
+    "umleitung": "Die Adresse leitet weiter. Trag die Zieladresse direkt ein, z. B. https:// statt http://.",
+    "adresse_ungueltig": "Gib die Adresse des DMS mit http:// oder https:// an, z. B. https://dms.home.arpa.",
+    "schluessel_format": "Das ist kein API-Schlüssel des DMS. Er beginnt mit dms_ und ist nur direkt nach dem Anlegen vollständig zu sehen.",
+    "unerwartet": "Unerwartete Antwort vom DMS. Einzelheiten stehen im Protokoll der App."
+  },
+  "hinweis": {
+    "stufe_lesen": "Tipp: Ein Schlüssel „nur Zähler“ genügt und verrät weniger, falls er verloren geht."
+  }
+}

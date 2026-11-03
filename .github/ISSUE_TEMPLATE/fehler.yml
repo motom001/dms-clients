@@ -1,0 +1,62 @@
+name: Fehler in einem Client · Bug in a client
+description: Ein Client funktioniert nicht wie erwartet · A client does not work as expected
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Danke, dass du dir die Zeit nimmst! Deutsch oder Englisch – beides ist willkommen.
+        **Bitte keine echten Namen, Adressen, Kunden- oder Vertragsnummern, keine API-Schlüssel und keine Fotos echter Unterlagen.** Nimm erfundene Beispiele (z. B. Lena, Jonas) und `dms.example.org` als Adresse.
+        Ein Fehler im DMS selbst gehört ins Repository [motom001/dms](https://github.com/motom001/dms/issues/new/choose). Sicherheitslücken bitte vertraulich melden (siehe SECURITY.md).
+
+        Thanks for taking the time! **Please no real names, addresses, API keys or photos of real documents.**
+  - type: dropdown
+    id: client
+    attributes:
+      label: Welcher Client? · Which client?
+      options:
+        - Homey (homey)
+        - Home Assistant (homeassistant)
+        - App für iPhone und iPad (ios)
+        - App für Android (android)
+        - Office-Add-in (office)
+        - Thunderbird (thunderbird)
+        - Browser-Erweiterung (browser)
+        - Kurzbefehle (kurzbefehle)
+        - Beispiele und Skripte (beispiele)
+    validations:
+      required: true
+  - type: input
+    id: clientversion
+    attributes:
+      label: Version des Clients · Client version
+      placeholder: z. B. 1.0.0
+  - type: input
+    id: dmsversion
+    attributes:
+      label: DMS-Version · DMS version
+      description: Steht im DMS unter „Über das DMS“ (Benutzermenü) · Shown under “About the DMS” (user menu)
+      placeholder: z. B. 0.144.2
+  - type: input
+    id: plattform
+    attributes:
+      label: Gerät und Version der Plattform · Device and platform version
+      placeholder: z. B. Homey Pro (2023), Homey 12.4 · iPhone 15, iOS 26.1
+  - type: textarea
+    id: beschreibung
+    attributes:
+      label: Was passiert? · What happens?
+      description: |
+        **Als** … **möchte ich** …, **damit** … – dann: Was hast du getan, was ist passiert, was hast du erwartet? Meldung oder Bildschirmfoto (ohne echte Daten).
+        **As a** … **I want** …, **so that** … – then: what did you do, what happened, what did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: kriterien
+    attributes:
+      label: Akzeptanzkriterien · Acceptance criteria
+      value: |
+        - [ ] …
+  - type: markdown
+    attributes:
+      value: Umgesetzt wird erst, wenn der Maintainer das Label „freigegeben“ gesetzt hat. · Work starts only after the maintainer has set the label "freigegeben" (approved).

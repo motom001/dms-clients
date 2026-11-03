@@ -1,0 +1,27 @@
+# Setzt bei Meldungen über die Vorlagen „Fehler“ und „Wunsch“ das Label „client: <kennung>“.
+# Der Issue-Text ist fremde Eingabe: Er kommt nur über eine Umgebungsvariable ins Skript (nie per ${{ }} in run),
+# und als Label taugt nur eine Kennung aus der festen Liste unten (gleiche Liste wie in den Vorlagen).
+name: Label je Client
+
+on:
+  issues:
+    types: [opened, edited]
+
+permissions:
+  issues: write
+
+jobs:
+  label:
+    if: contains(github.event.issue.body, '### Welcher Client?')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Client aus dem Formular lesen und Label setzen
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TEXT: ${{ github.event.issue.body }}
+          NUMMER: ${{ github.event.issue.number }}
+          BEKANNT: homey homeassistant ios android office thunderbird browser kurzbefehle beispiele
+        run: |
+          kennung=$(printf '%s\n' "$TEXT" | awk '/^### Welcher Client\?/{f=1; next} f && NF {print; exit}' | sed -nE 's/.*\(([a-z][a-z0-9_]{1,19})\)[[:space:]]*$/\1/p')
+          case " $BEKANNT " in *" $kennung "*) ;; *) echo "Kein bekannter Client im Formular – kein Label."; exit 0 ;; esac
+          gh issue edit "$NUMMER" --repo "$GITHUB_REPOSITORY" --add-label "client: $kennung"

@@ -1,0 +1,11 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Fehler oder Wunsch im DMS selbst · Bug or wish in the DMS itself
+    url: https://github.com/motom001/dms/issues/new/choose
+    about: Alles, was im DMS (Server, Weboberfläche, API) passiert · Everything that happens in the DMS (server, web interface, API)
+  - name: Wie komme ich an ein DMS? · How do I get a DMS?
+    url: https://motom001.github.io/dms/installieren/aktuell/
+    about: Anleitungen für NAS, App-Stores und Docker · Guides for NAS, app stores and Docker (in German)
+  - name: API-Beschreibung · API description
+    url: https://motom001.github.io/dms/admin/aktuell/api/
+    about: Die API v1, die alle Clients nutzen · The API v1 used by all clients (in German)

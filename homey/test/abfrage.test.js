@@ -96,4 +96,47 @@ describe('Regelmäßige Abfrage', () => {
     assert.equal(ok, 1, 'wieder in Ordnung');
     a.stop();
   });
+
+  it('wartet im Wartungsmodus nur so lange, wie Ablago sagt (Retry-After), höchstens einen Abstand', async () => {
+    const uhr = handuhr();
+    const fehler = [];
+    const a = new Zaehlerabfrage({
+      verbindung: new DmsVerbindung({ adresse: dms.adresse, schluessel: 'dms_zaehlerLenaTestschluessel' }),
+      abstandMs: 5 * 60000,
+      fehler: (e) => fehler.push(e.code),
+      setTimeout: uhr.setTimeout,
+      clearTimeout: uhr.clearTimeout,
+    });
+    dms.zustand.wartung = true;
+    try {
+      await a.start();
+      assert.deepEqual(fehler, ['wartung']);
+      assert.equal(uhr.abstand, 120000, 'nach Retry-After (120 s) statt nach 5 Minuten');
+      await uhr.weiter(a);
+      assert.equal(uhr.abstand, 120000);
+    } finally {
+      dms.zustand.wartung = false;
+    }
+    await uhr.weiter(a);
+    assert.equal(uhr.abstand, 300000, 'danach wieder der eingestellte Abstand');
+    a.stop();
+  });
+
+  it('wartet nie länger als den eingestellten Abstand, auch wenn Retry-After länger ist', async () => {
+    const uhr = handuhr();
+    const a = new Zaehlerabfrage({
+      verbindung: new DmsVerbindung({ adresse: dms.adresse, schluessel: 'dms_zaehlerLenaTestschluessel' }),
+      abstandMs: 60000,
+      setTimeout: uhr.setTimeout,
+      clearTimeout: uhr.clearTimeout,
+    });
+    dms.zustand.wartung = true;
+    try {
+      await a.start();
+      assert.equal(uhr.abstand, 60000);
+    } finally {
+      dms.zustand.wartung = false;
+      a.stop();
+    }
+  });
 });

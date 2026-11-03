@@ -6,7 +6,7 @@ body:
     attributes:
       value: |
         Deutsch oder Englisch – beides ist willkommen. **Bitte keine echten Daten**, nur erfundene Beispiele (z. B. Lena, Jonas).
-        Braucht dein Wunsch eine neue Schnittstelle im DMS? Dann gehört dieser Teil ins Repository [motom001/dms](https://github.com/motom001/dms/issues/new/choose). Einen ganz neuen Client schlägst du mit der Vorlage „Neuer Client“ vor.
+        Braucht dein Wunsch eine neue Schnittstelle in Ablago? Dann gehört dieser Teil ins Repository [motom001/dms](https://github.com/motom001/dms/issues/new/choose). Einen ganz neuen Client schlägst du mit der Vorlage „Neuer Client“ vor.
   - type: dropdown
     id: client
     attributes:
@@ -41,7 +41,7 @@ body:
     id: fuerwen
     attributes:
       label: Für wen? · Who is it for?
-      description: "Die Personas · The personas (German): https://motom001.github.io/dms/entwickler/aktuell/personas/"
+      description: "Die Personas · The personas (German): https://help.ablago.app/entwickler/aktuell/personas/"
       multiple: true
       options:
         - Einsteiger-Familie

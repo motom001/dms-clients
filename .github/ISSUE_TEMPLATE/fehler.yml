@@ -7,7 +7,7 @@ body:
       value: |
         Danke, dass du dir die Zeit nimmst! Deutsch oder Englisch – beides ist willkommen.
         **Bitte keine echten Namen, Adressen, Kunden- oder Vertragsnummern, keine API-Schlüssel und keine Fotos echter Unterlagen.** Nimm erfundene Beispiele (z. B. Lena, Jonas) und `dms.example.org` als Adresse.
-        Ein Fehler im DMS selbst gehört ins Repository [motom001/dms](https://github.com/motom001/dms/issues/new/choose). Sicherheitslücken bitte vertraulich melden (siehe SECURITY.md).
+        Ein Fehler in Ablago selbst gehört ins Repository [motom001/dms](https://github.com/motom001/dms/issues/new/choose). Sicherheitslücken bitte vertraulich melden (siehe SECURITY.md).
 
         Thanks for taking the time! **Please no real names, addresses, API keys or photos of real documents.**
   - type: dropdown
@@ -34,8 +34,8 @@ body:
   - type: input
     id: dmsversion
     attributes:
-      label: DMS-Version · DMS version
-      description: Steht im DMS unter „Über das DMS“ (Benutzermenü) · Shown under “About the DMS” (user menu)
+      label: Version von Ablago · Ablago version
+      description: Steht im Benutzermenü unter „Über Ablago“ (ältere Versionen: „Über das DMS“) · Shown in the user menu under “Über Ablago” (older versions: “Über das DMS”)
       placeholder: z. B. 0.144.2
   - type: input
     id: plattform

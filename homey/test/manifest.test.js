@@ -39,12 +39,12 @@ describe('Manifest', () => {
 
   it('Flow-Karten und Tokens passen zur Auswertung', () => {
     const ids = (liste) => (liste || []).map((k) => k.id).sort();
-    assert.deepEqual(ids(app.flow.triggers), ['frist_faellig', 'neue_post']);
+    assert.deepEqual(ids(app.flow.triggers), ['bald_faellig', 'neue_post']);
     assert.deepEqual(ids(app.flow.conditions), ['neue_post_vorhanden']);
     const tokens = (id) => app.flow.triggers.find((k) => k.id === id).tokens.map((t) => t.name).sort();
     assert.deepEqual(tokens('neue_post'), ['dazu', 'neue_post']);
-    assert.deepEqual(tokens('frist_faellig'), ['fristen_7_tage', 'ueberfaellig']);
-    const arten = app.flow.triggers.find((k) => k.id === 'frist_faellig').args.find((a) => a.name === 'art').values.map((v) => v.id);
+    assert.deepEqual(tokens('bald_faellig'), ['faellig_7_tage', 'ueberfaellig']);
+    const arten = app.flow.triggers.find((k) => k.id === 'bald_faellig').args.find((a) => a.name === 'art').values.map((v) => v.id);
     assert.deepEqual(arten.sort(), ['anstehend', 'ueberfaellig']);
     for (const k of [...app.flow.triggers, ...app.flow.conditions]) assert.ok(k.title.de && k.title.en, k.id);
   });
@@ -61,10 +61,40 @@ describe('Manifest', () => {
     assert.match(de.fehler.falsche_stufe, /nur Zähler/);
   });
 
-  it('keine Emoji und keine Verbindungen außer zum DMS', () => {
+  it('keine Emoji und keine Verbindungen außer zu Ablago', () => {
     const texte = [JSON.stringify(app), JSON.stringify(de), JSON.stringify(en), quelltext];
     for (const t of texte) assert.doesNotMatch(t, /\p{Extended_Pictographic}/u);
     const adressen = [...quelltext.matchAll(/https?:\/\/[^\s'"`)]+/g)].map((m) => m[0]);
     for (const a of adressen) assert.match(a, /dms\.home\.arpa|example\.org|192\.0\.2\.|\$\{/, a);
+  });
+});
+
+describe('Einheitlich in allen Clients', () => {
+  const texte = [JSON.stringify(app), JSON.stringify(de), JSON.stringify(en)].join('\n');
+
+  it('App-ID nach dem Schema app.ablago.clients.<client>, Name Ablago', () => {
+    assert.equal(app.id, 'app.ablago.clients.homey');
+    assert.equal(pkg.name, app.id);
+    assert.deepEqual(app.name, { en: 'Ablago', de: 'Ablago' });
+  });
+
+  it('die vier Zahlen heißen wie in allen Clients', () => {
+    const titel = Object.values(WERTE).map((c) => app.capabilities[c].title.de);
+    assert.deepEqual(titel, ['Neue Post', 'Zu erledigen', 'Fällig in 7 Tagen', 'Überfällig']);
+    assert.doesNotMatch(texte, /Fristen in 7 Tagen|Frist wird fällig|ohne Für/);
+  });
+
+  it('Wege so, wie man klickt: Mein Konto → Sicherheit → API-Schlüssel, nie Profil', () => {
+    assert.doesNotMatch(texte, /Profil\s*[>→]/);
+    assert.match(de.fehler.schluessel_ungueltig, /Mein Konto → Sicherheit → API-Schlüssel/);
+    const hinweis = app.drivers[0].settings.flatMap((g) => g.children).find((c) => c.id === 'schluessel').hint;
+    assert.match(hinweis.de, /Klick oben rechts auf deinen Namen → Mein Konto → Sicherheit → API-Schlüssel/);
+    assert.match(hinweis.en, /"Mein Konto" \(my account\)/);
+  });
+
+  it('Stufen immer in Anführungszeichen', () => {
+    const deTexte = [JSON.stringify(de), JSON.stringify(app.drivers[0])].join('\n');
+    assert.doesNotMatch(deTexte, /(?<![„"])nur Zähler/, 'de: „nur Zähler“');
+    for (const m of JSON.stringify(en).matchAll(/(.)nur Zähler/g)) assert.equal(m[1], '"', 'en: "nur Zähler"');
   });
 });

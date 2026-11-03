@@ -8,7 +8,7 @@ const z = (neuePost, zuErledigen, anstehend, ueberfaellig) => ({ neuePost, zuErl
 
 describe('Auswertung der Zahlen', () => {
   it('ordnet die Zahlen den Werten des Geräts zu', () => {
-    assert.deepEqual(geraetewerte(z(2, 5, 3, 1)), { dms_neue_post: 2, dms_zu_erledigen: 5, dms_fristen_7_tage: 3, dms_ueberfaellig: 1 });
+    assert.deepEqual(geraetewerte(z(2, 5, 3, 1)), { dms_neue_post: 2, dms_zu_erledigen: 5, dms_faellig_7_tage: 3, dms_ueberfaellig: 1 });
   });
 
   it('löst beim ersten Abruf nichts aus', () => {
@@ -23,9 +23,9 @@ describe('Auswertung der Zahlen', () => {
   });
 
   it('„Frist wird fällig“ für anstehend und überfällig getrennt', () => {
-    assert.deepEqual(ausloeser(z(0, 0, 1, 0), z(0, 0, 2, 0)), [{ karte: 'frist_faellig', art: 'anstehend', tokens: { fristen_7_tage: 2, ueberfaellig: 0 } }]);
+    assert.deepEqual(ausloeser(z(0, 0, 1, 0), z(0, 0, 2, 0)), [{ karte: 'bald_faellig', art: 'anstehend', tokens: { faellig_7_tage: 2, ueberfaellig: 0 } }]);
     // Eine Frist rutscht von „anstehend“ nach „überfällig“.
-    assert.deepEqual(ausloeser(z(0, 0, 2, 0), z(0, 0, 1, 1)), [{ karte: 'frist_faellig', art: 'ueberfaellig', tokens: { fristen_7_tage: 1, ueberfaellig: 1 } }]);
+    assert.deepEqual(ausloeser(z(0, 0, 2, 0), z(0, 0, 1, 1)), [{ karte: 'bald_faellig', art: 'ueberfaellig', tokens: { faellig_7_tage: 1, ueberfaellig: 1 } }]);
     assert.equal(ausloeser(z(0, 0, 0, 0), z(1, 0, 1, 1)).length, 3);
   });
 

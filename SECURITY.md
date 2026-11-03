@@ -2,13 +2,13 @@
 
 **Deutsch** · [English](SECURITY.en.md)
 
-Dieses Repository gehört zum DMS ([motom001/dms](https://github.com/motom001/dms)) und enthält: Clients, die über die API mit dem DMS sprechen (Apps, Erweiterungen, Anbindungen an Hausautomatisierung).
+Dieses Repository gehört zu Ablago ([motom001/dms](https://github.com/motom001/dms)) und enthält: Clients, die über die API mit Ablago sprechen (Apps, Erweiterungen, Anbindungen an Hausautomatisierung).
 
 ## Eine Sicherheitslücke melden
 
 Bitte **kein öffentliches Issue** für Sicherheitslücken. Melde sie vertraulich über GitHub: **Security → Report a vulnerability** in diesem Repository ([Private Vulnerability Reporting](https://github.com/motom001/dms-clients/security/advisories/new)).
 
-Betrifft die Lücke das DMS selbst, melde sie bitte direkt im Repository [motom001/dms](https://github.com/motom001/dms/security/advisories/new).
+Betrifft die Lücke Ablago selbst, melde sie bitte direkt im Repository [motom001/dms](https://github.com/motom001/dms/security/advisories/new).
 
 ## Was automatisch geprüft wird
 

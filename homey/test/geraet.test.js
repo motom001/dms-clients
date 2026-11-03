@@ -119,7 +119,7 @@ describe('Treiber und Gerät (mit Ersatz für Homey)', () => {
     assert.equal(await s.h.login({ username: `${dms.adresse}/`, password: 'dms_zaehlerLenaTestschluessel' }), true);
     const liste = await s.h.list_devices();
     assert.equal(liste.length, 1);
-    assert.equal(liste[0].name, 'DMS');
+    assert.equal(liste[0].name, 'Ablago');
     assert.deepEqual(liste[0].settings, { adresse: dms.adresse, schluessel: 'dms_zaehlerLenaTestschluessel', intervall: 5 });
     assert.match(liste[0].data.id, /^[0-9a-f-]{36}$/);
     assert.ok(!JSON.stringify(liste[0].data).includes('dms_'), 'Schlüssel nicht in den Gerätedaten');
@@ -130,7 +130,7 @@ describe('Treiber und Gerät (mit Ersatz für Homey)', () => {
     const g = new DmsDevice(driver, { adresse: dms.adresse, schluessel: 'dms_zaehlerLenaTestschluessel', intervall: 5 });
     await g.onInit();
     await bis(() => g.getCapabilityValue('dms_zu_erledigen') === 2);
-    assert.deepEqual(g.werte, { dms_neue_post: 0, dms_zu_erledigen: 2, dms_fristen_7_tage: 1, dms_ueberfaellig: 0 });
+    assert.deepEqual(g.werte, { dms_neue_post: 0, dms_zu_erledigen: 2, dms_faellig_7_tage: 1, dms_ueberfaellig: 0 });
     assert.equal(g.warnung, null);
     assert.equal(await karten.neue_post_vorhanden.lauscher({ device: g }), false);
 
@@ -140,9 +140,9 @@ describe('Treiber und Gerät (mit Ersatz für Homey)', () => {
     assert.equal(await karten.neue_post_vorhanden.lauscher({ device: g }), true);
     const post = ausgeloest.find((a) => a.id === 'neue_post');
     assert.deepEqual(post.tokens, { neue_post: 1, dazu: 1 });
-    const frist = ausgeloest.find((a) => a.id === 'frist_faellig');
-    assert.equal(await frist.passt({ art: 'ueberfaellig' }), true);
-    assert.equal(await frist.passt({ art: 'anstehend' }), false);
+    const faellig = ausgeloest.find((a) => a.id === 'bald_faellig');
+    assert.equal(await faellig.passt({ art: 'ueberfaellig' }), true);
+    assert.equal(await faellig.passt({ art: 'anstehend' }), false);
 
     // Unverändert: 304, keine neuen Auslöser.
     const vorher = ausgeloest.length;

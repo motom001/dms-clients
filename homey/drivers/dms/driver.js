@@ -6,14 +6,14 @@ const { DmsFehler, DmsVerbindung } = require('../../lib/dms');
 const { WERTE } = require('../../lib/auswertung');
 
 /**
- * Treiber „DMS“: Einrichten mit Adresse und Schlüssel (Verbindungstest beim Anlegen), Reparieren mit neuen
+ * Treiber „Ablago“: Einrichten mit Adresse und Schlüssel (Verbindungstest beim Anlegen), Reparieren mit neuen
  * Zugangsdaten und die Flow-Karten.
  */
 module.exports = class DmsDriver extends Homey.Driver {
   async onInit() {
     this.karteNeuePost = this.homey.flow.getDeviceTriggerCard('neue_post');
-    this.karteFrist = this.homey.flow.getDeviceTriggerCard('frist_faellig');
-    this.karteFrist.registerRunListener(async (args, state) => args.art === state.art);
+    this.karteFaellig = this.homey.flow.getDeviceTriggerCard('bald_faellig');
+    this.karteFaellig.registerRunListener(async (args, state) => args.art === state.art);
     this.homey.flow.getConditionCard('neue_post_vorhanden')
       .registerRunListener(async (args) => (args.device.getCapabilityValue(WERTE.neuePost) || 0) > 0);
   }
@@ -49,7 +49,7 @@ module.exports = class DmsDriver extends Homey.Driver {
     session.setHandler('list_devices', async () => {
       if (!zugang) return [];
       return [{
-        name: 'DMS',
+        name: 'Ablago',
         // Das DMS nennt einem Schlüssel „nur Zähler“ keinen Benutzer; eine zufällige Kennung erlaubt mehrere Geräte
         // (eines je Person) und gibt nichts über den Schlüssel preis.
         data: { id: crypto.randomUUID() },

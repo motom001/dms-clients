@@ -8,6 +8,8 @@ const { ausloeser, vollstaendig } = require('./auswertung');
  *
  * Ablauf je Runde: Abruf mit dem ETag der letzten Antwort → bei 304 nichts weiter, bei 200 neue Werte melden und
  * Auslöser für jeden Anstieg. Fehler werden gemeldet; die nächste Runde kommt trotzdem nach dem Abstand.
+ * Nennt Ablago im Wartungsmodus eine Wartezeit (`Retry-After`), kommt die nächste Runde nach dieser Zeit,
+ * höchstens aber nach dem eingestellten Abstand.
  */
 class Zaehlerabfrage {
   /**
@@ -46,16 +48,18 @@ class Zaehlerabfrage {
     this.zeitgeber = null;
   }
 
-  planen() {
+  /** @param {number} [ms] Wartezeit bis zur nächsten Runde, sonst der eingestellte Abstand */
+  planen(ms = this.o.abstandMs) {
     if (!this.aktiv) return;
     if (this.zeitgeber) this.clearTimeout(this.zeitgeber);
-    this.zeitgeber = this.setTimeout(() => { this.zeitgeber = null; this.runde(); }, this.o.abstandMs);
+    this.zeitgeber = this.setTimeout(() => { this.zeitgeber = null; this.runde(); }, ms);
   }
 
   /** Ein Abruf. Läuft schon einer, passiert nichts (keine Überholer bei langsamen Antworten). */
   async runde() {
     if (this.laeuft) return;
     this.laeuft = true;
+    let warten = this.o.abstandMs;
     try {
       const r = await this.o.verbindung.zaehler(this.etag || undefined);
       this.etag = r.etag || this.etag;
@@ -67,10 +71,12 @@ class Zaehlerabfrage {
       }
       await this.o.ok?.();
     } catch (e) {
+      const sek = e && /** @type {{ wiederholenNach?: number }} */ (e).wiederholenNach;
+      if (sek && sek > 0) warten = Math.min(this.o.abstandMs, sek * 1000);
       await this.o.fehler?.(/** @type {Error} */ (e));
     } finally {
       this.laeuft = false;
-      this.planen();
+      this.planen(warten);
     }
   }
 }

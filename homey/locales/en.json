@@ -1,15 +1,15 @@
 {
   "fehler": {
-    "nicht_erreichbar": "The DMS cannot be reached. Check the address, whether the DMS is running and whether Homey can reach it on your home network.",
-    "zertifikat": "Homey does not trust the certificate of the DMS (for example self-signed or expired). Use an address with a valid certificate or, on your own home network only, the http address of the DMS, e.g. http://192.0.2.10:8080.",
-    "schluessel_ungueltig": "The API key is invalid, deleted or expired. In the DMS, create a new key with the level \"nur Zähler\" (counts only) under Profil > Sicherheit > API-Schlüssel and enter it here.",
-    "falsche_stufe": "This API key has the wrong level. Use a key with the level \"nur Zähler\" (counts only), in the DMS under Profil > Sicherheit > API-Schlüssel.",
-    "wartung": "The DMS is in maintenance mode. Homey will ask again after the next polling interval.",
-    "kein_dms": "No DMS version 0.148.0 or newer answers at this address. Check the address (e.g. https://dms.home.arpa) and the version of your DMS.",
+    "nicht_erreichbar": "Ablago cannot be reached. Check the address, whether Ablago is running and whether Homey can reach it on your home network.",
+    "zertifikat": "Homey does not trust the certificate of Ablago (for example self-signed or expired). Use an address with a valid certificate or, on your own home network only, the http address, e.g. http://192.0.2.10:8080.",
+    "schluessel_ungueltig": "The API key is invalid, deleted or expired. In Ablago, create a new key with the level \"nur Zähler\" (counts only) under \"Mein Konto\" (my account) → \"Sicherheit\" (security) → \"API-Schlüssel\" (API keys) and enter it here.",
+    "falsche_stufe": "This API key has the wrong level. Use a key with the level \"nur Zähler\" (counts only), in Ablago under \"Mein Konto\" (my account) → \"Sicherheit\" (security) → \"API-Schlüssel\" (API keys).",
+    "wartung": "Ablago is in maintenance mode. Homey will ask again on its own afterwards.",
+    "kein_dms": "No Ablago version 0.148.0 or newer answers at this address. Check the address (e.g. https://dms.home.arpa) and the version.",
     "umleitung": "The address redirects. Enter the target address directly, e.g. https:// instead of http://.",
-    "adresse_ungueltig": "Enter the address of the DMS with http:// or https://, e.g. https://dms.home.arpa.",
-    "schluessel_format": "This is not an API key of the DMS. It starts with dms_ and is only fully visible right after you create it.",
-    "unerwartet": "Unexpected answer from the DMS. Details are in the app log."
+    "adresse_ungueltig": "Enter the address of Ablago with http:// or https://, e.g. https://dms.home.arpa.",
+    "schluessel_format": "This is not an Ablago API key. It starts with dms_ and is only fully visible right after you create it.",
+    "unerwartet": "Unexpected answer from Ablago. Details are in the app log."
   },
   "hinweis": {
     "stufe_lesen": "Tip: a key with the level \"nur Zähler\" (counts only) is enough and reveals less if it gets lost."

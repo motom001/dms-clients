@@ -12,8 +12,8 @@ Jeder Client liegt in einem **eigenen Ordner direkt unter der Wurzel**. Ein Ordn
 
 | Bereich | Ordner | Was es ist | Stand |
 | --- | --- | --- | --- |
-| Hausautomatisierung | `homey/` | App für Homey Pro: neue Post, Aufgaben und Fristen als Werte und Flow-Karten | geplant ([motom001/dms#626](https://github.com/motom001/dms/issues/626)) |
-| Hausautomatisierung | `homeassistant/` | Integration für Home Assistant (über HACS): dieselben Zahlen als Sensoren | später ([motom001/dms#628](https://github.com/motom001/dms/issues/628)) |
+| Hausautomatisierung | `homey/` | App für Homey Pro: neue Post, Aufgaben und Fristen als Werte und Flow-Karten | geplant ([#2](https://github.com/motom001/dms-clients/issues/2)) |
+| Hausautomatisierung | `homeassistant/` | Integration für Home Assistant (über HACS): dieselben Zahlen als Sensoren | später ([#3](https://github.com/motom001/dms-clients/issues/3)) |
 | Handy und Tablet | `ios/`, `android/` (oder gemeinsam `app/`) | Apps für iPhone, iPad und Android: Scannen, Teilen-Menü, Mitteilungen, Face ID | Konzept ([motom001/dms#340](https://github.com/motom001/dms/issues/340)) |
 | Büro | `office/` | Add-ins für Word, Excel und Outlook: Dokument oder E-Mail ins DMS ablegen | Idee (aus [motom001/dms#340](https://github.com/motom001/dms/issues/340)) |
 | Büro | `thunderbird/` | Erweiterung für Thunderbird: E-Mail mit Anhängen als Post ablegen | Idee |

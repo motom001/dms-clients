@@ -1,10 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" width="1000" height="1000">
-  <!-- Quelle für drivers/dms/assets/images/*.png. Gerendert z. B. mit rsvg-convert (siehe README). -->
+  <!-- Quelle für drivers/dms/assets/images/*.png: farbiges Zeichen aus dms-website/marke/ablago-zeichen-farbig.svg
+       (unverändert, hier nur vergrößert). Gerendert z. B. mit rsvg-convert (siehe README). -->
   <rect width="1000" height="1000" fill="#ffffff"/>
-  <g transform="translate(20 40)" fill="none" stroke="#1F4E79" stroke-width="44" stroke-linejoin="round" stroke-linecap="round">
-    <path d="M250 470 V210 a30 30 0 0 1 30 -30 H560 L710 330 V470"/>
-    <path d="M560 180 V330 H710"/>
-    <path d="M330 300 H480 M330 390 H630"/>
-    <path d="M140 520 H350 L400 610 H560 L610 520 H820 V760 a40 40 0 0 1 -40 40 H180 a40 40 0 0 1 -40 -40 Z"/>
+  <g transform="translate(116 116) scale(8)">
+    <path d="M12 60H28c4 8 11 12 20 12s16-4 20-12H84v16a6 6 0 0 1-6 6H18a6 6 0 0 1-6-6Z" fill="#1F4E79"/>
+    <g transform="rotate(-12 48 32)"><rect x="33" y="12" width="30" height="40" rx="4" fill="#E8A33D"/></g>
   </g>
 </svg>

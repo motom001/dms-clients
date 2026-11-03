@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 360" width="480" height="360" font-family="DejaVu Sans, Arial, sans-serif">
+  <title>Einrichten: Adresse des DMS und API-Schlüssel „nur Zähler“ (schematisch, erfundene Werte)</title>
+  <rect width="480" height="360" rx="16" fill="#F4F7FA"/>
+  <text x="240" y="50" font-size="22" font-weight="bold" fill="#1F4E79" text-anchor="middle">DMS verbinden</text>
+  <text x="40" y="100" font-size="15" fill="#333">Adresse des DMS</text>
+  <rect x="40" y="110" width="400" height="44" rx="8" fill="#fff" stroke="#9AAFC4" stroke-width="2"/>
+  <text x="56" y="139" font-size="17" fill="#111">https://dms.home.arpa</text>
+  <text x="40" y="190" font-size="15" fill="#333">API-Schlüssel (Stufe nur Zähler)</text>
+  <rect x="40" y="200" width="400" height="44" rx="8" fill="#fff" stroke="#9AAFC4" stroke-width="2"/>
+  <text x="56" y="229" font-size="17" fill="#111">dms_••••••••••••••••</text>
+  <rect x="140" y="280" width="200" height="48" rx="24" fill="#1F4E79"/>
+  <text x="240" y="311" font-size="18" fill="#fff" text-anchor="middle">Verbinden</text>
+</svg>

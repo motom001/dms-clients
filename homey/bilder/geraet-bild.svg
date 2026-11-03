@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" width="1000" height="1000">
+  <!-- Quelle für drivers/dms/assets/images/*.png. Gerendert z. B. mit rsvg-convert (siehe README). -->
+  <rect width="1000" height="1000" fill="#ffffff"/>
+  <g transform="translate(20 40)" fill="none" stroke="#1F4E79" stroke-width="44" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M250 470 V210 a30 30 0 0 1 30 -30 H560 L710 330 V470"/>
+    <path d="M560 180 V330 H710"/>
+    <path d="M330 300 H480 M330 390 H630"/>
+    <path d="M140 520 H350 L400 610 H560 L610 520 H820 V760 a40 40 0 0 1 -40 40 H180 a40 40 0 0 1 -40 -40 Z"/>
+  </g>
+</svg>

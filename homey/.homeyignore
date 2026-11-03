@@ -1,0 +1,8 @@
+# Nicht in die App auf dem Homey: Tests, Werkzeuge, Quellen der Bilder, Doku für GitHub
+test/
+scripts/
+bilder/
+README.md
+README.en.md
+CHANGELOG.md
+package-lock.json

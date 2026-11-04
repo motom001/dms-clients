@@ -6,7 +6,7 @@
 
 1. **Issue anlegen** – als User Story: „Als … möchte ich …, damit …“, mit Akzeptanzkriterien. Für einen **Fehler oder Wunsch zu einem Client** nimm die passende Vorlage und wähle dort den Client aus. Für einen **neuen Client** gibt es eine eigene Vorlage.
 2. **Freigabe abwarten.** Umgesetzt wird nur, was das Label `freigegeben` trägt; das vergibt allein der Maintainer.
-3. **Forken und bauen** im Ordner des Clients. Ein neuer Client bekommt einen eigenen Ordner direkt unter der Wurzel mit `README.md` und `CHANGELOG.md`.
+3. **Forken und bauen** im Ordner des Clients. Ein neuer Client bekommt einen eigenen Ordner direkt unter der Wurzel mit `README.md` und `CHANGELOG.md`. Was alle Clients teilen und keine eigene Version hat (z. B. Anwendungsfälle), liegt in `gemeinsam/` – dort genügt `README.md`.
 4. **Pull Request** mit `Closes #…`. Jeder Commit trägt ein `Signed-off-by:` (`git commit -s`). Damit bestätigst du nach dem [Developer Certificate of Origin](https://developercertificate.org/), dass du den Beitrag unter der [Apache-2.0](LICENSE) einbringen darfst.
 
 ## Regeln für Clients

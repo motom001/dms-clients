@@ -6,7 +6,7 @@
 
 1. **Open an issue** – as a user story: "As a … I want …, so that …", with acceptance criteria. For a **bug or wish for a client**, use the matching template and select the client there. There is a separate template for a **new client**.
 2. **Wait for approval.** Only issues with the label `freigegeben` (approved) are worked on; only the maintainer sets it.
-3. **Fork and build** in the client's folder. A new client gets its own folder directly under the root with `README.md` and `CHANGELOG.md`.
+3. **Fork and build** in the client's folder. A new client gets its own folder directly under the root with `README.md` and `CHANGELOG.md`. Anything all clients share and that has no version of its own (e.g. use cases) goes into `gemeinsam/` (shared) – `README.md` is enough there.
 4. **Pull request** with `Closes #…`. Every commit carries a `Signed-off-by:` (`git commit -s`). With it you confirm, following the [Developer Certificate of Origin](https://developercertificate.org/), that you may contribute under the [Apache-2.0](LICENSE).
 
 ## Rules for clients

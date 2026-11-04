@@ -40,6 +40,7 @@ Was ein Client in Ablago braucht, etwa den schlanken Zähler-Endpunkt mit dem Sc
   README.md            was der Client kann, welche Schlüssel-Stufe, Installation (de, gern auch README.en.md)
   CHANGELOG.md         Änderungen je Version
   …                    Quellcode, Tests, Build nach den Regeln der jeweiligen Plattform
+gemeinsam/             was alle Clients teilen, ohne eigene Version (z. B. Anwendungsfälle der Apps)
 .github/               Vorlagen für Issues und Pull Requests, Workflows
 CONTRIBUTING.md        wie ein Beitrag hierher kommt
 ROADMAP.md             wie du den Fahrplan liest

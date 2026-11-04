@@ -1,6 +1,6 @@
 # Anwendungsfälle der Apps
 
-Gilt für alle Clients mit Bildschirm: iPhone, iPad, Android und später weitere. Die Fälle sind **ohne Plattform** beschrieben. Je Fall stehen die Entwürfe der Plattformen dabei – zuerst iOS. Android und andere Plattformen folgen eigenen Entwürfen nach ihren Gewohnheiten (siehe „Plattform-Gewohnheiten“ unten).
+Gilt für alle Clients mit Bildschirm: iPhone, iPad, Android und später weitere. Gebaut wird je Plattform eine native App (SwiftUI, Jetpack Compose) mit gemeinsamer, aus der API-Beschreibung erzeugter Schnittstelle. Die Fälle sind **ohne Plattform** beschrieben. Je Fall stehen die Entwürfe der Plattformen dabei – zuerst iOS. Android und andere Plattformen folgen eigenen Entwürfen nach ihren Gewohnheiten (siehe „Plattform-Gewohnheiten“ unten).
 
 **Stand:** 04.11.2026 · Entwürfe, keine Zusage. Alle Namen, Firmen, Adressen und Nummern sind erfunden.
 
@@ -18,14 +18,14 @@ Gilt für alle Clients mit Bildschirm: iPhone, iPad, Android und später weitere
 
 | Persona | Handy | Sonst | Kurz |
 |---|---|---|---|
-| Lena | iPhone | Laptop mit Browser | Einsteigerin, verwaltet selbst, keine Einstellungsorgien |
+| Lena | iPhone, iPad | Laptop mit Browser | Einsteigerin, verwaltet selbst, keine Einstellungsorgien |
 | Tom | Android | – | „nur mal nachschauen“ |
 | Jonas (16) | Android, günstig | – | sieht nur, was für ihn freigegeben ist |
 | Markus | Android | Home Assistant, NAS | technikaffin, verwaltet gern |
 | Petra | iPhone, iPad | – | sorgt mit Jan und Tim für die Mutter |
 | Herr Özdemir | Android (in den Entwürfen iPhone) | Windows-PC | vermietet sechs Wohnungen |
 | Katrin | iPhone | Mac | Grafikerin, Büro und Privat |
-| Tischlerei Brandt | robustes Android | Windows, Microsoft 365 | 12 Mitarbeitende, Werkstatt |
+| Tischlerei Brandt | robustes Android, iPad im Büro | Windows, Microsoft 365 | 12 Mitarbeitende, Werkstatt |
 
 ## Matrix
 
@@ -301,7 +301,7 @@ Gilt für alle Clients mit Bildschirm: iPhone, iPad, Android und später weitere
 - **Situation:** Auf einen Blick, ohne die App zu öffnen.
 - **Erwartung:** „2 Neue Post · 1 Zu erledigen“.
 - **Lösung:**
-  - Zahlen aus dem Zähler-Endpunkt; Zahl am App-Symbol = Neue Post + Zu erledigen.
+  - Zahlen aus dem Zähler-Endpunkt; Zahl am App-Symbol = Neue Post + Zu erledigen, bei mehreren Ablagen aus allen zusammen.
   - Mit zwei Ablagen beide als Zeilen untereinander (21a).
 
 **Entwürfe iOS:**
@@ -514,7 +514,7 @@ Eine einzige Tür: das **Benutzerbild** oben rechts.
 
 **17b** Benutzermenü: Ablage wechseln (Zahl bei Privat) · **17c** Mein Konto: Bild gilt in ganz Ablago · **6a** Auf diesem iPhone (alle Einstellungen des Geräts) · **5d** Auf diesem iPhone › Mitteilungen (auch aus der anderen Ablage)
 
-**iPad:** Seitenleiste statt Tab-Leiste, Liste und Mappe nebeneinander.
+**iPad** (Petra, Lena, im Büro der Tischlerei): Seitenleiste statt Tab-Leiste, Liste und Mappe nebeneinander.
 
 <a href="ios/22e.png"><img src="ios/22e.png" width="160" alt="22e · iPad: Favoriten der Ablage „Mama“"></a>
 
@@ -543,7 +543,7 @@ Gleich überall: Begriffe aus dem Glossar, Du-Form, Inhalte und Bedeutung, Logo 
 
 ## Bewusst offen
 
-- Zahl am App-Symbol bei mehreren Ablagen: alles zusammen oder nur, was „Auch aus der anderen Ablage melden“ erlaubt.
 - Zählerstände: Stand auf dem Foto erkennen, Messreihen, Mappen aus Aufgaben anlegen.
 - Mitteilungen ohne eigenen Dienst und Erreichbarkeit von unterwegs (wird gesondert geprüft).
 - Entwürfe für Android.
+- Notiz an eine Mappe (11a): ob die Zeile „Foto oder Brief dazu?“ bleibt.

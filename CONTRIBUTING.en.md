@@ -25,19 +25,18 @@ All clients should look and work like Ablago itself and like the other clients.
 
 - **Name:** the program is called **Ablago** (one word, only the A in capitals). "DMS" only where the kind of program is meant. Internal identifiers (`dms_…`, folders, API paths) stay.
 - **App ID:** `app.ablago.clients.<client>`, e.g. `app.ablago.clients.homey`. It cannot be changed after the first release.
-- **Terms from the [glossary](https://help.ablago.app/benutzer/aktuell/begriffe/)** (in German), spelled as in the interface. The four numbers of the counts endpoint have the same name in every client:
+- **Terms from the [glossary](https://help.ablago.app/benutzer/aktuell/begriffe/)** (in German), spelled as in the interface. The three numbers of the counts endpoint have the same name in every client:
 
   | Number | German | English |
   | --- | --- | --- |
   | `neuePost` | Neue Post | New mail |
   | `zuErledigen` | Zu erledigen | To do |
-  | `anstehend` | Fällig in 7 Tagen | Due in 7 days |
   | `ueberfaellig` | Überfällig | Overdue |
 
-  Triggers are called "New mail arrived", "Something is due soon", "Something is overdue".
+  Triggers are called "New mail arrived", "New to-do", "Something is overdue" (German: „Neue Post angekommen“, „Neue Aufgabe zu erledigen“, „Etwas ist überfällig“). Ablago no longer has "Anstehend" ([dms#725](https://github.com/motom001/dms/issues/725)); do not read `anstehend`, no time window of your own such as "in 7 days". Ignore unknown fields in the response.
 - **Describe paths the way you click:** "click your name at the top right → "Mein Konto" (my account) → "Sicherheit" (security) → "API-Schlüssel" (API keys)". Always "→", never ">", never "Profil →".
 - **English:** as long as Ablago only speaks German, interface terms stay German in quotation marks, with a translation in brackets the first time: "nur Zähler" (counts only).
-- **Icons from [Lucide](https://lucide.dev), the same shapes as in the Ablago interface** (`web/src/Symbol.tsx` in the `dms` repository, ISC license; copy only the shapes, license notice in `NOTICE`). New mail `inbox`, To do `list-checks`, Due in 7 days `calendar`, Overdue `triangle-alert`. If a platform only allows its own set, use the closest icon.
+- **Icons from [Lucide](https://lucide.dev), the same shapes as in the Ablago interface** (`web/src/Symbol.tsx` in the `dms` repository, ISC license; copy only the shapes, license notice in `NOTICE`). New mail `inbox`, To do `list-checks`, Overdue `triangle-alert`. If a platform only allows its own set, use the closest icon.
 - **Logo and colours** only from the `marke/` folder in the [dms-website](https://github.com/motom001/dms-website) repository. The app icon is always the logo, never a custom drawing.
 - **Setup:** address and API key, suggest and explain the narrowest level, test the connection right away (also when changing settings and repairing), one key per person.
 - **Messages** say why something does not work and what to do, including the path; never the key.

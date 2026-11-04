@@ -2,7 +2,7 @@
 
 **Deutsch** · [English](README.en.md)
 
-App für **Homey Pro**: Neue Post, Aufgaben und Fälliges aus [Ablago](https://github.com/motom001/dms), deiner selbst gehosteten Dokumentenablage, als Werte am Gerät und als Flow-Karten. So kann zum Beispiel eine Lampe leuchten, wenn neue Post da ist, oder eine Mitteilung kommen, wenn etwas bald fällig wird – ohne dass jemand Ablago öffnet.
+App für **Homey Pro**: Neue Post, Aufgaben und Überfälliges aus [Ablago](https://github.com/motom001/dms), deiner selbst gehosteten Dokumentenablage, als Werte am Gerät und als Flow-Karten. So kann zum Beispiel eine Lampe leuchten, wenn neue Post da ist, oder eine Mitteilung kommen, wenn eine neue Aufgabe zu erledigen ist – ohne dass jemand Ablago öffnet.
 
 ![Zusammenspiel: Homey fragt Ablago ab und löst Flows aus (erfundene Werte)](bilder/ablauf.svg)
 
@@ -39,17 +39,17 @@ Brauchst du den Schlüssel nicht mehr, löschst du ihn in Ablago unter **Mein Ko
 | Wert am Gerät | Zahl in Ablago (`GET /api/v1/ich/zaehler`) |
 | --- | --- |
 | **Neue Post** | `neuePost`: Post im Stand *Neu*, für dich oder für alle |
-| **Zu erledigen** | `zuErledigen`: Mappen mit offenen Aufgaben für dich |
-| **Fällig in 7 Tagen** | `anstehend`: Fristen, Erinnerungen und Aufgaben mit Datum von heute bis in 7 Tagen |
+| **Zu erledigen** | `zuErledigen`: Mappen mit offenen Aufgaben für dich – auch Fristen und Erinnerungen, sobald sie mit ihrem Vorlauf fällig werden |
 | **Überfällig** | `ueberfaellig`: offene Fristen, Erinnerungen und Aufgaben mit Datum vor heute |
 
 | Flow-Karte | Art | Wann |
 | --- | --- | --- |
 | **Neue Post angekommen** | Auslöser | Die Zahl der neuen Post steigt. Tokens: *Neue Post insgesamt*, *Neu dazugekommen* |
-| **Etwas wird bald fällig / ist überfällig** | Auslöser | „Fällig in 7 Tagen“ bzw. „Überfällig“ steigt – auch, wenn jemand etwas Neues mit Datum in den nächsten 7 Tagen anlegt. Tokens: *Fällig in 7 Tagen*, *Überfällig* |
+| **Neue Aufgabe zu erledigen** | Auslöser | Die Zahl „Zu erledigen“ steigt – auch, wenn eine Frist oder Erinnerung mit ihrem Vorlauf fällig wird. Tokens: *Zu erledigen insgesamt*, *Neu dazugekommen* |
+| **Etwas ist überfällig** | Auslöser | Die Zahl „Überfällig“ steigt. Tokens: *Überfällig insgesamt*, *Neu überfällig* |
 | **Es liegt neue Post vor** | Bedingung | „Neue Post“ ist größer als 0 (auch umkehrbar: *keine* neue Post) |
 
-Alle vier Werte stehen außerdem als Tokens in Flows und in Insights (Verlauf) zur Verfügung.
+Alle drei Werte stehen außerdem als Tokens in Flows und in Insights (Verlauf) zur Verfügung.
 
 ## Abfrage
 
@@ -75,13 +75,14 @@ Bei einem Fehler zeigt das Gerät „nicht verfügbar“ mit dem Grund; beim Ein
 ## Datenschutz
 
 - **Keine Telemetrie, keine Verbindungen zu Dritten.** Die App spricht nur mit der Adresse von Ablago, die du einträgst. Installation und Updates laufen über den Homey App Store; das verlangt die Plattform.
-- **Nur Zahlen:** Die App liest bei Ablago nur die vier Zahlen (und beim Start die Stufe des Schlüssels über `GET /api/v1/ich`; dort speichert sie nichts).
+- **Nur Zahlen:** Die App liest bei Ablago nur drei Zahlen (und beim Start die Stufe des Schlüssels über `GET /api/v1/ich`; dort speichert sie nichts).
 - **Wo was liegt:** Adresse und Schlüssel stehen in den Einstellungen des Geräts auf deinem Homey Pro (der Schlüssel in einem Passwortfeld, nicht angezeigt). Einen eigenen Schlüsselbund bietet Homey Apps nicht. Die Zahlen speichert Homey als Werte des Geräts und in Insights. Der Schlüssel steht nie im Protokoll der App.
 
 ## Grenzen
 
 - Kommt in einem Abfrage-Abstand genauso viel Post dazu, wie erledigt wird, bleibt die Zahl gleich – dann löst „Neue Post angekommen“ nicht aus.
-- „Etwas wird bald fällig“ zählt nur, ob die Zahl steigt: Rückt etwas in die nächsten 7 Tage, während etwas anderes erledigt wird, löst nichts aus.
+- Das gilt genauso für „Neue Aufgabe zu erledigen“ und „Etwas ist überfällig“: Ausgelöst wird nur, wenn die Zahl steigt.
+- Wann eine Frist „zu erledigen“ wird, bestimmt ihr Vorlauf in Ablago. Ein eigenes Zeitfenster (etwa „in 7 Tagen“) hat die App nicht.
 - Die App folgt keinen Weiterleitungen (z. B. von `http://` auf `https://`), damit der Schlüssel nicht an eine andere Adresse geht. Trag die Zieladresse direkt ein.
 
 ## Entwicklung

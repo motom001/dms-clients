@@ -18,7 +18,7 @@
     <text x="170" y="204">numbers only, no content</text>
     <text x="590" y="140">device "Ablago"</text>
     <text x="590" y="172">New mail 2 · To do 5</text>
-    <text x="590" y="204">Due in 7 days 3 · Overdue 1</text>
+    <text x="590" y="204">Overdue 1</text>
     <text x="1010" y="140">When: New mail arrived</text>
     <text x="1010" y="172">Then: hallway light on</text>
     <text x="1010" y="204">or a phone notification</text>

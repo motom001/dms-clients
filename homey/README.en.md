@@ -2,7 +2,7 @@
 
 [Deutsch](README.md) · **English**
 
-App for **Homey Pro**: new mail, to-dos and due dates from [Ablago](https://github.com/motom001/dms), your self-hosted document filing, as device values and Flow cards. For example, a light can turn on when new mail has arrived, or you get a notification when something is due soon – without anyone opening Ablago.
+App for **Homey Pro**: new mail, to-dos and overdue items from [Ablago](https://github.com/motom001/dms), your self-hosted document filing, as device values and Flow cards. For example, a light can turn on when new mail has arrived, or you get a notification when there is a new to-do – without anyone opening Ablago.
 
 Ablago itself is in German, so this page names its menus and key levels in German in quotation marks, with a translation in brackets.
 
@@ -41,17 +41,17 @@ If you no longer need the key, delete it in Ablago under "Mein Konto" → "Siche
 | Device value | Number in Ablago (`GET /api/v1/ich/zaehler`) |
 | --- | --- |
 | **New mail** | `neuePost`: mail in the state *Neu* (new), for you or for everyone |
-| **To do** | `zuErledigen`: folders with open tasks for you |
-| **Due in 7 days** | `anstehend`: deadlines, reminders and tasks with a date from today to 7 days ahead |
+| **To do** | `zuErledigen`: folders with open tasks for you – including deadlines and reminders as soon as they become due with their lead time |
 | **Overdue** | `ueberfaellig`: open deadlines, reminders and tasks with a date before today |
 
 | Flow card | Type | When |
 | --- | --- | --- |
 | **New mail arrived** | Trigger | The number of new mail goes up. Tokens: *New mail in total*, *Newly arrived* |
-| **Something is due soon / is overdue** | Trigger | "Due in 7 days" or "Overdue" goes up – also when someone adds something new with a date in the next 7 days. Tokens: *Due in 7 days*, *Overdue* |
+| **New to-do** | Trigger | The number "To do" goes up – also when a deadline or reminder becomes due with its lead time. Tokens: *To do in total*, *Newly added* |
+| **Something is overdue** | Trigger | The number "Overdue" goes up. Tokens: *Overdue in total*, *Newly overdue* |
 | **There is new mail** | Condition | "New mail" is greater than 0 (can be inverted: *no* new mail) |
 
-All four values are also available as Flow tokens and in Insights (history).
+All three values are also available as Flow tokens and in Insights (history).
 
 ## Polling
 
@@ -77,13 +77,14 @@ On an error the device shows "unavailable" with the reason; during setup you see
 ## Privacy
 
 - **No telemetry, no connections to third parties.** The app only talks to the Ablago address you enter. Installation and updates go through the Homey App Store; the platform requires that.
-- **Numbers only:** the app only reads the four numbers from Ablago (and, on start, the level of the key via `GET /api/v1/ich`; it stores nothing from there).
+- **Numbers only:** the app only reads three numbers from Ablago (and, on start, the level of the key via `GET /api/v1/ich`; it stores nothing from there).
 - **What is stored where:** address and key are kept in the device settings on your Homey Pro (the key in a password field, never displayed). Homey does not offer apps a separate keychain. Homey stores the numbers as device values and in Insights. The key never appears in the app log.
 
 ## Limits
 
 - If, within one polling interval, as much mail arrives as is dealt with, the number stays the same – "New mail arrived" then does not fire.
-- "Something is due soon" only looks at whether the number goes up: if something moves into the next 7 days while something else is done, nothing fires.
+- The same applies to "New to-do" and "Something is overdue": they only fire when the number goes up.
+- When a deadline becomes a to-do is set by its lead time in Ablago. The app has no time window of its own (such as "within 7 days").
 - The app does not follow redirects (e.g. from `http://` to `https://`), so the key never goes to another address. Enter the target address directly.
 
 ## Development

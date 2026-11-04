@@ -2,6 +2,15 @@
 
 Änderungen der Homey-App je Version. Ein Release bekommt den Tag `homey-v<version>`.
 
+## 1.2.0
+
+Umstellung auf Ablago ohne „Anstehend“ (#14, Folge aus [motom001/dms#725](https://github.com/motom001/dms/issues/725)), weiterhin vor der ersten Veröffentlichung.
+
+- **Wert „Fällig in 7 Tagen“ entfällt.** Ablago kennt kein „Anstehend“ mehr: Fristen und Erinnerungen haben einen Vorlauf und stehen, sobald sie fällig werden, unter **Zu erledigen**. Die App braucht dafür kein eigenes Zeitfenster. Geräte aus 1.1.x verlieren den Wert beim Start ohne Fehlermeldung.
+- **Neue Flow-Karte „Neue Aufgabe zu erledigen“:** löst aus, wenn die Zahl „Zu erledigen“ steigt – auch, wenn eine Frist mit ihrem Vorlauf fällig wird. Tokens: *Zu erledigen insgesamt*, *Neu dazugekommen*.
+- Die Flow-Karte „Etwas wird bald fällig / ist überfällig“ heißt jetzt **„Etwas ist überfällig“** (ohne Auswahl). Tokens: *Überfällig insgesamt*, *Neu überfällig*.
+- Die App liest das Feld `anstehend` aus `GET /api/v1/ich/zaehler` nicht mehr und läuft mit Ablago **mit und ohne** dieses Feld. Bisher wäre das Gerät ohne `anstehend` ganz „nicht verfügbar“ geworden.
+
 ## 1.1.1
 
 Nacharbeit zu 1.1.0 (#7), weiterhin vor der ersten Veröffentlichung.

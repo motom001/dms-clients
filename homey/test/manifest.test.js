@@ -39,13 +39,13 @@ describe('Manifest', () => {
 
   it('Flow-Karten und Tokens passen zur Auswertung', () => {
     const ids = (liste) => (liste || []).map((k) => k.id).sort();
-    assert.deepEqual(ids(app.flow.triggers), ['bald_faellig', 'neue_post']);
+    assert.deepEqual(ids(app.flow.triggers), ['neue_aufgabe', 'neue_post', 'ueberfaellig']);
     assert.deepEqual(ids(app.flow.conditions), ['neue_post_vorhanden']);
     const tokens = (id) => app.flow.triggers.find((k) => k.id === id).tokens.map((t) => t.name).sort();
     assert.deepEqual(tokens('neue_post'), ['dazu', 'neue_post']);
-    assert.deepEqual(tokens('bald_faellig'), ['faellig_7_tage', 'ueberfaellig']);
-    const arten = app.flow.triggers.find((k) => k.id === 'bald_faellig').args.find((a) => a.name === 'art').values.map((v) => v.id);
-    assert.deepEqual(arten.sort(), ['anstehend', 'ueberfaellig']);
+    assert.deepEqual(tokens('neue_aufgabe'), ['dazu', 'zu_erledigen']);
+    assert.deepEqual(tokens('ueberfaellig'), ['dazu', 'ueberfaellig']);
+    for (const k of app.flow.triggers) assert.deepEqual(k.args.map((a) => a.name), ['device'], `${k.id}: keine Auswahl`);
     for (const k of [...app.flow.triggers, ...app.flow.conditions]) assert.ok(k.title.de && k.title.en, k.id);
   });
 
@@ -78,10 +78,11 @@ describe('Einheitlich in allen Clients', () => {
     assert.deepEqual(app.name, { en: 'Ablago', de: 'Ablago' });
   });
 
-  it('die vier Zahlen heißen wie in allen Clients', () => {
+  it('die drei Zahlen heißen wie in allen Clients', () => {
     const titel = Object.values(WERTE).map((c) => app.capabilities[c].title.de);
-    assert.deepEqual(titel, ['Neue Post', 'Zu erledigen', 'Fällig in 7 Tagen', 'Überfällig']);
-    assert.doesNotMatch(texte, /Fristen in 7 Tagen|Frist wird fällig|ohne Für/);
+    assert.deepEqual(titel, ['Neue Post', 'Zu erledigen', 'Überfällig']);
+    // „Anstehend“ gibt es in Ablago nicht mehr (dms #725), auch kein eigenes 7-Tage-Fenster.
+    assert.doesNotMatch(texte, /in 7 Tagen|within 7 days|in 7 days|[Aa]nstehend|bald fällig|due soon|Frist wird fällig|ohne Für/);
   });
 
   it('Wege so, wie man klickt: Mein Konto → Sicherheit → API-Schlüssel, nie Profil', () => {

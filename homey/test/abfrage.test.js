@@ -23,7 +23,7 @@ describe('Regelmäßige Abfrage', () => {
   after(async () => { await dms.stopp(); });
 
   it('meldet Werte, löst nach neuer Post innerhalb eines Abstands aus und fragt sonst mit If-None-Match', async () => {
-    dms.setze({ neuePost: 0, zuErledigen: 1, anstehend: 0, ueberfaellig: 0 });
+    dms.setze({ neuePost: 0, zuErledigen: 1, ueberfaellig: 0 });
     const uhr = handuhr();
     const werte = [];
     const ausgeloest = [];
@@ -47,7 +47,7 @@ describe('Regelmäßige Abfrage', () => {
     assert.equal(dms.zustand.antworten.at(-1).status, 304);
     assert.equal(werte.length, 1, 'bei 304 keine neuen Werte');
 
-    dms.setze({ neuePost: 1, zuErledigen: 2 });
+    dms.setze({ neuePost: 1, zuErledigen: 0 }); // Aufgabe erledigt: löst nichts aus
     await uhr.weiter(a);
     assert.equal(werte.length, 2);
     assert.deepEqual(ausgeloest, [{ karte: 'neue_post', tokens: { neue_post: 1, dazu: 1 } }]);
@@ -60,20 +60,20 @@ describe('Regelmäßige Abfrage', () => {
   });
 
   it('löst nach einem Neustart für Post aus, die in der Zwischenzeit kam (Vorwerte vom Gerät)', async () => {
-    dms.setze({ neuePost: 4, zuErledigen: 0, anstehend: 2, ueberfaellig: 0 });
+    dms.setze({ neuePost: 4, zuErledigen: 1, ueberfaellig: 0 });
     const uhr = handuhr();
     const ausgeloest = [];
     const a = new Zaehlerabfrage({
       verbindung: new DmsVerbindung({ adresse: dms.adresse, schluessel: 'dms_lesenLenaTestschluessel00' }),
       abstandMs: 60000,
-      vorher: { neuePost: 3, zuErledigen: 0, anstehend: 1, ueberfaellig: 0 },
+      vorher: { neuePost: 3, zuErledigen: 0, ueberfaellig: 0 },
       ausloeser: (x) => ausgeloest.push(x),
       setTimeout: uhr.setTimeout,
       clearTimeout: uhr.clearTimeout,
     });
     await a.start();
     a.stop();
-    assert.deepEqual(ausgeloest.map((x) => x.art || x.karte), ['neue_post', 'anstehend']);
+    assert.deepEqual(ausgeloest.map((x) => x.karte), ['neue_post', 'neue_aufgabe']);
   });
 
   it('meldet Fehler und versucht es im nächsten Abstand wieder', async () => {

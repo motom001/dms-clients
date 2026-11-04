@@ -3,7 +3,7 @@
 const Homey = require('homey');
 const { DmsFehler, DmsVerbindung } = require('../../lib/dms');
 const { Zaehlerabfrage } = require('../../lib/abfrage');
-const { WERTE, geraetewerte, abstandMs } = require('../../lib/auswertung');
+const { WERTE, ENTFALLEN, geraetewerte, abstandMs } = require('../../lib/auswertung');
 
 /**
  * Gerät „Ablago“: fragt die Zahlen im eingestellten Abstand ab (mit If-None-Match), zeigt sie als Werte und löst die
@@ -14,6 +14,10 @@ module.exports = class DmsDevice extends Homey.Device {
   async onInit() {
     this.lauf = 0;
     this.fehlercode = null;
+    // Werte früherer Versionen entfernen (1.1.x: „Fällig in 7 Tagen“, entfällt mit dms #725).
+    for (const cap of ENTFALLEN) {
+      if (this.hasCapability(cap)) await this.removeCapability(cap);
+    }
     for (const cap of Object.values(WERTE)) {
       if (!this.hasCapability(cap)) await this.addCapability(cap);
     }
@@ -116,8 +120,7 @@ module.exports = class DmsDevice extends Homey.Device {
   }
 
   async loeseAus(a) {
-    if (a.karte === 'neue_post') await this.driver.karteNeuePost.trigger(this, a.tokens, {});
-    else await this.driver.karteFaellig.trigger(this, a.tokens, { art: a.art });
+    await this.driver.karten[a.karte].trigger(this, a.tokens, {});
   }
 
   async zeigeFehler(e) {

@@ -64,6 +64,7 @@ class Geraet extends Basis {
   async setSettings(s) { Object.assign(this.settings, s); }
   hasCapability(c) { return this.caps.has(c); }
   async addCapability(c) { this.caps.add(c); this.werte[c] = null; }
+  async removeCapability(c) { this.caps.delete(c); delete this.werte[c]; }
   getCapabilityValue(c) { return this.werte[c] ?? null; }
   async setCapabilityValue(c, w) { this.werte[c] = w; }
   async setUnavailable(m) { this.verfuegbar = false; this.grund = m; }
@@ -126,23 +127,23 @@ describe('Treiber und Gerät (mit Ersatz für Homey)', () => {
   });
 
   it('Gerät: Werte wie im DMS, Auslöser bei neuer Post, Bedingung, Fehler und Erholung', async () => {
+    // Ablago bis 0.18x liefert noch `anstehend`; die App liest es nicht.
     dms.setze({ neuePost: 0, zuErledigen: 2, anstehend: 1, ueberfaellig: 0 });
     const g = new DmsDevice(driver, { adresse: dms.adresse, schluessel: 'dms_zaehlerLenaTestschluessel', intervall: 5 });
     await g.onInit();
     await bis(() => g.getCapabilityValue('dms_zu_erledigen') === 2);
-    assert.deepEqual(g.werte, { dms_neue_post: 0, dms_zu_erledigen: 2, dms_faellig_7_tage: 1, dms_ueberfaellig: 0 });
+    assert.deepEqual(g.werte, { dms_neue_post: 0, dms_zu_erledigen: 2, dms_ueberfaellig: 0 });
     assert.equal(g.warnung, null);
     assert.equal(await karten.neue_post_vorhanden.lauscher({ device: g }), false);
 
-    dms.setze({ neuePost: 1, ueberfaellig: 1 });
+    dms.setze({ neuePost: 1, zuErledigen: 3, anstehend: 0, ueberfaellig: 1 });
     await g.abfrage.runde();
     assert.equal(g.getCapabilityValue('dms_neue_post'), 1);
     assert.equal(await karten.neue_post_vorhanden.lauscher({ device: g }), true);
     const post = ausgeloest.find((a) => a.id === 'neue_post');
     assert.deepEqual(post.tokens, { neue_post: 1, dazu: 1 });
-    const faellig = ausgeloest.find((a) => a.id === 'bald_faellig');
-    assert.equal(await faellig.passt({ art: 'ueberfaellig' }), true);
-    assert.equal(await faellig.passt({ art: 'anstehend' }), false);
+    assert.deepEqual(ausgeloest.find((a) => a.id === 'neue_aufgabe').tokens, { zu_erledigen: 3, dazu: 1 });
+    assert.deepEqual(ausgeloest.find((a) => a.id === 'ueberfaellig').tokens, { ueberfaellig: 1, dazu: 1 });
 
     // Unverändert: 304, keine neuen Auslöser.
     const vorher = ausgeloest.length;
@@ -162,6 +163,33 @@ describe('Treiber und Gerät (mit Ersatz für Homey)', () => {
     await assert.rejects(g.onSettings({ oldSettings: g.getSettings(), newSettings: { ...g.getSettings(), schluessel: 'dms_schreibenJonasTestschluessel' }, changedKeys: ['schluessel'] }), { message: de.fehler.falsche_stufe });
     await g.onDeleted();
     assert.equal(g.abfrage, null);
+  });
+
+  it('Ablago ohne „anstehend“ (dms #725): Einrichten geht, Gerät aus 1.1.x verliert „Fällig in 7 Tagen“ sauber', async () => {
+    dms.zustand.mitAnstehend = false;
+    try {
+      dms.setze({ neuePost: 0, zuErledigen: 1, ueberfaellig: 0 });
+      const s = sitzung();
+      await driver.onPair(s);
+      assert.equal(await s.h.login({ username: dms.adresse, password: 'dms_zaehlerLenaTestschluessel' }), true);
+
+      // Gerät aus 1.1.x mit dem alten Wert und gespeicherten Zahlen.
+      const g = new DmsDevice(driver, { adresse: dms.adresse, schluessel: 'dms_zaehlerLenaTestschluessel', intervall: 5 });
+      for (const [c, w] of Object.entries({ dms_neue_post: 0, dms_zu_erledigen: 1, dms_faellig_7_tage: 2, dms_ueberfaellig: 0 })) {
+        g.caps.add(c);
+        g.werte[c] = w;
+      }
+      await g.onInit();
+      assert.equal(g.hasCapability('dms_faellig_7_tage'), false);
+      dms.setze({ neuePost: 0, zuErledigen: 2, ueberfaellig: 0 });
+      await bis(() => g.getCapabilityValue('dms_zu_erledigen') === 2);
+      assert.equal(g.verfuegbar, true);
+      assert.deepEqual(g.werte, { dms_neue_post: 0, dms_zu_erledigen: 2, dms_ueberfaellig: 0 });
+      assert.deepEqual(ausgeloest.at(-1), { ...ausgeloest.at(-1), id: 'neue_aufgabe', tokens: { zu_erledigen: 2, dazu: 1 } });
+      await g.onDeleted();
+    } finally {
+      dms.zustand.mitAnstehend = true;
+    }
   });
 
   it('Schlüssel „nur lesen“ geht mit Hinweis, „lesen und schreiben“ macht das Gerät nicht verfügbar', async () => {

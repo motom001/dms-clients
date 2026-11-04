@@ -1,6 +1,6 @@
 {
   "id": "app.ablago.clients.homey",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "compatibility": ">=12.4.0",
   "sdk": 3,
   "runtime": "nodejs",
@@ -10,8 +10,8 @@
     "de": "Ablago"
   },
   "description": {
-    "en": "New mail, to-dos and due dates from Ablago, your self-hosted document filing",
-    "de": "Neue Post, Aufgaben und Fälliges aus Ablago, deiner selbst gehosteten Dokumentenablage"
+    "en": "New mail, to-dos and overdue items from Ablago, your self-hosted document filing",
+    "de": "Neue Post, Aufgaben und Überfälliges aus Ablago, deiner selbst gehosteten Dokumentenablage"
   },
   "category": ["tools"],
   "tags": {
@@ -59,21 +59,6 @@
       "insights": true,
       "icon": "/assets/capabilities/zu_erledigen.svg"
     },
-    "dms_faellig_7_tage": {
-      "type": "number",
-      "title": { "en": "Due in 7 days", "de": "Fällig in 7 Tagen" },
-      "desc": {
-        "en": "Deadlines, reminders and tasks with a date from today to 7 days ahead",
-        "de": "Fristen, Erinnerungen und Aufgaben mit Datum von heute bis in 7 Tagen"
-      },
-      "getable": true,
-      "setable": false,
-      "decimals": 0,
-      "min": 0,
-      "uiComponent": "sensor",
-      "insights": true,
-      "icon": "/assets/capabilities/faellig.svg"
-    },
     "dms_ueberfaellig": {
       "type": "number",
       "title": { "en": "Overdue", "de": "Überfällig" },
@@ -92,7 +77,7 @@
       "id": "dms",
       "name": { "en": "Ablago", "de": "Ablago" },
       "class": "sensor",
-      "capabilities": ["dms_neue_post", "dms_zu_erledigen", "dms_faellig_7_tage", "dms_ueberfaellig"],
+      "capabilities": ["dms_neue_post", "dms_zu_erledigen", "dms_ueberfaellig"],
       "platforms": ["local"],
       "connectivity": ["lan"],
       "images": {
@@ -210,44 +195,53 @@
         ]
       },
       {
-        "id": "bald_faellig",
-        "title": { "en": "Something is due soon or overdue", "de": "Etwas wird bald fällig oder ist überfällig" },
-        "titleFormatted": { "en": "Something [[art]]", "de": "Etwas [[art]]" },
+        "id": "neue_aufgabe",
+        "title": { "en": "New to-do", "de": "Neue Aufgabe zu erledigen" },
         "hint": {
-          "en": "Fires when the number \"Due in 7 days\" or \"Overdue\" goes up – also when someone adds a new deadline, reminder or task with a date in the next 7 days.",
-          "de": "Löst aus, wenn die Zahl „Fällig in 7 Tagen“ oder „Überfällig“ steigt – auch, wenn jemand eine neue Frist, Erinnerung oder Aufgabe mit Datum in den nächsten 7 Tagen anlegt."
+          "en": "Fires when the number \"To do\" in Ablago goes up – also when a deadline or reminder becomes due with its lead time and Ablago lists it under \"Zu erledigen\" (to do).",
+          "de": "Löst aus, sobald die Zahl „Zu erledigen“ in Ablago steigt – auch, wenn eine Frist oder Erinnerung mit ihrem Vorlauf fällig wird und Ablago sie unter „Zu erledigen“ zeigt."
         },
         "tokens": [
           {
-            "name": "faellig_7_tage",
+            "name": "zu_erledigen",
             "type": "number",
-            "title": { "en": "Due in 7 days", "de": "Fällig in 7 Tagen" },
-            "example": 2
+            "title": { "en": "To do in total", "de": "Zu erledigen insgesamt" },
+            "example": 4
           },
           {
-            "name": "ueberfaellig",
+            "name": "dazu",
             "type": "number",
-            "title": { "en": "Overdue", "de": "Überfällig" },
+            "title": { "en": "Newly added", "de": "Neu dazugekommen" },
             "example": 1
           }
         ],
         "args": [
-          { "type": "device", "name": "device", "filter": "driver_id=dms" },
+          { "type": "device", "name": "device", "filter": "driver_id=dms" }
+        ]
+      },
+      {
+        "id": "ueberfaellig",
+        "title": { "en": "Something is overdue", "de": "Etwas ist überfällig" },
+        "hint": {
+          "en": "Fires when the number \"Overdue\" in Ablago goes up, at the latest after one polling interval.",
+          "de": "Löst aus, sobald die Zahl „Überfällig“ in Ablago steigt – spätestens nach einem Abfrage-Abstand."
+        },
+        "tokens": [
           {
-            "type": "dropdown",
-            "name": "art",
-            "title": { "en": "When", "de": "Wann" },
-            "values": [
-              {
-                "id": "anstehend",
-                "label": { "en": "is due soon (within 7 days)", "de": "wird bald fällig (in 7 Tagen)" }
-              },
-              {
-                "id": "ueberfaellig",
-                "label": { "en": "is overdue", "de": "ist überfällig" }
-              }
-            ]
+            "name": "ueberfaellig",
+            "type": "number",
+            "title": { "en": "Overdue in total", "de": "Überfällig insgesamt" },
+            "example": 1
+          },
+          {
+            "name": "dazu",
+            "type": "number",
+            "title": { "en": "Newly overdue", "de": "Neu überfällig" },
+            "example": 1
           }
+        ],
+        "args": [
+          { "type": "device", "name": "device", "filter": "driver_id=dms" }
         ]
       }
     ],

@@ -11,9 +11,11 @@ const { WERTE } = require('../../lib/auswertung');
  */
 module.exports = class DmsDriver extends Homey.Driver {
   async onInit() {
-    this.karteNeuePost = this.homey.flow.getDeviceTriggerCard('neue_post');
-    this.karteFaellig = this.homey.flow.getDeviceTriggerCard('bald_faellig');
-    this.karteFaellig.registerRunListener(async (args, state) => args.art === state.art);
+    this.karten = {
+      neue_post: this.homey.flow.getDeviceTriggerCard('neue_post'),
+      neue_aufgabe: this.homey.flow.getDeviceTriggerCard('neue_aufgabe'),
+      ueberfaellig: this.homey.flow.getDeviceTriggerCard('ueberfaellig'),
+    };
     this.homey.flow.getConditionCard('neue_post_vorhanden')
       .registerRunListener(async (args) => (args.device.getCapabilityValue(WERTE.neuePost) || 0) > 0);
   }

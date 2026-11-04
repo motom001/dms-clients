@@ -33,10 +33,13 @@ describe('Adresse und Schlüssel prüfen', () => {
   });
 
   it('liest nur die bekannten Zahlen', () => {
-    const z = leseZaehlerstand({ neuePost: 2, zuErledigen: 5, anstehend: 3, ueberfaellig: 1, stand: 42, geaendert: '2026-11-03T07:15:00.000Z', extra: 'x' });
-    assert.deepEqual(z, { neuePost: 2, zuErledigen: 5, anstehend: 3, ueberfaellig: 1, stand: 42, geaendert: '2026-11-03T07:15:00.000Z' });
+    const erwartet = { neuePost: 2, zuErledigen: 5, ueberfaellig: 1, stand: 42, geaendert: '2026-11-03T07:15:00.000Z' };
+    // Ablago bis 0.18x liefert noch `anstehend`, danach nicht mehr (dms #725): beides geht, unbekannte Felder fallen weg.
+    assert.deepEqual(leseZaehlerstand({ ...erwartet, anstehend: 3, extra: 'x' }), erwartet);
+    assert.deepEqual(leseZaehlerstand(erwartet), erwartet);
+    assert.deepEqual(leseZaehlerstand({ ...erwartet, anstehend: 'kaputt' }), erwartet, '`anstehend` wird gar nicht gelesen');
     assert.throws(() => leseZaehlerstand({ neuePost: 2 }), code('kein_dms'));
-    assert.throws(() => leseZaehlerstand({ neuePost: -1, zuErledigen: 0, anstehend: 0, ueberfaellig: 0, stand: 1 }), code('kein_dms'));
+    assert.throws(() => leseZaehlerstand({ neuePost: -1, zuErledigen: 0, ueberfaellig: 0, stand: 1 }), code('kein_dms'));
     assert.throws(() => leseZaehlerstand(null), code('kein_dms'));
   });
 });
@@ -51,7 +54,7 @@ describe('Abruf gegen einen nachgebauten DMS-Server', () => {
     const v = new DmsVerbindung({ adresse: dms.adresse, schluessel: ZAEHLER });
     const r = await v.zaehler();
     assert.equal(r.geaendert, true);
-    assert.deepEqual({ ...r.zahlen, stand: 0, geaendert: '' }, { neuePost: 2, zuErledigen: 5, anstehend: 3, ueberfaellig: 1, stand: 0, geaendert: '' });
+    assert.deepEqual({ ...r.zahlen, stand: 0, geaendert: '' }, { neuePost: 2, zuErledigen: 5, ueberfaellig: 1, stand: 0, geaendert: '' });
     assert.match(r.etag, /^"z\d+-[\w-]+"$/);
     const letzte = dms.zustand.anfragen.at(-1);
     assert.equal(letzte.pfad, '/api/v1/ich/zaehler');

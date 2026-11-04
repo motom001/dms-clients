@@ -25,20 +25,19 @@ Alle Clients sollen aussehen und sich bedienen wie Ablago selbst und wie die and
 
 - **Name:** Das Programm heißt **Ablago** (ein Wort, nur das A groß). „DMS“ nur, wo die Programmart gemeint ist. Interne Kennungen (`dms_…`, Ordner, API-Pfade) bleiben.
 - **App-ID:** `app.ablago.clients.<client>`, z. B. `app.ablago.clients.homey`. Sie ist nach der ersten Veröffentlichung nicht mehr änderbar.
-- **Begriffe aus dem [Glossar](https://help.ablago.app/benutzer/aktuell/begriffe/)**, in der Schreibweise der Oberfläche, Du-Form, kurze Sätze. Die vier Zahlen des Zähler-Endpunkts heißen in jedem Client gleich:
+- **Begriffe aus dem [Glossar](https://help.ablago.app/benutzer/aktuell/begriffe/)**, in der Schreibweise der Oberfläche, Du-Form, kurze Sätze. Die drei Zahlen des Zähler-Endpunkts heißen in jedem Client gleich:
 
   | Zahl | Name | Beschreibung |
   | --- | --- | --- |
   | `neuePost` | Neue Post | Post im Stand Neu, für dich oder für alle |
-  | `zuErledigen` | Zu erledigen | Mappen mit offenen Aufgaben für dich |
-  | `anstehend` | Fällig in 7 Tagen | Fristen, Erinnerungen und Aufgaben mit Datum von heute bis in 7 Tagen |
+  | `zuErledigen` | Zu erledigen | Mappen mit offenen Aufgaben für dich – auch Fristen und Erinnerungen, sobald sie mit ihrem Vorlauf fällig werden |
   | `ueberfaellig` | Überfällig | offene Fristen, Erinnerungen und Aufgaben mit Datum vor heute |
 
-  Auslöser heißen „Neue Post angekommen“, „Etwas wird bald fällig“, „Etwas ist überfällig“.
+  Auslöser heißen „Neue Post angekommen“, „Neue Aufgabe zu erledigen“, „Etwas ist überfällig“. „Anstehend“ gibt es in Ablago nicht mehr ([dms#725](https://github.com/motom001/dms/issues/725)); `anstehend` nicht lesen, kein eigenes Zeitfenster wie „in 7 Tagen“. Unbekannte Felder der Antwort übergehen.
 - **Wege so, wie man klickt:** „Klick oben rechts auf deinen Namen → Mein Konto → Sicherheit → API-Schlüssel“, danach kurz „Mein Konto → Sicherheit → API-Schlüssel“. Immer „→“, nie „>“, nie „Profil →“.
 - **Stufen** immer in Anführungszeichen: „nur Zähler“, „nur lesen“, „lesen und schreiben“.
 - **Englisch:** Solange Ablago nur Deutsch spricht, stehen Begriffe der Oberfläche auf Deutsch in Anführungszeichen, beim ersten Vorkommen mit Übersetzung in Klammern: "nur Zähler" (counts only).
-- **Symbole aus [Lucide](https://lucide.dev), dieselben Formen wie in der Oberfläche von Ablago** (`web/src/Symbol.tsx` im Repository `dms`, ISC-Lizenz; nur die Formen kopieren, Lizenzhinweis in `NOTICE`). Neue Post `inbox`, Zu erledigen `list-checks`, Fällig in 7 Tagen `calendar`, Überfällig `triangle-alert`. Lässt eine Plattform nur ihren eigenen Satz zu, das nächstliegende Symbol.
+- **Symbole aus [Lucide](https://lucide.dev), dieselben Formen wie in der Oberfläche von Ablago** (`web/src/Symbol.tsx` im Repository `dms`, ISC-Lizenz; nur die Formen kopieren, Lizenzhinweis in `NOTICE`). Neue Post `inbox`, Zu erledigen `list-checks`, Überfällig `triangle-alert`. Lässt eine Plattform nur ihren eigenen Satz zu, das nächstliegende Symbol.
 - **Logo und Farben** nur aus dem Ordner `marke/` im Repository [dms-website](https://github.com/motom001/dms-website). Das App-Symbol ist immer das Logo, nie ein eigenes Zeichen.
 - **Einrichten:** Adresse und API-Schlüssel, engste Stufe vorschlagen und begründen, die Verbindung sofort prüfen (auch beim Ändern und Reparieren), je Person ein Schlüssel.
 - **Meldungen** sagen, warum etwas nicht geht und was zu tun ist, mit dem Weg dorthin; nie den Schlüssel.

@@ -16,8 +16,11 @@ const ZAEHLER_PFAD = '/api/v1/ich/zaehler';
 const ICH_PFAD = '/api/v1/ich';
 const ZEITLIMIT_MS = 15000;
 const PRAEFIX = 'dms_';
-/** Felder der Antwort von GET /api/v1/ich/zaehler (OpenAPI-Schema `Zaehlerstand`). */
-const ZAHLEN = ['neuePost', 'zuErledigen', 'anstehend', 'ueberfaellig'];
+/**
+ * Felder der Antwort von GET /api/v1/ich/zaehler, die die App braucht (OpenAPI-Schema `Zaehlerstand`).
+ * Andere Felder (z. B. `anstehend`, das mit dms #725 wegfällt) liest die App nicht – sie läuft mit und ohne sie.
+ */
+const ZAHLEN = ['neuePost', 'zuErledigen', 'ueberfaellig'];
 
 /** @typedef {'nicht_erreichbar'|'zertifikat'|'schluessel_ungueltig'|'falsche_stufe'|'wartung'|'kein_dms'|'umleitung'|'adresse_ungueltig'|'schluessel_format'|'unerwartet'} Fehlercode */
 
@@ -102,7 +105,7 @@ function antwortFehler(status, koepfe, istJson) {
 /**
  * Prüft die Antwort von GET /api/v1/ich/zaehler und gibt nur die bekannten Felder zurück.
  * @param {unknown} body
- * @returns {{ neuePost: number, zuErledigen: number, anstehend: number, ueberfaellig: number, stand: number, geaendert: string }}
+ * @returns {{ neuePost: number, zuErledigen: number, ueberfaellig: number, stand: number, geaendert: string }}
  */
 function leseZaehlerstand(body) {
   if (!body || typeof body !== 'object') throw new DmsFehler('kein_dms', 'keine Zahlen');
@@ -113,7 +116,6 @@ function leseZaehlerstand(body) {
   return {
     neuePost: /** @type {number} */ (b.neuePost),
     zuErledigen: /** @type {number} */ (b.zuErledigen),
-    anstehend: /** @type {number} */ (b.anstehend),
     ueberfaellig: /** @type {number} */ (b.ueberfaellig),
     stand: /** @type {number} */ (b.stand),
     geaendert: typeof b.geaendert === 'string' ? b.geaendert : '',

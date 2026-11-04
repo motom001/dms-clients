@@ -6,23 +6,29 @@
  *
  * Ausgelöst wird bei einem Anstieg gegenüber dem zuletzt bekannten Wert:
  * - „Neue Post angekommen“, wenn `neuePost` größer wird,
- * - „Etwas wird bald fällig“ (Art `anstehend`), wenn `anstehend` (Wert „Fällig in 7 Tagen“: heute bis in 7 Tagen)
- *   größer wird – auch, wenn jemand etwas Neues mit Datum in diesem Zeitraum anlegt –,
- *   und „… ist überfällig“ (Art `ueberfaellig`), wenn `ueberfaellig` größer wird.
+ * - „Neue Aufgabe zu erledigen“, wenn `zuErledigen` größer wird – auch, wenn eine Frist mit ihrem Vorlauf fällig wird
+ *   (Ablago legt sie dann unter „Zu erledigen“ ab; ein eigenes Zeitfenster braucht die App nicht, dms #725),
+ * - „Etwas ist überfällig“, wenn `ueberfaellig` größer wird.
  * Ohne bekannten Vorwert (erster Abruf nach dem Einrichten) löst nichts aus.
- * `stand` vergleicht die App nicht auf „größer“: Nach einer Wiederherstellung des DMS kann er zurückgehen.
+ * `stand` vergleicht die App nicht auf „größer“: Nach einer Wiederherstellung von Ablago kann er zurückgehen.
  */
 
-/** Zuordnung der Zahlen des DMS zu den Werten (Capabilities) des Geräts. */
+/** Zuordnung der Zahlen von Ablago zu den Werten (Capabilities) des Geräts. */
 const WERTE = {
   neuePost: 'dms_neue_post',
   zuErledigen: 'dms_zu_erledigen',
-  anstehend: 'dms_faellig_7_tage',
   ueberfaellig: 'dms_ueberfaellig',
 };
 
-/** @typedef {{ neuePost: number, zuErledigen: number, anstehend: number, ueberfaellig: number }} Zahlen */
-/** @typedef {{ karte: 'neue_post', tokens: { neue_post: number, dazu: number } } | { karte: 'bald_faellig', art: 'anstehend'|'ueberfaellig', tokens: { faellig_7_tage: number, ueberfaellig: number } }} Ausloeser */
+/** Werte früherer Versionen, die das Gerät beim Start entfernt (1.1.x: „Fällig in 7 Tagen“). */
+const ENTFALLEN = ['dms_faellig_7_tage'];
+
+/** @typedef {{ neuePost: number, zuErledigen: number, ueberfaellig: number }} Zahlen */
+/**
+ * @typedef {{ karte: 'neue_post', tokens: { neue_post: number, dazu: number } }
+ *   | { karte: 'neue_aufgabe', tokens: { zu_erledigen: number, dazu: number } }
+ *   | { karte: 'ueberfaellig', tokens: { ueberfaellig: number, dazu: number } }} Ausloeser
+ */
 
 /**
  * @param {Partial<Record<keyof Zahlen, unknown>> | null | undefined} z
@@ -49,9 +55,12 @@ function ausloeser(alt, neu) {
   if (neu.neuePost > vorher.neuePost) {
     liste.push({ karte: 'neue_post', tokens: { neue_post: neu.neuePost, dazu: neu.neuePost - vorher.neuePost } });
   }
-  const faelligTokens = { faellig_7_tage: neu.anstehend, ueberfaellig: neu.ueberfaellig };
-  if (neu.anstehend > vorher.anstehend) liste.push({ karte: 'bald_faellig', art: 'anstehend', tokens: faelligTokens });
-  if (neu.ueberfaellig > vorher.ueberfaellig) liste.push({ karte: 'bald_faellig', art: 'ueberfaellig', tokens: faelligTokens });
+  if (neu.zuErledigen > vorher.zuErledigen) {
+    liste.push({ karte: 'neue_aufgabe', tokens: { zu_erledigen: neu.zuErledigen, dazu: neu.zuErledigen - vorher.zuErledigen } });
+  }
+  if (neu.ueberfaellig > vorher.ueberfaellig) {
+    liste.push({ karte: 'ueberfaellig', tokens: { ueberfaellig: neu.ueberfaellig, dazu: neu.ueberfaellig - vorher.ueberfaellig } });
+  }
   return liste;
 }
 
@@ -77,4 +86,4 @@ function abstandMs(minuten) {
   return sicher * 60 * 1000;
 }
 
-module.exports = { WERTE, ausloeser, geraetewerte, vollstaendig, abstandMs };
+module.exports = { WERTE, ENTFALLEN, ausloeser, geraetewerte, vollstaendig, abstandMs };

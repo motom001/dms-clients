@@ -35,6 +35,8 @@ async function starteFakeDms(o = {}) {
   const vor = o.pfad || '';
   const zustand = {
     zahlen: { neuePost: 0, zuErledigen: 0, anstehend: 0, ueberfaellig: 0 },
+    // Ablago bis 0.18x liefert noch `anstehend`, danach nicht mehr (dms #725). Die App muss mit beiden laufen.
+    mitAnstehend: true,
     stand: 0,
     abdruck: '',
     geaendert: new Date('2026-11-03T07:00:00.000Z').toISOString(),
@@ -60,12 +62,14 @@ async function starteFakeDms(o = {}) {
     if (!s) { json(res, 401, { fehler: 'Dieser API-Schlüssel ist ungültig oder wurde gelöscht.' }); return; }
     if (s.abgelaufen) { json(res, 401, { fehler: 'Dieser API-Schlüssel ist am 2026-10-01 abgelaufen.' }); return; }
     if (req.method === 'GET' && pfad === '/api/v1/ich/zaehler') {
-      const abdruck = crypto.createHash('sha256').update(JSON.stringify(zustand.zahlen)).digest('base64url').slice(0, 22);
+      const zahlen = { ...zustand.zahlen };
+      if (!zustand.mitAnstehend) delete zahlen.anstehend;
+      const abdruck = crypto.createHash('sha256').update(JSON.stringify(zahlen)).digest('base64url').slice(0, 22);
       if (abdruck !== zustand.abdruck) { zustand.stand += 1; zustand.abdruck = abdruck; zustand.geaendert = new Date().toISOString(); }
       const etag = `"z${zustand.stand}-${abdruck}"`;
       const koepfe = { etag, 'cache-control': 'private, no-cache' };
       if (passtEtag(req.headers['if-none-match'], etag)) { res.writeHead(304, koepfe); res.end(); return; }
-      json(res, 200, { ...zustand.zahlen, stand: zustand.stand, geaendert: zustand.geaendert }, koepfe);
+      json(res, 200, { ...zahlen, stand: zustand.stand, geaendert: zustand.geaendert }, koepfe);
       return;
     }
     if (s.recht === 'zaehler') { json(res, 403, { fehler: 'Dieser API-Schlüssel darf nur die Zahlen abrufen (GET /api/v1/ich/zaehler).' }); return; }

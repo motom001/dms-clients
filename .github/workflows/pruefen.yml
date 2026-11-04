@@ -1,4 +1,4 @@
-# Grundprüfung für alle Pull Requests und main: Aufbau der Client-Ordner und Signed-off-by.
+# Grundprüfung für alle Pull Requests und main: Aufbau der Client-Ordner, Probe für Releases und Signed-off-by.
 # Jeder Client bringt später eigene Schritte mit (Build, Tests) – als eigener Job oder eigener Workflow.
 name: Prüfen
 
@@ -30,6 +30,9 @@ jobs:
             done
           done
           exit $fehler
+      - name: Probe Release – was entsteht nach dem Merge? (#9)
+        if: github.event_name == 'pull_request'
+        run: .github/scripts/releases.sh pruefen
       - name: Signed-off-by in allen Commits des Pull Requests
         if: github.event_name == 'pull_request'
         env:

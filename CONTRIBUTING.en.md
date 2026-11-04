@@ -17,7 +17,7 @@
 - **Store secrets safely:** API keys only in the platform's secure storage (keychain, encrypted settings), never in logs.
 - **New dependencies only with a reason** in the pull request: what for, why not with built-in means, license (compatible with Apache-2.0), maintenance status.
 - **No real data:** examples, tests and screenshots use only made-up names (Lena, Jonas …), reserved domains such as `dms.example.org` or `dms.home.arpa`, and documentation IP addresses (`192.0.2.x`).
-- **Version and changes:** increase the client's version and update `CHANGELOG.md`. A release gets a tag `<folder>-v<version>`.
+- **Version and changes:** increase the client's version (in `package.json`, otherwise in a `VERSION` file in the folder, format `X.Y.Z`) and add a section `## X.Y.Z` to `CHANGELOG.md`. After the merge, the "Release" workflow creates the tag `<folder>-v<version>` and the release with that section as its text – nothing to do by hand. If the section is missing, the check in the pull request already reports it. Publishing to third-party stores (Homey App Store …) is done by the maintainer.
 
 ## The same in every client
 

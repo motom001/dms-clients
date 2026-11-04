@@ -2,6 +2,12 @@
 
 Änderungen der Homey-App je Version. Ein Release bekommt den Tag `homey-v<version>`.
 
+## 1.1.1
+
+Nacharbeit zu 1.1.0 (#7), weiterhin vor der ersten Veröffentlichung.
+
+- Die Symbole der vier Werte haben jetzt **dieselben Formen wie in Ablago selbst** (Lucide aus `web/src/Symbol.tsx`): Neue Post `inbox`, Zu erledigen `list-checks`, Fällig in 7 Tagen `calendar`, Überfällig `triangle-alert`. In 1.1.0 waren es andere Lucide-Formen.
+
 ## 1.1.0
 
 Die App heißt jetzt **Ablago** und erscheint so zum ersten Mal im Homey App Store (#6, #7). Version 1.0.0 war nicht veröffentlicht.

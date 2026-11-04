@@ -1,6 +1,8 @@
 # Homey-App (homey/): Tests gegen einen nachgebauten DMS-Server und Prüfung des Manifests wie
 # „homey app validate --level publish“ – ohne Homey-CLI und ohne Anmeldung (dieselbe Bibliothek homey-lib).
-# Läuft bei jedem Pull Request und auf main (ohne Pfadfilter, damit die Prüfung nie hängen bleibt).
+# Der Workflow startet bei jedem Pull Request und auf main (ohne Pfadfilter, damit eine verlangte Prüfung nie
+# hängen bleibt). Ändert ein Pull Request nichts an der Homey-App, laufen die Schritte nicht: Die Prüfungen
+# „Homey (Node …)“ sind dann nach wenigen Sekunden grün, ohne npm und Tests.
 name: Homey
 
 on:
@@ -12,8 +14,34 @@ permissions:
   contents: read
 
 jobs:
+  aenderungen:
+    name: Homey betroffen?
+    runs-on: ubuntu-latest
+    outputs:
+      homey: ${{ steps.pruefen.outputs.homey }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - id: pruefen
+        env:
+          EREIGNIS: ${{ github.event_name }}
+          BASIS: ${{ github.event.pull_request.base.sha }}
+          KOPF: ${{ github.event.pull_request.head.sha }}
+        run: |
+          # Auf main immer prüfen; im Pull Request nur, wenn die App oder dieser Workflow geändert ist.
+          if [ "$EREIGNIS" != pull_request ]; then echo "homey=true" >> "$GITHUB_OUTPUT"; exit 0; fi
+          if git diff --name-only "$BASIS...$KOPF" | grep -qE '^(homey/|\.github/workflows/homey\.yml$)'; then
+            echo "homey=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "homey=false" >> "$GITHUB_OUTPUT"
+            echo "Keine Änderung an homey/ – Tests und Manifest-Prüfung entfallen." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
   homey:
     name: Homey (Node ${{ matrix.node }})
+    needs: aenderungen
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -23,19 +51,30 @@ jobs:
     defaults:
       run:
         working-directory: homey
+    # Ohne Änderung an homey/ läuft der Job (gleicher Name der Prüfung), aber keiner der Schritte.
     steps:
+      - name: Nichts zu tun
+        if: needs.aenderungen.outputs.homey != 'true'
+        working-directory: .
+        run: echo "Keine Änderung an homey/ – übersprungen."
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        if: needs.aenderungen.outputs.homey == 'true'
         with:
           persist-credentials: false
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        if: needs.aenderungen.outputs.homey == 'true'
         with:
           node-version: ${{ matrix.node }}
       # Genau die Versionen aus package-lock.json; es sind nur Werkzeuge für die Prüfung.
-      - run: npm ci --no-audit --no-fund
+      - if: needs.aenderungen.outputs.homey == 'true'
+        run: npm ci --no-audit --no-fund
       - name: Die App selbst hat keine Abhängigkeiten
+        if: needs.aenderungen.outputs.homey == 'true'
         run: |
           test "$(node -p 'Object.keys(require("./package.json").dependencies || {}).length')" = 0
           npm audit --omit=dev
-      - run: npm test
+      - if: needs.aenderungen.outputs.homey == 'true'
+        run: npm test
       - name: Manifest prüfen (Stufe publish)
+        if: needs.aenderungen.outputs.homey == 'true'
         run: npm run validieren

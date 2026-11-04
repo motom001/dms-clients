@@ -40,6 +40,7 @@ Whatever a client needs inside Ablago, such as the lean counter endpoint with th
   README.md            what the client does, which key level, installation (German, ideally also README.en.md)
   CHANGELOG.md         changes per version
   …                    source code, tests, build following the rules of the platform
+gemeinsam/             shared by all clients, no version of its own (e.g. use cases of the apps)
 .github/               templates for issues and pull requests, workflows
 CONTRIBUTING.en.md     how a contribution gets here
 ROADMAP.md             how to read the roadmap (German)

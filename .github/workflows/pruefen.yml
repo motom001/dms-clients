@@ -19,13 +19,16 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
       - name: Jeder Client-Ordner hat README.md und CHANGELOG.md
+        # gemeinsam/ ist kein Client: keine eigene Version, also nur README.md (siehe CONTRIBUTING.md).
         run: |
           shopt -s nullglob
           fehler=0
           for d in */; do
             d="${d%/}"
             case "$d" in .github) continue ;; esac
-            for f in README.md CHANGELOG.md; do
+            noetig="README.md CHANGELOG.md"
+            [ "$d" = gemeinsam ] && noetig="README.md"
+            for f in $noetig; do
               if [ ! -f "$d/$f" ]; then echo "::error::$d/ braucht $f (siehe CONTRIBUTING.md)"; fehler=1; fi
             done
           done

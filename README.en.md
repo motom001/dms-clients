@@ -46,7 +46,7 @@ ROADMAP.md             how to read the roadmap (German)
 SECURITY.en.md         report vulnerabilities confidentially
 ```
 
-**Versions:** each client has its own version numbers, independent of Ablago. A release gets a tag with the folder name, e.g. `homey-v1.0.0`.
+**Versions:** each client has its own version numbers, independent of Ablago. A release gets a tag with the folder name, e.g. `homey-v1.1.0`. Tag and release are created automatically after the merge as soon as a new version is on `main`; the text comes from the client's `CHANGELOG.md`. All releases are listed under [Releases](https://github.com/motom001/dms-clients/releases).
 
 ## Contributing
 

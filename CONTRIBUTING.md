@@ -17,7 +17,7 @@
 - **Geheimnisse sicher ablegen:** API-Schlüssel nur im sicheren Speicher der Plattform (Schlüsselbund, verschlüsselte Einstellungen), nie in Protokollen.
 - **Neue Abhängigkeiten nur mit Begründung** im Pull Request: wozu, warum nicht mit Bordmitteln, Lizenz (verträglich mit Apache-2.0), Pflegezustand.
 - **Keine echten Daten:** In Beispielen, Tests und Bildschirmfotos nur erfundene Namen (Lena, Jonas …), reservierte Domains wie `dms.example.org` oder `dms.home.arpa` und Dokumentations-IP-Adressen (`192.0.2.x`).
-- **Version und Änderungen:** Version des Clients erhöhen und `CHANGELOG.md` ergänzen. Ein Release bekommt einen Tag `<ordner>-v<version>`.
+- **Version und Änderungen:** Version des Clients erhöhen (in `package.json`, sonst in einer Datei `VERSION` im Ordner, Format `X.Y.Z`) und in `CHANGELOG.md` einen Abschnitt `## X.Y.Z` ergänzen. Nach dem Merge legt der Workflow „Release“ den Tag `<ordner>-v<version>` und das Release mit diesem Abschnitt als Text an – von Hand ist nichts zu tun. Fehlt der Abschnitt, meldet das schon die Prüfung im Pull Request. Veröffentlichen in fremden Stores (Homey App Store …) macht der Maintainer.
 
 ## Gleich in allen Clients
 

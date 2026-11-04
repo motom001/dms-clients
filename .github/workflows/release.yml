@@ -1,0 +1,34 @@
+# Tags und Releases je Client (#9): Bei jedem Push auf main bekommt jede Client-Version, für die es noch keinen
+# Tag <ordner>-v<version> gibt, Tag und Release – mit dem passenden Abschnitt aus <ordner>/CHANGELOG.md als Text.
+# Die Logik steht in .github/scripts/releases.sh; die Probe für Pull Requests läuft im Workflow „Prüfen“.
+# Bestehende Tags und Releases werden nie verändert. Veröffentlichen in fremden Stores bleibt Handarbeit.
+name: Release
+
+on:
+  push:
+    branches: [main]
+
+# Grundsätzlich nur lesen; Schreibrechte bekommt nur der Job, der Tag und Release anlegt.
+permissions:
+  contents: read
+
+# Zwei Pushs kurz hintereinander nicht gleichzeitig: sonst versuchen beide denselben Tag anzulegen.
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Tags und Releases für neue Versionen anlegen
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ZIEL: ${{ github.sha }}
+          GH_REPO: ${{ github.repository }}
+        run: .github/scripts/releases.sh anlegen

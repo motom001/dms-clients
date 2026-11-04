@@ -46,7 +46,7 @@ ROADMAP.md             wie du den Fahrplan liest
 SECURITY.md            Sicherheitslücken vertraulich melden
 ```
 
-**Versionen:** Jeder Client hat eigene Versionsnummern, unabhängig von Ablago. Ein Release bekommt einen Tag mit Ordnernamen, z. B. `homey-v1.0.0`.
+**Versionen:** Jeder Client hat eigene Versionsnummern, unabhängig von Ablago. Ein Release bekommt einen Tag mit Ordnernamen, z. B. `homey-v1.1.0`. Tag und Release entstehen nach dem Merge von selbst, sobald eine neue Version auf `main` steht; der Text kommt aus der `CHANGELOG.md` des Clients. Alle Releases stehen unter [Releases](https://github.com/motom001/dms-clients/releases).
 
 ## Mitmachen
 

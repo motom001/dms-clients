@@ -38,7 +38,7 @@ Alle Clients sollen aussehen und sich bedienen wie Ablago selbst und wie die and
 - **Wege so, wie man klickt:** „Klick oben rechts auf deinen Namen → Mein Konto → Sicherheit → API-Schlüssel“, danach kurz „Mein Konto → Sicherheit → API-Schlüssel“. Immer „→“, nie „>“, nie „Profil →“.
 - **Stufen** immer in Anführungszeichen: „nur Zähler“, „nur lesen“, „lesen und schreiben“.
 - **Englisch:** Solange Ablago nur Deutsch spricht, stehen Begriffe der Oberfläche auf Deutsch in Anführungszeichen, beim ersten Vorkommen mit Übersetzung in Klammern: "nur Zähler" (counts only).
-- **Symbole aus [Lucide](https://lucide.dev)** (ISC-Lizenz; nur die SVG-Dateien kopieren, Lizenzhinweis in `NOTICE`). Neue Post `mail`, Zu erledigen `list-todo`, Fällig in 7 Tagen `calendar-clock`, Überfällig `calendar-x`. Lässt eine Plattform nur ihren eigenen Satz zu, das nächstliegende Symbol.
+- **Symbole aus [Lucide](https://lucide.dev), dieselben Formen wie in der Oberfläche von Ablago** (`web/src/Symbol.tsx` im Repository `dms`, ISC-Lizenz; nur die Formen kopieren, Lizenzhinweis in `NOTICE`). Neue Post `inbox`, Zu erledigen `list-checks`, Fällig in 7 Tagen `calendar`, Überfällig `triangle-alert`. Lässt eine Plattform nur ihren eigenen Satz zu, das nächstliegende Symbol.
 - **Logo und Farben** nur aus dem Ordner `marke/` im Repository [dms-website](https://github.com/motom001/dms-website). Das App-Symbol ist immer das Logo, nie ein eigenes Zeichen.
 - **Einrichten:** Adresse und API-Schlüssel, engste Stufe vorschlagen und begründen, die Verbindung sofort prüfen (auch beim Ändern und Reparieren), je Person ein Schlüssel.
 - **Meldungen** sagen, warum etwas nicht geht und was zu tun ist, mit dem Weg dorthin; nie den Schlüssel.

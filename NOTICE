@@ -9,6 +9,7 @@ Der Name „Ablago“ und das Logo sind von der Lizenz nicht erfasst
 
 Enthaltene Werke Dritter:
 
-- Symbole aus Lucide (https://lucide.dev), lucide-static 1.67.0,
-  Copyright (c) 2026 Lucide Icons and Contributors, ISC-Lizenz.
+- Symbole aus Lucide (https://lucide.dev), lucide-static 0.460.0 – dieselben Formen wie in
+  der Oberfläche von Ablago (web/src/Symbol.tsx im Repository dms), Copyright (c) Lucide
+  Contributors 2022, Teile Cole Bemis 2013-2022 (Feather, MIT), ISC-Lizenz.
   Verwendet in homey/assets/capabilities/; Lizenztext dort in LICENSE-lucide.txt.

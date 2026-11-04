@@ -37,7 +37,7 @@ All clients should look and work like Ablago itself and like the other clients.
   Triggers are called "New mail arrived", "Something is due soon", "Something is overdue".
 - **Describe paths the way you click:** "click your name at the top right → "Mein Konto" (my account) → "Sicherheit" (security) → "API-Schlüssel" (API keys)". Always "→", never ">", never "Profil →".
 - **English:** as long as Ablago only speaks German, interface terms stay German in quotation marks, with a translation in brackets the first time: "nur Zähler" (counts only).
-- **Icons from [Lucide](https://lucide.dev)** (ISC license; copy only the SVG files, license notice in `NOTICE`). New mail `mail`, To do `list-todo`, Due in 7 days `calendar-clock`, Overdue `calendar-x`. If a platform only allows its own set, use the closest icon.
+- **Icons from [Lucide](https://lucide.dev), the same shapes as in the Ablago interface** (`web/src/Symbol.tsx` in the `dms` repository, ISC license; copy only the shapes, license notice in `NOTICE`). New mail `inbox`, To do `list-checks`, Due in 7 days `calendar`, Overdue `triangle-alert`. If a platform only allows its own set, use the closest icon.
 - **Logo and colours** only from the `marke/` folder in the [dms-website](https://github.com/motom001/dms-website) repository. The app icon is always the logo, never a custom drawing.
 - **Setup:** address and API key, suggest and explain the narrowest level, test the connection right away (also when changing settings and repairing), one key per person.
 - **Messages** say why something does not work and what to do, including the path; never the key.

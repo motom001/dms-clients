@@ -23,7 +23,7 @@ Each client lives in **its own folder directly under the root**. A folder is cre
 
 **Deliberately not planned:** a separate desktop app (the WebDAV drive and the browser cover this), connections to cloud systems that require Ablago to be reachable from the internet (Google Home, Alexa, SmartThings), and Apple Home/HomeKit (use Home Assistant for that).
 
-Whatever a client needs inside Ablago, such as the lean counter endpoint with the "counters only" key ([motom001/dms#625](https://github.com/motom001/dms/issues/625)) or the webhook ([motom001/dms#627](https://github.com/motom001/dms/issues/627)), is built in the repository [motom001/dms](https://github.com/motom001/dms).
+Whatever a client needs inside Ablago, such as the lean counter endpoint with the "counters only" key ([motom001/dms#625](https://github.com/motom001/dms/issues/625)), is built in the repository [motom001/dms](https://github.com/motom001/dms).
 
 ## Principles for all clients
 

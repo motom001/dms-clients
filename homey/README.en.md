@@ -59,7 +59,7 @@ Homey asks Ablago once per **polling interval** (default 5 minutes, adjustable f
 
 Nothing fires on the first poll after setup. After Homey restarts, the app compares with the last stored values: mail that arrived in the meantime fires once.
 
-**Instant updates:** since version 0.150.0, Ablago can also report changes itself (webhook). This version of the app does not use that yet and keeps polling at a fixed interval; instant updates will come with a later version.
+**No instant updates:** the app always polls at a fixed interval. The counter webhook through which Ablago used to report changes itself no longer exists since Ablago 0.258.0 (motom001/dms#991). If you want to know sooner, set a shorter polling interval; thanks to `304 Not Modified` this costs very little.
 
 ## Error messages
 

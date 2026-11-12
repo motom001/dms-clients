@@ -23,7 +23,7 @@ Jeder Client liegt in einem **eigenen Ordner direkt unter der Wurzel**. Ein Ordn
 
 **Bewusst nicht geplant:** eine eigene Desktop-App (das WebDAV-Laufwerk und der Browser decken das ab), Anbindungen an Cloud-Systeme, die ein aus dem Internet erreichbares Ablago voraussetzen (Google Home, Alexa, SmartThings), und Apple Home/HomeKit (dafür gibt es den Weg über Home Assistant).
 
-Was ein Client in Ablago braucht, etwa den schlanken Zähler-Endpunkt mit dem Schlüssel „nur Zähler“ ([motom001/dms#625](https://github.com/motom001/dms/issues/625)) oder den Webhook ([motom001/dms#627](https://github.com/motom001/dms/issues/627)), entsteht im Repository [motom001/dms](https://github.com/motom001/dms).
+Was ein Client in Ablago braucht, etwa den schlanken Zähler-Endpunkt mit dem Schlüssel „nur Zähler“ ([motom001/dms#625](https://github.com/motom001/dms/issues/625)), entsteht im Repository [motom001/dms](https://github.com/motom001/dms).
 
 ## Grundsätze für alle Clients
 

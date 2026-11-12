@@ -57,7 +57,7 @@ Homey fragt Ablago im **Abfrage-Abstand** (Vorgabe 5 Minuten, einstellbar von 1 
 
 Beim ersten Abruf nach dem Einrichten löst nichts aus. Nach einem Neustart des Homey vergleicht die App mit den zuletzt gespeicherten Werten: Post, die in der Zwischenzeit kam, löst dann einmal aus.
 
-**Sofort melden:** Ablago kann sich seit Version 0.150.0 auch selbst melden (Webhook). Diese Version der App nutzt das noch nicht und fragt weiter im festen Abstand; sofortiges Melden kommt mit einer späteren Version.
+**Sofort melden gibt es nicht:** Die App fragt immer im festen Abstand. Den Zähler-Webhook, über den Ablago sich früher selbst melden konnte, gibt es seit Ablago 0.258.0 nicht mehr (motom001/dms#991). Wer schneller Bescheid wissen will, stellt den Abfrage-Abstand kleiner; dank `304 Not Modified` kostet das kaum etwas.
 
 ## Fehlermeldungen
 

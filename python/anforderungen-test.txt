@@ -1,5 +1,5 @@
 # Für Tests und Prüfungen (CI und lokal): pip install -r anforderungen-test.txt -e ".[api]"
-pytest==8.4.2
+pytest==9.2.0
 pytest-asyncio==1.2.0
 ruff==0.14.5
 mypy==2.4.1

@@ -1,0 +1,5 @@
+# Einstellungen für openapi-python-client (werkzeuge/erzeugen.py).
+# Das erzeugte Paket heißt „api“ und landet unter src/ablago/api, also `from ablago.api import AuthenticatedClient`.
+project_name_override: ablago-api
+package_name_override: api
+post_hooks: []

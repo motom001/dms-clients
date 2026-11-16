@@ -17,6 +17,7 @@ body:
       options:
         - Homey (homey)
         - Home Assistant (homeassistant)
+        - Python-Client (python)
         - App für iPhone und iPad (ios)
         - App für Android (android)
         - Office-Add-in (office)

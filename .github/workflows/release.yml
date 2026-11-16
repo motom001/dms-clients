@@ -1,7 +1,8 @@
 # Tags und Releases je Client (#9): Bei jedem Push auf main bekommt jede Client-Version, für die es noch keinen
 # Tag <ordner>-v<version> gibt, Tag und Release – mit dem passenden Abschnitt aus <ordner>/CHANGELOG.md als Text.
 # Die Logik steht in .github/scripts/releases.sh; die Probe für Pull Requests läuft im Workflow „Prüfen“.
-# Bestehende Tags und Releases werden nie verändert. Veröffentlichen in fremden Stores bleibt Handarbeit.
+# Bestehende Tags und Releases werden nie verändert. Veröffentlichen in fremden Stores bleibt Handarbeit – außer PyPI:
+# Den Python-Client (python/, #22) lädt der Job „pypi“ hoch, sobald seine Version noch nicht auf PyPI steht.
 name: Release
 
 on:
@@ -32,3 +33,54 @@ jobs:
           ZIEL: ${{ github.sha }}
           GH_REPO: ${{ github.repository }}
         run: .github/scripts/releases.sh anlegen
+
+  # Python-Client auf PyPI (#22) über Trusted Publishing: PyPI vertraut genau diesem Workflow (release.yml) in der
+  # Umgebung „pypi“ – ohne gespeichertes Passwort oder Token. Läuft erst, wenn die Variable PYPI_VEROEFFENTLICHEN
+  # auf „ja“ steht (nach der Einrichtung bei PyPI, python/README.md). Hochgeladen wird nur eine Version, die es auf
+  # PyPI noch nicht gibt; so ist ein zweiter Lauf auf demselben Stand harmlos.
+  pypi:
+    name: Python-Client auf PyPI
+    needs: release
+    if: vars.PYPI_VEROEFFENTLICHEN == 'ja'
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/project/ablago/
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Schon auf PyPI?
+        id: stand
+        run: |
+          version=$(tr -d '[:space:]' < python/VERSION)
+          code=$(curl -s -o /dev/null -w '%{http_code}' "https://pypi.org/pypi/ablago/$version/json")
+          if [ "$code" = 200 ]; then
+            echo "neu=false" >> "$GITHUB_OUTPUT"; echo "ablago $version steht schon auf PyPI – nichts zu tun." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "neu=true" >> "$GITHUB_OUTPUT"; echo "version=$version" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        if: steps.stand.outputs.neu == 'true'
+        with:
+          python-version: '3.13'
+      - name: Erzeugen und bauen
+        if: steps.stand.outputs.neu == 'true'
+        working-directory: python
+        run: |
+          pip install -r werkzeuge/anforderungen-erzeugen.txt -r anforderungen-test.txt
+          python werkzeuge/erzeugen.py
+          python -m build
+          twine check --strict dist/*
+      - uses: pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086 # v1.14.3
+        if: steps.stand.outputs.neu == 'true'
+        with:
+          packages-dir: python/dist/
+      - name: Ergebnis
+        if: steps.stand.outputs.neu == 'true'
+        env:
+          VERSION: ${{ steps.stand.outputs.version }}
+        run: echo "ablago $VERSION auf PyPI veröffentlicht – https://pypi.org/project/ablago/$VERSION/" >> "$GITHUB_STEP_SUMMARY"

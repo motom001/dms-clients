@@ -2,8 +2,8 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Ablago API",
-    "version": "1",
-    "description": "Schnittstelle von Ablago, selbst gehostet. Anmeldung mit einem API-Schlüssel aus dem Profil: `Authorization: Bearer dms_…`. Ein Schlüssel hat höchstens die Rechte seines Benutzers; Schlüssel „nur lesen“ erlauben nur GET, Schlüssel „nur Zähler“ nur GET /ich/zaehler (alles andere 403). Diese Beschreibung entsteht aus der installierten Version. Übergänge bis 1.0.0: Post mit von/an statt absender/fuer (#1042, siehe Werte).",
+    "version": "0.226.0",
+    "description": "Schnittstelle von Ablago, selbst gehostet. Anmeldung mit einem API-Schlüssel aus dem Profil: `Authorization: Bearer dms_…`. Ein Schlüssel hat höchstens die Rechte seines Benutzers; Schlüssel „nur lesen“ erlauben nur GET, Schlüssel „nur Zähler“ nur GET /ich/zaehler (alles andere 403). Diese Beschreibung entsteht aus der installierten Version.",
     "license": {
       "name": "Apache-2.0",
       "url": "https://www.apache.org/licenses/LICENSE-2.0"
@@ -86,7 +86,7 @@
           "Konto"
         ],
         "summary": "Zähler: neue Post, Zu erledigen, Überfälliges (nur Zahlen)",
-        "description": "Nur Zahlen für den Benutzer des Schlüssels, in dessen Rechten – keine Titel, Namen, Absender oder Inhalte (#625). neuePost: Post im Stand „Neu“, deren „An“ (Kennung an, bis 0.241 „Für“, #1042) du bist oder leer ist – Zahl und Bedeutung unverändert; zuErledigen: wie „Zu erledigen“; ueberfaellig: eigene offene Fristen, Erinnerungen und Aufgaben mit Datum vor heute. Die frühere Zahl anstehend gibt es nicht mehr (#725). stand zählt hoch, sobald sich eine Zahl gegenüber dem letzten Abruf ändert; geaendert ist der Zeitpunkt dieser Änderung. Die Antwort trägt ein ETag: Mit If-None-Match und gleichem ETag kommt 304 ohne Inhalt. Dafür genügt ein Schlüssel der Stufe „nur Zähler“, der sonst nichts darf; „lesen“ und „lesen und schreiben“ dürfen ebenfalls.",
+        "description": "Nur Zahlen für den Benutzer des Schlüssels, in dessen Rechten – keine Titel, Namen, Absender oder Inhalte (#625). neuePost: Post im Stand „Neu“, deren „Für“ du bist oder leer ist; zuErledigen: wie „Zu erledigen“; ueberfaellig: eigene offene Fristen, Erinnerungen und Aufgaben mit Datum vor heute. Die frühere Zahl anstehend gibt es nicht mehr (#725). stand zählt hoch, sobald sich eine Zahl gegenüber dem letzten Abruf ändert; geaendert ist der Zeitpunkt dieser Änderung. Die Antwort trägt ein ETag: Mit If-None-Match und gleichem ETag kommt 304 ohne Inhalt. Dafür genügt ein Schlüssel der Stufe „nur Zähler“, der sonst nichts darf; „lesen“ und „lesen und schreiben“ dürfen ebenfalls.",
         "operationId": "getIchZaehler",
         "parameters": [
           {
@@ -150,7 +150,7 @@
           "Konto"
         ],
         "summary": "Rundgänge und Tipps für die Person (Ablago entdecken)",
-        "description": "Wie in der Oberfläche (#831, #832): nur, was die Person nutzen darf (Verwaltungsrecht, eingeschaltete Funktionen, lesbare Mappentypen, installierte Pakete), Texte in ihrer Sprache. Je Tipp Anker und Seite (bzw. Anker und Mappentyp, wenn die Stelle in einer Mappe liegt) oder Rundgang, Herkunft (ablago, paket:<id>), neu, ausgeblendet und clients – nur Tipps mit clients=true eignen sich für eine App (kein Rundgang, die Stelle gibt es dort auch). tipp ist der Tipp des Tages (höchstens einer), starten der Rundgang, der jetzt von selbst startet. Dafür genügt ein Schlüssel der Stufe „lesen“; gesehen und ausgeblendet setzen (POST, unten) braucht „schreiben“.",
+        "description": "Wie in der Oberfläche (#831, #832): nur, was die Person nutzen darf (Verwaltungsrecht, eingeschaltete Funktionen), Texte in ihrer Sprache. Je Tipp Anker und Seite bzw. Rundgang, Herkunft (ablago, später paket:<id>), neu, ausgeblendet und clients – nur Tipps mit clients=true eignen sich für eine App (kein Rundgang, die Stelle gibt es dort auch). tipp ist der Tipp des Tages (höchstens einer), starten der Rundgang, der jetzt von selbst startet. Gesehen und ausgeblendet setzen geht vorerst nur über die Oberfläche. Dafür genügt ein Schlüssel der Stufe „lesen“.",
         "operationId": "getEntdecken",
         "responses": {
           "200": {
@@ -175,158 +175,6 @@
           },
           "403": {
             "description": "Schlüssel nur zum Lesen oder nur Zähler",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/entdecken/tipps/{schluessel}": {
-      "post": {
-        "tags": [
-          "Konto"
-        ],
-        "summary": "Tipp gesehen, erledigt, ausblenden oder wieder einblenden",
-        "description": "Merker je Person (#832), damit sich Oberfläche und App nicht doppelt melden: gezeigt (gesehen), erledigt (heute kein Tipp mehr), ausblenden (wie das ×), einblenden. Bleibt in der eigenen Ablago, keine Telemetrie. In einer Vertretung wird nichts gemerkt.",
-        "operationId": "postEntdeckenTippsMitschluessel",
-        "parameters": [
-          {
-            "name": "schluessel",
-            "in": "path",
-            "required": true,
-            "description": "Schlüssel des Tipps aus GET /entdecken",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/TippHandlung"
-              }
-            }
-          }
-        },
-        "responses": {
-          "204": {
-            "description": "Erledigt"
-          },
-          "401": {
-            "description": "Nicht angemeldet oder Schlüssel ungültig",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Schlüssel nur zum Lesen oder nur Zähler",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Nicht gefunden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Eingaben ungültig (details: Prüfergebnis)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/entdecken/rundgaenge/{schluessel}": {
-      "post": {
-        "tags": [
-          "Konto"
-        ],
-        "summary": "Rundgang gesehen oder später",
-        "description": "Merker je Person (#831): gesehen (startet nicht mehr von selbst) oder spaeter (bei der nächsten Anmeldung wieder).",
-        "operationId": "postEntdeckenRundgaengeMitschluessel",
-        "parameters": [
-          {
-            "name": "schluessel",
-            "in": "path",
-            "required": true,
-            "description": "Schlüssel des Rundgangs aus GET /entdecken",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/RundgangMerker"
-              }
-            }
-          }
-        },
-        "responses": {
-          "204": {
-            "description": "Erledigt"
-          },
-          "401": {
-            "description": "Nicht angemeldet oder Schlüssel ungültig",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Schlüssel nur zum Lesen oder nur Zähler",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Nicht gefunden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Eingaben ungültig (details: Prüfergebnis)",
             "content": {
               "application/json": {
                 "schema": {
@@ -531,48 +379,6 @@
           },
           "422": {
             "description": "Eingaben ungültig (details: Prüfergebnis)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/merkmale": {
-      "get": {
-        "tags": [
-          "Konto"
-        ],
-        "summary": "Merkmale der Ablage, z. B. „beruflich genutzt“",
-        "description": "Nur lesen (#1032). Anzeige-Bedingungen an Feldern und Abschnitten (#1033) können davon abhängen – eine App, die Formulare zeigt, braucht es. Einstellen in Werkbank → Ablage aufbauen → Nutzung.",
-        "operationId": "getMerkmale",
-        "responses": {
-          "200": {
-            "description": "Erfolg",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Merkmale"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Nicht angemeldet oder Schlüssel ungültig",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Schlüssel nur zum Lesen oder nur Zähler",
             "content": {
               "application/json": {
                 "schema": {
@@ -816,7 +622,7 @@
           "Ablage"
         ],
         "summary": "Mappen einer Ansicht, seitenweise",
-        "description": "Mappen eines Typs (oder von „Zu erledigen“), sortiert und seitenweise. `bezuege` enthält Titel und Typ der Mappen, auf die die gelieferten Mappen verweisen. Teile (#1031, Mappentypen mit teilVon) stehen in keiner Ansicht und nicht in der erweiterten Suche; mit sicht=typ:<Id> kommen sie wie alle Mappen. Eine Suche findet über ihre Teile die übergeordnete Mappe (ausschnitte[].teil) – nur, wenn der Schlüssel den Teil lesen darf.",
+        "description": "Mappen eines Typs (oder von „Zu erledigen“), sortiert und seitenweise. `bezuege` enthält Titel und Typ der Mappen, auf die die gelieferten Mappen verweisen.",
         "operationId": "getMappen",
         "parameters": [
           {
@@ -957,7 +763,7 @@
           "Ablage"
         ],
         "summary": "Mappe anlegen",
-        "description": "Die Werte werden wie in der Oberfläche geprüft (Pflichtfelder, Längen, eindeutige Werte, Verweise, Formate und Datumsgrenzen). Bei Fehlern: 422 mit den Feldnamen in der Meldung und `details` je Feld. Berechnete Felder (#1034) darf nur das Paket, das sie berechnet, schon beim Anlegen setzen – sonst 400 mit dem Namen des Pakets. Geschützte Felder (#995, schreibschutz am Feld, z. B. das Merkmal „eigene Organisation“) setzt ein API-Schlüssel nur mit einer in der Werkbank freigegebenen Rolle – sonst 403 (details.schreibschutz).",
+        "description": "Die Werte werden wie in der Oberfläche geprüft (Pflichtfelder, Längen, eindeutige Werte, Verweise, Formate und Datumsgrenzen). Bei Fehlern: 422 mit den Feldnamen in der Meldung und `details` je Feld.",
         "operationId": "postMappen",
         "requestBody": {
           "required": true,
@@ -1088,7 +894,7 @@
           "Ablage"
         ],
         "summary": "Mappe ändern",
-        "description": "Übergebene Werte ersetzen die bisherigen; nicht übergebene Felder bleiben, wie sie gerade gespeichert sind – schicke nur, was du ändern willst. Werte von Feldern, die es im Typ nicht mehr gibt, bleiben erhalten. Formate und Datumsgrenzen (#535) gelten nur für Werte, die sich ändern. Gleichzeitig bearbeiten (#609): Mit stand (der Wert geaendert der Mappe, so wie du sie gelesen hast) prüft Ablago, ob seitdem jemand eines der übergebenen Felder geändert hat. Dann kommt 409 mit details: Mappenkonflikt (betroffene Felder, wer, wann, aktueller Wert) und nichts wird gespeichert; andere Felder werden ohne Rückfrage zusammengeführt. Den eigenen Wert trotzdem übernehmen: noch einmal mit stand aus der 409-Antwort senden; den anderen behalten: das Feld weglassen. Ohne stand keine Prüfung (wie bis 0.143): Die übergebenen Felder gelten. Berechnete Felder (#1034, berechnetVon am Feld) ändert nur das Paket, das sie berechnet – sonst 400 mit dem Namen des Pakets (details.berechnet); unverändert mitgeschickte Werte stören nicht. Geschützte Felder (#995, schreibschutz am Feld, z. B. das Merkmal „eigene Organisation“) ändert ein API-Schlüssel nur mit einer in der Werkbank freigegebenen Rolle – sonst 403 mit den Feldern (details.schreibschutz); Verwaltungsrechte gelten über die Schnittstelle nie.",
+        "description": "Übergebene Werte ersetzen die bisherigen; nicht übergebene Felder bleiben, wie sie gerade gespeichert sind – schicke nur, was du ändern willst. Werte von Feldern, die es im Typ nicht mehr gibt, bleiben erhalten. Formate und Datumsgrenzen (#535) gelten nur für Werte, die sich ändern. Gleichzeitig bearbeiten (#609): Mit stand (der Wert geaendert der Mappe, so wie du sie gelesen hast) prüft Ablago, ob seitdem jemand eines der übergebenen Felder geändert hat. Dann kommt 409 mit details: Mappenkonflikt (betroffene Felder, wer, wann, aktueller Wert) und nichts wird gespeichert; andere Felder werden ohne Rückfrage zusammengeführt. Den eigenen Wert trotzdem übernehmen: noch einmal mit stand aus der 409-Antwort senden; den anderen behalten: das Feld weglassen. Ohne stand keine Prüfung (wie bis 0.143): Die übergebenen Felder gelten.",
         "operationId": "putMappenMitid",
         "parameters": [
           {
@@ -1179,7 +985,7 @@
           "Ablage"
         ],
         "summary": "Mappe löschen",
-        "description": "Samt ihrer Dokumente. 409, solange andere Mappen auf sie verweisen. Teile (#1031) gehen mit – als ein Vorgang im Papierkorb; darf der Schlüssel nicht jeden Teil lesen und löschen, 403 mit ihrer Anzahl (nichts wird gelöscht). Ist der Papierkorb an, kommt sie dorthin und lässt sich wiederherstellen. Jede Löschung steht im Löschprotokoll (#470) – mit dem API-Schlüssel als „Schnittstelle“.",
+        "description": "Samt ihrer Dokumente. 409, solange andere Mappen auf sie verweisen. Ist der Papierkorb an, kommt sie dorthin und lässt sich wiederherstellen. Jede Löschung steht im Löschprotokoll (#470) – mit dem API-Schlüssel als „Schnittstelle“.",
         "operationId": "deleteMappenMitid",
         "parameters": [
           {
@@ -1379,114 +1185,6 @@
           },
           "409": {
             "description": "Kann (noch) nicht gelöscht werden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/mappen/{id}/tabelle/{feld}": {
-      "get": {
-        "tags": [
-          "Ablage"
-        ],
-        "summary": "Zeilen einer Tabelle an einer Mappe",
-        "description": "Feldart Tabelle (#1030): die Mappen des anderen Typs, die über das Verweisfeld der Quelle auf diese Mappe verweisen – je 50 (von blättert; gesamt vom ersten Blatt mitgeben), sortiert wie eine Trefferliste (sortierung: Spalte, absteigend: true; ohne nach Titel). Lesen an der Mappe nötig. Nur Mappen, die der Aufrufer lesen darf – auch gesamt zählt nur sie. Dazu verborgen (#1208): nur die Zahl der Zeilen ohne Leserecht, damit eine Oberfläche „3 von 7“ zeigen kann. Je Mappe nur die Werte der Spalten (spalten, ohne Passwortfelder); Verweise auf nicht lesbare Mappen in bezuege ohne Titel (verborgen). Neue Zeilen legt POST /mappen an (Verweisfeld auf diese Mappe gesetzt); der Server prüft dabei das Anlegerecht am anderen Typ und das Leserecht auf diese Mappe.",
-        "operationId": "getMappenMitidTabelleMitfeld",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "description": "Id der Mappe (UUID)",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "feld",
-            "in": "path",
-            "required": false,
-            "description": "Kennung des Tabellenfelds",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "von",
-            "in": "query",
-            "required": false,
-            "description": "Ab der wievielten Zeile (0 = erste)",
-            "schema": {
-              "type": "integer"
-            }
-          },
-          {
-            "name": "gesamt",
-            "in": "query",
-            "required": false,
-            "description": "Beim Blättern: gesamt vom ersten Blatt",
-            "schema": {
-              "type": "integer"
-            }
-          },
-          {
-            "name": "sortierung",
-            "in": "query",
-            "required": false,
-            "description": "Spalte (Feldkennung oder _titel, _erstellt …)",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "absteigend",
-            "in": "query",
-            "required": false,
-            "description": "Absteigend sortieren",
-            "schema": {
-              "type": "boolean"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Erfolg",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Tabellenseite"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Nicht angemeldet oder Schlüssel ungültig",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Schlüssel nur zum Lesen oder nur Zähler",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Nicht gefunden",
             "content": {
               "application/json": {
                 "schema": {
@@ -1867,7 +1565,7 @@
           "Ablage"
         ],
         "summary": "Mappe aus dem Papierkorb wiederherstellen",
-        "description": "Verweise auf Mappen, die es nicht mehr gibt, entfallen; passt die Mappe danach nicht zur Definition (z. B. ein eindeutiger Wert ist inzwischen vergeben), erscheint sie unter „Zu erledigen“. Aufgelöste Post (#936, aufgeloestIn) lässt sich nicht wiederherstellen: 409. Teile (#1031): Eine übergeordnete Mappe bringt die Teile mit, die mit ihr gelöscht wurden (teile); ein Teil, dessen übergeordnete Mappe noch im Papierkorb liegt, kommt nur mit ihr zurück (409).",
+        "description": "Verweise auf Mappen, die es nicht mehr gibt, entfallen; passt die Mappe danach nicht zur Definition (z. B. ein eindeutiger Wert ist inzwischen vergeben), erscheint sie unter „Zu erledigen“. Aufgelöste Post (#936, aufgeloestIn) lässt sich nicht wiederherstellen: 409.",
         "operationId": "postPapierkorbMitidWiederherstellen",
         "parameters": [
           {
@@ -2284,7 +1982,6 @@
           "Ablage"
         ],
         "summary": "Aufgabe vergeben",
-        "description": "Wendet die Automatisierungsvorlage „Aufgabe vergeben“ an (#1044) – sofort, mit den Rechten des Benutzers dieses Schlüssels. Gleich wie POST /mappen/{id}/ablaeufe mit vorlage aufgabe_vergeben.",
         "operationId": "postMappenMitidAufgaben",
         "parameters": [
           {
@@ -2699,7 +2396,7 @@
           "Ablage"
         ],
         "summary": "Erinnerung anlegen",
-        "description": "Wendet die Automatisierungsvorlage „Erinnern“ an (#1044): Am Datum wird daraus eine Aufgabe der Art „erinnerung“; liegt es heute oder früher, sofort. Gleich wie POST /mappen/{id}/ablaeufe mit vorlage erinnern.",
+        "description": "Am Datum wird daraus eine Aufgabe der Art „erinnerung“; liegt es heute oder früher, sofort.",
         "operationId": "postMappenMitidErinnerungen",
         "parameters": [
           {
@@ -2869,296 +2566,6 @@
             "in": "path",
             "required": true,
             "description": "Id der Erinnerung (UUID)",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Erledigt"
-          },
-          "401": {
-            "description": "Nicht angemeldet oder Schlüssel ungültig",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Schlüssel nur zum Lesen oder nur Zähler",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Nicht gefunden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "409": {
-            "description": "Kann (noch) nicht gelöscht werden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/mappen/{id}/ablaeufe": {
-      "get": {
-        "tags": [
-          "Ablage"
-        ],
-        "summary": "Geplante Abläufe und Vorlagen einer Mappe",
-        "description": "geplant: offene Mappen-Abläufe (früher Erinnerungen) mit Vorlage; vorlagen: die Automatisierungsvorlagen, die man an dieser Mappe anwenden kann (eingeschaltet, für diesen Mappentyp), mit ihren Fragen.",
-        "operationId": "getMappenMitidAblaeufe",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "description": "Id der Mappe (UUID)",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Erfolg",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/MappenAblaeufe"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Nicht angemeldet oder Schlüssel ungültig",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Schlüssel nur zum Lesen oder nur Zähler",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Nicht gefunden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "tags": [
-          "Ablage"
-        ],
-        "summary": "Automatisierungsvorlage an einer Mappe anwenden",
-        "description": "Mit den Antworten auf die Fragen der Vorlage (empfaengerId, datum, text). Läuft sie sofort, stehen die Aufgaben unter aufgaben; sonst der geplante Ablauf unter ablauf. Er läuft mit den Rechten des Benutzers dieses Schlüssels – geprüft, wenn er läuft: Darf dieser die Mappe dann nicht mehr lesen oder ist er deaktiviert, bleibt der Ablauf angehalten stehen. Bremse: höchstens 20 offene Abläufe je Person und Mappe und 30 angewendete je Minute (429).",
-        "operationId": "postMappenMitidAblaeufe",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "description": "Id der Mappe (UUID)",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AblaufEingabe"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "Erfolg",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AblaufErgebnis"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Nicht angemeldet oder Schlüssel ungültig",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Schlüssel nur zum Lesen oder nur Zähler",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Nicht gefunden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Eingaben ungültig (details: Prüfergebnis)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/ablaeufe/{id}": {
-      "put": {
-        "tags": [
-          "Ablage"
-        ],
-        "summary": "Geplanten Ablauf ändern",
-        "description": "Datum und – was die Vorlage fragt – Text und Empfänger. Wer ihn angelegt hat, der Empfänger oder ein Administrator. Gleich wie PUT /erinnerungen/{id}.",
-        "operationId": "putAblaeufeMitid",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "description": "Id des Ablaufs (UUID)",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ErinnerungEingabe"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Erfolg",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/MappenAblauf"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Nicht angemeldet oder Schlüssel ungültig",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Schlüssel nur zum Lesen oder nur Zähler",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Nicht gefunden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Eingaben ungültig (details: Prüfergebnis)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "Ablage"
-        ],
-        "summary": "Geplanten Ablauf löschen",
-        "operationId": "deleteAblaeufeMitid",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "description": "Id des Ablaufs (UUID)",
             "schema": {
               "type": "string"
             }
@@ -3406,69 +2813,6 @@
           },
           "422": {
             "description": "Eingaben ungültig (details: Prüfergebnis)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/mappen/{id}/erwaehnungen": {
-      "get": {
-        "tags": [
-          "Ablage"
-        ],
-        "summary": "Erwähnungen einer Mappe (#889)",
-        "description": "erwaehnt: wen oder was die Mappe in Notizen und formatierten Feldern mit @ erwähnt (Markdown @[Titel](mappe:<id>), ältere Notizen auch benutzer:<id>) – mit aktuellem Titel und Mappentyp, wenn lesbar, sonst nur sichtbarkeit „verborgen“ bzw. „geloescht“. erwaehntIn: wo die Mappe selbst erwähnt ist (Hinweis „Erwähnt in einer Notiz bei …“), nur Stellen in Mappen, die du lesen darfst, neueste zuerst, höchstens 20.",
-        "operationId": "getMappenMitidErwaehnungen",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "description": "Id der Mappe (UUID)",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Erfolg",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Erwaehnungen"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Nicht angemeldet oder Schlüssel ungültig",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Schlüssel nur zum Lesen oder nur Zähler",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Nicht gefunden",
             "content": {
               "application/json": {
                 "schema": {
@@ -3866,7 +3210,7 @@
           "Ablage"
         ],
         "summary": "Post anlegen",
-        "description": "Neue Post (Systemtyp Post, #192): Stand „Neu“, Richtung eingehend, Kanal „API“ (mit Schlüssel) bzw. „Hochgeladen“; Datum heute, wenn nicht angegeben. Dokumente danach mit POST /mappen/{id}/dokumente ins Register „dokumente“ hochladen. 403 ohne das Recht, Post anzulegen. Die Systemfelder der Post heißen seit 0.242 von („Von“, bisher absender) und an („An“, Verweis auf einen Benutzer, bisher fuer); das frühere Textfeld an (Adressen einer versendeten E-Mail) heißt an_adresse. Übergang bis 1.0.0: absender und fuer werden beim Schreiben als von und an angenommen (der neue Name geht vor) und beim Lesen einer Post zusätzlich mit demselben Wert geliefert; das Ereignis post.angelegt trägt an und fuer. Das frühere an (Adresse) gibt es unter diesem Namen nicht mehr.",
+        "description": "Neue Post (Systemtyp Post, #192): Stand „Neu“, Richtung eingehend, Kanal „API“ (mit Schlüssel) bzw. „Hochgeladen“; Datum heute, wenn nicht angegeben. Dokumente danach mit POST /mappen/{id}/dokumente ins Register „dokumente“ hochladen. 403 ohne das Recht, Post anzulegen.",
         "operationId": "postPost",
         "requestBody": {
           "required": true,
@@ -3928,7 +3272,7 @@
           "Ablage"
         ],
         "summary": "Post einer Mappe zuordnen",
-        "description": "Die Post verweist danach auf die Mappe („Zugeordnet zu“) und hat Stand „Zugeordnet“. Die gewählten Dokumente (Standard: alle der Post) wandern in ein Dokumentenregister der Zielmappe; mit kopieren=true bleiben sie zusätzlich in der Post (gleiche Datei, kein zweiter Speicherplatz). Mehrmals möglich. Braucht Bearbeiten an Post und Zielmappe. Mit aufloesen=true (#936, #934) wird aus der Post die Zielmappe – eine neu angelegte wie eine bestehende: Die gewählten Dokumente wandern dorthin, die übrigen in eine neue Post (abgetrennt, mit Verweis auf die Herkunft in deren Historie); Historie, Notizen, Aufgaben und Erinnerungen der Post gehören danach der Zielmappe (Einträge mit ausPost), dort steht „Aus Post … angelegt“ (eben von diesem Benutzer angelegt) bzw. „Post … übernommen“. Die Post kommt in den Papierkorb (Weg „aufgeloest“ im Löschprotokoll) und lässt sich nicht wiederherstellen. Nicht aufgelöst, nur zugeordnet wird mit kopieren, bei versendeten E-Mails und beim automatischen Zuordnen. Darf der Benutzer die Post nicht löschen (bzw. für den abgetrennten Teil keine Post anlegen), bleibt es beim Zuordnen: aufgeloest=false mit hinweis. Leerseiten (#997): Markierte Seiten (GET /dokumente/{id}/leerseiten) fallen weg (leerseiten=behalten: alle bleiben) – das Dokument in der Mappe ist eine neue Fassung ohne sie, das Original bleibt als frühere Version, Historie „3 leere Seiten entfernt“; nie beim automatischen Zuordnen, nie ganz (sind alle Seiten markiert, bleibt das Dokument, wie es ist).",
+        "description": "Die Post verweist danach auf die Mappe („Zugeordnet zu“) und hat Stand „Zugeordnet“. Die gewählten Dokumente (Standard: alle der Post) wandern in ein Dokumentenregister der Zielmappe; mit kopieren=true bleiben sie zusätzlich in der Post (gleiche Datei, kein zweiter Speicherplatz). Mehrmals möglich. Braucht Bearbeiten an Post und Zielmappe. Mit aufloesen=true (#936, #934) wird aus der Post die Zielmappe – eine neu angelegte wie eine bestehende: Die gewählten Dokumente wandern dorthin, die übrigen in eine neue Post (abgetrennt, mit Verweis auf die Herkunft in deren Historie); Historie, Notizen, Aufgaben und Erinnerungen der Post gehören danach der Zielmappe (Einträge mit ausPost), dort steht „Aus Post … angelegt“ (eben von diesem Benutzer angelegt) bzw. „Post … übernommen“. Die Post kommt in den Papierkorb (Weg „aufgeloest“ im Löschprotokoll) und lässt sich nicht wiederherstellen. Nicht aufgelöst, nur zugeordnet wird mit kopieren, bei versendeten E-Mails und beim automatischen Zuordnen. Darf der Benutzer die Post nicht löschen (bzw. für den abgetrennten Teil keine Post anlegen), bleibt es beim Zuordnen: aufgeloest=false mit hinweis.",
         "operationId": "postPostMitidZuordnen",
         "parameters": [
           {
@@ -4011,7 +3355,7 @@
           "Ablage"
         ],
         "summary": "Dokumente als neue Post abtrennen",
-        "description": "„Ab hier abtrennen“ (#934): Die gewählten Dokumente kommen als neue Post „… (abgetrennt)“ nach „Neue Post“ – Datum, „Von“, Kanal und „An“ wie bisher, in ihrer Historie der Verweis auf die Herkunft. Mindestens ein Dokument bleibt in der Post (sonst 422); nicht bei versendeten E-Mails. Braucht Bearbeiten an der Post und das Recht, Post anzulegen.",
+        "description": "„Ab hier abtrennen“ (#934): Die gewählten Dokumente kommen als neue Post „… (abgetrennt)“ nach „Neue Post“ – Datum, Absender, Kanal und „Für“ wie bisher, in ihrer Historie der Verweis auf die Herkunft. Mindestens ein Dokument bleibt in der Post (sonst 422); nicht bei versendeten E-Mails. Braucht Bearbeiten an der Post und das Recht, Post anzulegen.",
         "operationId": "postPostMitidAbtrennen",
         "parameters": [
           {
@@ -4218,7 +3562,7 @@
           "Ablage"
         ],
         "summary": "Vorschläge für Mappentyp aus Dokument",
-        "description": "Aus Dokument ausfüllen (#391; Erkennung eingebaut ohne KI oder – #511, in der Werkbank bzw. am Mappentyp gewählt – ein Paket mit dms:erkennen, dessen Antwort genauso geprüft wird; engine sagt, womit): Vorschläge für die Felder des Mappentyps aus text und/oder den Volltexten der Dokumente dokumente (Ids, Lesen nötig; ohne Volltext 409). Mit mappe (Id einer Mappe dieses Typs) braucht es Bearbeiten, sonst das Recht, Mappen des Typs anzulegen. Gefüllt werden die Felder mit „Aus Dokument füllen“ (hat der Typ keine, alle mit erkennbarer Art); Passwortfelder und feste Felder nie. Jeder Wert ist gegen die Feldart geprüft: Datum JJJJ-MM-TT, Betrag {betrag, waehrung}, Auswahl nur aus der Liste, Verweis als Mappen-Id einer lesbaren Mappe. Fundstellen (#939): je Wert der Textausschnitt (fundstelle) – von einem Paket nur, wenn er im Dokument steht – und mit dokumente dazu stelle (Dokument, Seite, Rahmen). Nichts wird gespeichert. Folgt ein Verweisfeld aus einem vorgeschlagenen Verweis (#886), kommt es mit derselben Sicherheit und der Fundstelle „aus …“ dazu. Hat ein vorgeschlagenes Verweisfeld „beim Auswählen übernehmen“ (#1037), kommen die Werte der vorgeschlagenen Mappe für Felder ohne eigenen Vorschlag dazu (fundstelle „vorgeschlagen aus …“, aus = { feld, mappe }; beim Bearbeiten nur für leere Felder; nur lesbare Werte, nie an ein KI-Paket). #1043: Eigene Organisationen und Personen des Haushalts (Konten der Ablage) sind nie „von“; stehen sie als Aussteller in der Absenderzeile bzw. als Verkäufer der E-Rechnung, ist „von“ die eigene Mappe mit Sicherheit niedrig und hinweis „ausgehend?“, „an“ die Gegenseite. Steht „Gutschrift“, „Erstattung“ oder „Rückzahlung“ im Kopf bzw. neben dem Betrag, werden positive Beträge in Feldern mit negativ negativ (mit hinweis) – auch bei Antworten eines Pakets. Ein Dokument als E-Rechnung (XML oder PDF mit Anhang) liefert seine Werte exakt (erechnung, positionen); dazu nennt Mappen, die über ein leeres Verweisfeld dazugehören (Lieferschein → Rechnung), und ein leeres „gehört zu“-Feld bekommt die eine lesbare Mappe, deren Dokumente die Nummer dieses Belegs nennen.",
+        "description": "Aus Dokument ausfüllen (#391; Erkennung eingebaut ohne KI oder – #511, in der Werkbank bzw. am Mappentyp gewählt – ein Paket mit dms:erkennen, dessen Antwort genauso geprüft wird; engine sagt, womit): Vorschläge für die Felder des Mappentyps aus text und/oder den Volltexten der Dokumente dokumente (Ids, Lesen nötig; ohne Volltext 409). Mit mappe (Id einer Mappe dieses Typs) braucht es Bearbeiten, sonst das Recht, Mappen des Typs anzulegen. Gefüllt werden die Felder mit „Aus Dokument füllen“ (hat der Typ keine, alle mit erkennbarer Art); Passwortfelder und feste Felder nie. Jeder Wert ist gegen die Feldart geprüft: Datum JJJJ-MM-TT, Betrag {betrag, waehrung}, Auswahl nur aus der Liste, Verweis als Mappen-Id einer lesbaren Mappe. Fundstellen (#939): je Wert der Textausschnitt (fundstelle) – von einem Paket nur, wenn er im Dokument steht – und mit dokumente dazu stelle (Dokument, Seite, Rahmen). Nichts wird gespeichert. Folgt ein Verweisfeld aus einem vorgeschlagenen Verweis (#886), kommt es mit derselben Sicherheit und der Fundstelle „aus …“ dazu.",
         "operationId": "postTypenMitidVorschlaege",
         "parameters": [
           {
@@ -4301,7 +3645,7 @@
           "Ablage"
         ],
         "summary": "Vorschläge aus einer Datei (Foto, PDF, vCard)",
-        "description": "Wie POST /typen/{id}/vorschlaege, der Text kommt aus der Datei im Körper (roh, höchstens 30 MB): Fotos und PDFs über die Texterkennung (sofort, höchstens 5 Seiten), vCards (.vcf) direkt, E-Rechnungen (#1043) als XML (XRechnung UBL/CII) direkt und aus dem PDF-Anhang (ZUGFeRD/Factur-X) – ihre Werte gehen vor, gelesen ohne DTD und Entitäten, mit Grenzen für Größe (4 MB), Tiefe und Positionen. Die Datei wird nicht gespeichert; die Antwort enthält zusätzlich text (der gelesene Text, z. B. um Vorder- und Rückseite einer Visitenkarte zusammen an POST /typen/{id}/vorschlaege zu geben). 415 bei anderen Dateiarten (auch XML, das keine lesbare E-Rechnung ist), 503 ohne Texterkennung (nicht bei einer E-Rechnung).",
+        "description": "Wie POST /typen/{id}/vorschlaege, der Text kommt aus der Datei im Körper (roh, höchstens 30 MB): Fotos und PDFs über die Texterkennung (sofort, höchstens 5 Seiten), vCards (.vcf) direkt. Die Datei wird nicht gespeichert; die Antwort enthält zusätzlich text (der gelesene Text, z. B. um Vorder- und Rückseite einer Visitenkarte zusammen an POST /typen/{id}/vorschlaege zu geben). 415 bei anderen Dateiarten, 503 ohne Texterkennung.",
         "operationId": "postTypenMitidVorschlaegeDatei",
         "parameters": [
           {
@@ -4336,15 +3680,6 @@
             "in": "query",
             "required": false,
             "description": "Id der Mappe, die gefüllt wird (sonst eine neue)",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "positionen",
-            "in": "query",
-            "required": false,
-            "description": "E-Rechnung (#1043): 1 = Positionen auch liefern, wenn die Mappe schon welche hat",
             "schema": {
               "type": "string"
             }
@@ -4873,171 +4208,6 @@
         }
       }
     },
-    "/mappen/{id}/hinweise/{schluessel}": {
-      "put": {
-        "tags": [
-          "Ablage"
-        ],
-        "summary": "Hinweis eines Pakets an der Mappe setzen",
-        "description": "Für Pakete mit dem Recht „dms:hinweise“ (#1034): setzt oder ersetzt den Hinweis unter schluessel – je Paket eigene Schlüssel, das Paket ergibt sich aus dem Dienstkonto. Nur an Mappen, die das Paket schreiben darf. Nur Text: kein HTML, kein Markdown, keine Links, höchstens 300 Zeichen (Zeilenumbrüche werden zu Leerzeichen); höchstens 3 Hinweise je Paket und Mappe – sonst 400. Der Hinweis steht für alle, die die Mappe lesen, in der Hinweiszeile über den Registern, immer mit dem Namen des Pakets. Er ändert die Mappe nicht (kein geaendert, keine Historie, kein Ereignis) und hindert das Speichern nie. Andere Aufrufer bekommen 403.",
-        "operationId": "putMappenMitidHinweiseMitschluessel",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "description": "Id der Mappe (UUID)",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "schluessel",
-            "in": "path",
-            "required": true,
-            "description": "Kennung des Hinweises im Paket (klein, z. B. summe)",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/HinweisEingabe"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Erfolg",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PaketHinweis"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Nicht angemeldet oder Schlüssel ungültig",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Schlüssel nur zum Lesen oder nur Zähler",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Nicht gefunden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Eingaben ungültig (details: Prüfergebnis)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "Ablage"
-        ],
-        "summary": "Hinweis eines Pakets entfernen",
-        "description": "Entfernt den eigenen Hinweis unter schluessel (#1034); auch, wenn es ihn nicht gibt. Gleiche Rechte wie beim Setzen.",
-        "operationId": "deleteMappenMitidHinweiseMitschluessel",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "description": "Id der Mappe (UUID)",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "schluessel",
-            "in": "path",
-            "required": true,
-            "description": "Kennung des Hinweises im Paket",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Erledigt"
-          },
-          "401": {
-            "description": "Nicht angemeldet oder Schlüssel ungültig",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Schlüssel nur zum Lesen oder nur Zähler",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Nicht gefunden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "409": {
-            "description": "Kann (noch) nicht gelöscht werden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/mappen/{id}/dokumente": {
       "post": {
         "tags": [
@@ -5111,516 +4281,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Hochgeladen"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Nicht angemeldet oder Schlüssel ungültig",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Schlüssel nur zum Lesen oder nur Zähler",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Nicht gefunden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/mappen/{id}/vorlagen": {
-      "get": {
-        "tags": [
-          "Dokumente"
-        ],
-        "summary": "Text-Vorlagen für eine Mappe",
-        "description": "Text-Vorlagen (#1038, Markdown), die zu dieser Mappe passen: an ihr selbst und an Mappen, auf die sie verweist (z. B. die Vertragsart eines Vertrags) – nur lesbare. Vorlage ist, was ein Paket als Vorlage mitgebracht hat, oder ein Markdown-Dokument im Register „vorlagen“. Je Vorlage ihre Platzhalter mit fehlt = true, wenn der Wert fehlt oder der Schlüssel ihn nicht lesen darf (dann steht im Brief die Lücke „[Feld]“), dazu Briefkopf (absender) und Empfänger, soweit bekannt. Braucht Lesen an der Mappe (sonst 404); Pakete dazu das Recht „Dokumente lesen“.",
-        "operationId": "getMappenMitidVorlagen",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "description": "Id der Mappe (UUID)",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Erfolg",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/VorlagenListe"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Nicht angemeldet oder Schlüssel ungültig",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Schlüssel nur zum Lesen oder nur Zähler",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Nicht gefunden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/mappen/{id}/vorlagen/{dokument}/setzen": {
-      "post": {
-        "tags": [
-          "Dokumente"
-        ],
-        "summary": "Brief aus einer Vorlage setzen (PDF)",
-        "description": "Text setzen (#1040): Markdown der Vorlage plus Werte der Mappe → Brief als PDF (A4, Aufbau ähnlich DIN 5008, getaggt, Sprache der Vorlage). Briefkopf aus der Mappe im Feld an (Person oder Organisation), sonst aus der eigenen Organisation (nur Name, Anschrift, E-Mail, Telefon, #995); Anschrift aus der Mappe im Feld von; Betreff aus der ersten Überschrift (#). Platzhalter wie {vertragsnummer} oder {von.name} nur mit Werten, die der Schlüssel lesen darf, nie aus Passwortfeldern; Werte erscheinen als Text (kein Markdown). Die Vorlage wird vor dem Satz noch einmal geprüft (422 bei HTML, Bildern, fremden Links, Passwortfeldern). ziel = ablegen (Standard): PDF und ausgefüllter Text (.md) kommen als neue Dokumente ins Register register (sonst „dokumente“ bzw. das erste Dokumentenregister); braucht Bearbeiten an der Mappe, Pakete das Recht „Dokumente schreiben“. ziel = herunterladen: nur das PDF als Antwort; Herunterladen ist Mitnehmen (#723) und braucht Lesen und das Exportrecht E, Werte verwiesener Mappen ebenso. Grenzen: ausgefüllter Text 512 KB, PDF 4 MB und 30 Seiten (413), 30 Sekunden.",
-        "operationId": "postMappenMitidVorlagenMitdokumentSetzen",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "description": "Id der Mappe (UUID)",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "dokument",
-            "in": "path",
-            "required": true,
-            "description": "Id der Vorlage (GET /mappen/{id}/vorlagen)",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/TextSetzen"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "Erfolg",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TextGesetzt"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Nicht angemeldet oder Schlüssel ungültig",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Schlüssel nur zum Lesen oder nur Zähler",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Nicht gefunden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Eingaben ungültig (details: Prüfergebnis)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/mappen/{id}/paketaktionen": {
-      "get": {
-        "tags": [
-          "Ablage"
-        ],
-        "summary": "Aktionen von Paketen an einer Mappe",
-        "description": "Was im Menü „Mappe“ von Paketen dazukommt (#1039): je Aktion Paket, Schlüssel, Name und die Rechte, die sie am Ende braucht. Nur Aktionen, für die der Schlüssel und das Paket genau diese Rechte an der Mappe haben (Schnittmenge); gesperrt = die Bedingung der Aktion trifft nicht zu (Grund als Text). eingebautAus: eingebaute Aktionen, die die Werkbank ausgeblendet hat. Braucht Lesen an der Mappe (sonst 404).",
-        "operationId": "getMappenMitidPaketaktionen",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "description": "Id der Mappe (UUID)",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Erfolg",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AktionenAnMappe"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Nicht angemeldet oder Schlüssel ungültig",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Schlüssel nur zum Lesen oder nur Zähler",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Nicht gefunden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/mappen/{id}/paketaktionen/{paket}/{aktion}": {
-      "post": {
-        "tags": [
-          "Ablage"
-        ],
-        "summary": "Aktion eines Pakets starten",
-        "description": "Startet die Aktion (#1039): Ablago prüft die Rechte (angekündigt ∩ Schlüssel ∩ Paket) und die Bedingung (409 mit Grund) und ruft das Paket mit Zeitgrenze auf (503 „Das Paket antwortet gerade nicht“). Antwort: ein Dialog (Felder text, auswahl, haken, textfeld, datum – nur Daten) mit der Kennung lauf, ein Ergebnis oder kern = dms:vorlage (dann „Brief aus Vorlage“ mit lauf im Körper von POST /mappen/{id}/vorlagen/{dokument}/setzen). Höchstens ein laufender Ablauf je Person und Paket (429).",
-        "operationId": "postMappenMitidPaketaktionenMitpaketMitaktion",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "description": "Id der Mappe (UUID)",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "paket",
-            "in": "path",
-            "required": true,
-            "description": "Id des Pakets",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "aktion",
-            "in": "path",
-            "required": true,
-            "description": "Schlüssel der Aktion",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Erfolg",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AktionsSchritt"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Nicht angemeldet oder Schlüssel ungültig",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Schlüssel nur zum Lesen oder nur Zähler",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Nicht gefunden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/paketaktionen/laeufe/{lauf}": {
-      "post": {
-        "tags": [
-          "Ablage"
-        ],
-        "summary": "Dialog einer Paket-Aktion beantworten",
-        "description": "Antworten auf den Dialog (#1039) als antworten: { schluessel: wert } – Text, Datum (JJJJ-MM-TT), Wert einer Option, Liste von Werten bei mehrfach, true/false bei haken. Fehlt eine Pflichtangabe: 422 mit details.felderFehler. Rechte und Bedingung prüft Ablago bei jedem Schritt neu. Antwort wie beim Start: nächster Dialog (höchstens zwei) oder Ergebnis.",
-        "operationId": "postPaketaktionenLaeufeMitlauf",
-        "parameters": [
-          {
-            "name": "lauf",
-            "in": "path",
-            "required": true,
-            "description": "Kennung aus der Antwort auf den Start",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AktionsAntworten"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Erfolg",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AktionsSchritt"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Nicht angemeldet oder Schlüssel ungültig",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Schlüssel nur zum Lesen oder nur Zähler",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Nicht gefunden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Eingaben ungültig (details: Prüfergebnis)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "Ablage"
-        ],
-        "summary": "Paket-Aktion abbrechen",
-        "description": "Beendet einen offenen Dialog (#1039); auch, wenn es ihn nicht mehr gibt.",
-        "operationId": "deletePaketaktionenLaeufeMitlauf",
-        "parameters": [
-          {
-            "name": "lauf",
-            "in": "path",
-            "required": true,
-            "description": "Kennung des Laufs",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Erledigt"
-          },
-          "401": {
-            "description": "Nicht angemeldet oder Schlüssel ungültig",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Schlüssel nur zum Lesen oder nur Zähler",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Nicht gefunden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "409": {
-            "description": "Kann (noch) nicht gelöscht werden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/paketaktionen/laeufe/{lauf}/datei": {
-      "post": {
-        "tags": [
-          "Ablage"
-        ],
-        "summary": "Datei einer Paket-Aktion abholen",
-        "description": "Herausgeben (#1039) zählt wie Herunterladen (#723): braucht Lesen und das Exportrecht E; der Pflicht-Stempel des Mappentyps gilt. Immer als Anhang (Content-Disposition: attachment). Danach ist der Lauf zu Ende.",
-        "operationId": "postPaketaktionenLaeufeMitlaufDatei",
-        "parameters": [
-          {
-            "name": "lauf",
-            "in": "path",
-            "required": true,
-            "description": "Kennung des Laufs",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Erfolg",
-            "content": {
-              "application/octet-stream": {
-                "schema": {
-                  "type": "string",
-                  "format": "binary"
                 }
               }
             }
@@ -7436,15 +6096,6 @@
             "schema": {
               "type": "string"
             }
-          },
-          {
-            "name": "fassung",
-            "in": "query",
-            "required": false,
-            "description": "„archiv“ (#1137): Seiten, Größen und Wörter aus der Textebene der Archivfassung (PDF/A, quelle „archiv“), z. B. für E-Mails; 404 ohne",
-            "schema": {
-              "type": "string"
-            }
           }
         ],
         "responses": {
@@ -7645,639 +6296,6 @@
         }
       }
     },
-    "/dokumente/{id}/leerseiten": {
-      "get": {
-        "tags": [
-          "Dokumente"
-        ],
-        "summary": "Leerseiten eines Dokuments in Post",
-        "description": "Leerseiten (#997): welche Seiten ein Paket mit dem Recht „dms:leerseiten“ als leer markiert hat, die Wahl je Seite („Doch behalten“, „Auch weglassen“) und wegfallend – die Seiten, die beim Übernehmen in eine Mappe wegfallen. leerseiten ist null, solange nichts markiert ist oder die Datei sich seitdem geändert hat. Nur Dokumente in Post (sonst 409), nur PDF, JPEG und PNG (sonst 422). Braucht Lesen.",
-        "operationId": "getDokumenteMitidLeerseiten",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "description": "Id des Dokuments (UUID)",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Erfolg",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LeerseitenStand"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Nicht angemeldet oder Schlüssel ungültig",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Schlüssel nur zum Lesen oder nur Zähler",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Nicht gefunden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          }
-        }
-      },
-      "put": {
-        "tags": [
-          "Dokumente"
-        ],
-        "summary": "Leerseiten markieren (Pakete)",
-        "description": "Für Pakete mit dem Recht „dms:leerseiten“ (#997), z. B. „Leerseiten“: seiten ersetzt die erkannten leeren Seiten (Nummern ab 1, leer = keine), sha256 nennt die geprüfte Datei (sonst 409). Die Wahl der Personen bleibt, solange die Datei dieselbe ist. Das Paket markiert nur: Es löscht nichts, ändert weder Datei noch Post (kein „zuletzt geändert“, keine Historie, kein Ereignis). Nur Dokumente in Post, die das Paket lesen darf (409 bei anderen Mappen); andere Aufrufer bekommen 403.",
-        "operationId": "putDokumenteMitidLeerseiten",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "description": "Id des Dokuments (UUID)",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/LeerseitenMarkieren"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Erfolg",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LeerseitenStand"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Nicht angemeldet oder Schlüssel ungültig",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Schlüssel nur zum Lesen oder nur Zähler",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Nicht gefunden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Eingaben ungültig (details: Prüfergebnis)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/dokumente/{id}/leerseiten/{nr}": {
-      "put": {
-        "tags": [
-          "Dokumente"
-        ],
-        "summary": "Seite behalten oder weglassen",
-        "description": "Wahl einer Person (#997) für eine Seite eines Dokuments in Post: weglassen=true („Auch weglassen“) – die Seite fällt beim Übernehmen weg; false („Doch behalten“) – sie bleibt. Geht auch ohne Markierung eines Pakets. Nichts wird jetzt gelöscht. Braucht Bearbeiten an der Post; Pakete bekommen 403, versendete E-Mails 422.",
-        "operationId": "putDokumenteMitidLeerseitenMitnr",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "description": "Id des Dokuments (UUID)",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "nr",
-            "in": "path",
-            "required": true,
-            "description": "Seitennummer ab 1",
-            "schema": {
-              "type": "integer"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/LeerseiteWahl"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Erfolg",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LeerseitenStand"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Nicht angemeldet oder Schlüssel ungültig",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Schlüssel nur zum Lesen oder nur Zähler",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Nicht gefunden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Eingaben ungültig (details: Prüfergebnis)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/dokumente/{id}/anlagen": {
-      "get": {
-        "tags": [
-          "Dokumente"
-        ],
-        "summary": "Anlagen eines Dokuments",
-        "description": "Anlagen (#998): das Dokument und seine Anlagen in ihrer Reihenfolge (anlageNr 1, 2 …). Bei einer Anlage kommt ihr Hauptdokument mit allen Anlagen. Anlagen liegen immer in derselben Mappe und demselben Register wie ihr Hauptdokument; Rechte wie beim Hauptdokument. Braucht Lesen.",
-        "operationId": "getDokumenteMitidAnlagen",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "description": "Id des Dokuments (UUID)",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Erfolg",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Anlagen"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Nicht angemeldet oder Schlüssel ungültig",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Schlüssel nur zum Lesen oder nur Zähler",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Nicht gefunden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "tags": [
-          "Dokumente"
-        ],
-        "summary": "Dokument als Anlage anhängen",
-        "description": "„Als Anlage an … hängen“ (#998): dokument wird die nächste Anlage dieses Dokuments – nur ein Dokument derselben Mappe (sonst 422), es kommt ins Register des Hauptdokuments; name benennt es dabei um (sonst bleibt sein Name). Hängt es an einem anderen Hauptdokument, wechselt es; hat es selbst Anlagen, kommen sie gleich dahinter mit. Eine Anlage kann keine Anlagen haben (409). Höchstens 99 Anlagen. Historie der Mappe. Braucht Bearbeiten; Pakete zusätzlich das Recht dms:anlagen und nur in Post (sonst 403).",
-        "operationId": "postDokumenteMitidAnlagen",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "description": "Id des Hauptdokuments (UUID)",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AnlageAnhaengen"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "Erfolg",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Anlagen"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Nicht angemeldet oder Schlüssel ungültig",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Schlüssel nur zum Lesen oder nur Zähler",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Nicht gefunden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Eingaben ungültig (details: Prüfergebnis)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          }
-        }
-      },
-      "put": {
-        "tags": [
-          "Dokumente"
-        ],
-        "summary": "Anlagen umsortieren",
-        "description": "Reihenfolge der Anlagen (#998): reihenfolge nennt genau die Anlagen des Dokuments, jede einmal (sonst 422); sie heißen danach Anlage 1, 2 … in dieser Reihenfolge. Historie der Mappe. Braucht Bearbeiten; Pakete wie oben.",
-        "operationId": "putDokumenteMitidAnlagen",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "description": "Id des Hauptdokuments (UUID)",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AnlagenReihenfolge"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Erfolg",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Anlagen"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Nicht angemeldet oder Schlüssel ungültig",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Schlüssel nur zum Lesen oder nur Zähler",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Nicht gefunden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Eingaben ungültig (details: Prüfergebnis)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/dokumente/{id}/anlagen/{anlage}": {
-      "put": {
-        "tags": [
-          "Dokumente"
-        ],
-        "summary": "Anlage umbenennen",
-        "description": "Anlage umbenennen (#998): Der Vorgabe-Name „<Name des Dokuments> – Anlage 1“ ist nur ein Vorschlag. 404, wenn anlage keine Anlage dieses Dokuments ist. Historie der Mappe. Braucht Bearbeiten; Pakete wie oben.",
-        "operationId": "putDokumenteMitidAnlagenMitanlage",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "description": "Id des Hauptdokuments (UUID)",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "anlage",
-            "in": "path",
-            "required": true,
-            "description": "Id der Anlage",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AnlageName"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Erfolg",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Anlagen"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Nicht angemeldet oder Schlüssel ungültig",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Schlüssel nur zum Lesen oder nur Zähler",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Nicht gefunden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Eingaben ungültig (details: Prüfergebnis)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "Dokumente"
-        ],
-        "summary": "Anlage lösen (zum eigenen Dokument machen)",
-        "description": "„Zum eigenen Dokument machen“ (#998): Die Anlage bleibt in Mappe und Register, hat danach kein Hauptdokument mehr; die übrigen rücken auf. Nichts wird gelöscht. 404, wenn anlage keine Anlage dieses Dokuments ist. Historie der Mappe. Braucht Bearbeiten; Pakete wie oben.",
-        "operationId": "deleteDokumenteMitidAnlagenMitanlage",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "description": "Id des Hauptdokuments (UUID)",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "anlage",
-            "in": "path",
-            "required": true,
-            "description": "Id der Anlage",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Erfolg",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Anlagen"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Nicht angemeldet oder Schlüssel ungültig",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Schlüssel nur zum Lesen oder nur Zähler",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Nicht gefunden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "409": {
-            "description": "Kann (noch) nicht gelöscht werden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/dokumente/{id}/seiten": {
       "get": {
         "tags": [
@@ -8345,7 +6363,7 @@
           "Dokumente"
         ],
         "summary": "PDF bearbeiten: drehen, Seiten löschen, umsortieren, teilen",
-        "description": "PDF bearbeiten (#335). seiten = die Seiten des Ergebnisses in der gewünschten Reihenfolge (nr im Original ab 1, drehung zusätzlich im Uhrzeigersinn: 0/90/180/270); fehlende Seiten fallen weg. teile = Positionen in seiten (ab 0), an denen ein neuer Teil beginnt. Ohne teile: neue Version des Dokuments; ist die Versionierung des Registers aus, ersetzt das Ergebnis das Dokument nur mit bestaetigt=true (sonst 409 mit rueckfrage), das bisherige kommt in den Papierkorb. Mit teile in einer Mappe: Teil 1 wird die neue Version, die weiteren Teile werden eigene Dokumente „Name (Teil n).pdf“ im selben Register. Mit teile bei Post („Post teilen nach Seitenbereichen“): je Teil eine neue Post (Stand Neu, Betreff „… (Teil n)“); die Ausgangspost behält ihr Dokument, hat Stand Erledigt und verweist auf die neuen. Texterkennung läuft für die Ergebnisse neu. Anlagen (#998, z. B. Trennblatt mit zweitem Barcode): anlagen = Positionen in seiten, an denen eine Anlage zum vorherigen Teil beginnt (nie am Anfang eines Teils, höchstens 99 je Teil; sonst 422). Nur bei Post (sonst 409): Jeder Teil wird eine neue Post, sein Dokument bekommt dort die Anlagen „<Name> – Anlage 1.pdf“, „– Anlage 2.pdf“ …; bei nur einem Teil behält die neue Post den Betreff. Anlagen entstehen nie in anderen Mappen. Pakete brauchen dafür das Recht dms:anlagen (sonst 403). E-Mail-Postfach (#999): Post mit Kanal „E-Mail“ teilt kein Paket (teile oder anlagen: 409) – eine E-Mail bleibt eine Post; Menschen und API-Schlüssel von Personen dürfen.",
+        "description": "PDF bearbeiten (#335). seiten = die Seiten des Ergebnisses in der gewünschten Reihenfolge (nr im Original ab 1, drehung zusätzlich im Uhrzeigersinn: 0/90/180/270); fehlende Seiten fallen weg. teile = Positionen in seiten (ab 0), an denen ein neuer Teil beginnt. Ohne teile: neue Version des Dokuments; ist die Versionierung des Registers aus, ersetzt das Ergebnis das Dokument nur mit bestaetigt=true (sonst 409 mit rueckfrage), das bisherige kommt in den Papierkorb. Mit teile in einer Mappe: Teil 1 wird die neue Version, die weiteren Teile werden eigene Dokumente „Name (Teil n).pdf“ im selben Register. Mit teile bei Post („Post teilen nach Seitenbereichen“): je Teil eine neue Post (Stand Neu, Betreff „… (Teil n)“); die Ausgangspost behält ihr Dokument, hat Stand Erledigt und verweist auf die neuen. Texterkennung läuft für die Ergebnisse neu.",
         "operationId": "postDokumenteMitidSeiten",
         "parameters": [
           {
@@ -9303,243 +7321,6 @@
           },
           "409": {
             "description": "Kann (noch) nicht gelöscht werden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/typen/{id}/fassungen": {
-      "get": {
-        "tags": [
-          "Werkbank"
-        ],
-        "summary": "Fassungen eines Mappentyps (Werkbank)",
-        "description": "Wer hat wann was geändert (#1006): neueste zuerst (höchstens 50), je Fassung Urheber (Person, Paket mit Version, Automatisierung, Update, Ablago) und lesbare Änderungen zur Fassung davor in der Sprache der Anfrage. stand = Stand der neuesten Fassung (für das Wiederherstellen).",
-        "operationId": "getTypenMitidFassungen",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "description": "Id des Mappentyps (UUID)",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Erfolg",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/FassungsListe"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Nicht angemeldet oder Schlüssel ungültig",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Werkbank: nie mit einem API-Schlüssel (#818), nur in der Oberfläche im Verwaltungsmodus; oder Schlüssel nur zum Lesen oder nur Zähler",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Nicht gefunden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/typen/{id}/fassungen/{nr}": {
-      "get": {
-        "tags": [
-          "Werkbank"
-        ],
-        "summary": "Vorschau: Fassung wiederherstellen (Werkbank)",
-        "description": "Was das Wiederherstellen der Fassung nr gegenüber jetzt ändert und worauf zu achten ist (Felder mit Werten, Mappen, die nicht mehr passen) – ohne etwas zu ändern.",
-        "operationId": "getTypenMitidFassungenMitnr",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "description": "Id des Mappentyps (UUID)",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "nr",
-            "in": "path",
-            "required": true,
-            "description": "Nummer der Fassung",
-            "schema": {
-              "type": "integer"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Erfolg",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/FassungsVorschau"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Nicht angemeldet oder Schlüssel ungültig",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Werkbank: nie mit einem API-Schlüssel (#818), nur in der Oberfläche im Verwaltungsmodus; oder Schlüssel nur zum Lesen oder nur Zähler",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Nicht gefunden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/typen/{id}/fassungen/{nr}/wiederherstellen": {
-      "post": {
-        "tags": [
-          "Werkbank"
-        ],
-        "summary": "Fassung wiederherstellen (Werkbank)",
-        "description": "Stellt die Fassung nr über das normale Speichern wieder her (dieselben Prüfungen und Rückfragen: bestaetigt, doppelteBestaetigt); das Ergebnis ist eine neue Fassung. Mit stand (aus der Liste bzw. Vorschau) nur, wenn seitdem niemand gespeichert hat.",
-        "operationId": "postTypenMitidFassungenMitnrWiederherstellen",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "description": "Id des Mappentyps (UUID)",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "nr",
-            "in": "path",
-            "required": true,
-            "description": "Nummer der Fassung",
-            "schema": {
-              "type": "integer"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/FassungWiederherstellen"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Erfolg",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/FassungsListe"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Nicht angemeldet oder Schlüssel ungültig",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Werkbank: nie mit einem API-Schlüssel (#818), nur in der Oberfläche im Verwaltungsmodus; oder Schlüssel nur zum Lesen oder nur Zähler",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Nicht gefunden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "409": {
-            "description": "Seitdem hat jemand gespeichert, die Fassung entspricht schon dem jetzigen Stand oder das normale Speichern fragt nach (details); nichts geändert",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Eingaben ungültig (details: Prüfergebnis)",
             "content": {
               "application/json": {
                 "schema": {
@@ -10996,96 +8777,13 @@
         }
       }
     },
-    "/sicherungen/{name}/holen": {
-      "put": {
-        "tags": [
-          "Werkbank"
-        ],
-        "summary": "Angeforderte Sicherung zurückliefern (Pakete)",
-        "description": "Für Pakete mit dem Recht „dms:sicherung-holen“ (#976, dazu dms:sicherung-lesen), z. B. „Sicherungsziel WebDAV“: Auf den Auftrag „holen“ liefert das Paket die Sicherung vom Ziel unverändert zurück – je Anfrage ein Stück von höchstens 8 MB, roh, lückenlos ab versatz. Ablago nimmt nur, was es gerade bei genau diesem Paket angefordert hat, nie mehr als die Größe aus seiner Liste, und prüft am Ende die SHA-256. Antwort: der neue versatz und die groesse. 403 ohne Recht oder ohne Anforderung; 409 mit dem erwarteten versatz, wenn die Stelle nicht passt; 422 bei leerem oder zu großem Stück.",
-        "operationId": "putSicherungenMitnameHolen",
-        "parameters": [
-          {
-            "name": "name",
-            "in": "path",
-            "required": true,
-            "description": "Name der Sicherung aus dem Auftrag (ohne Endung)",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "versatz",
-            "in": "query",
-            "required": true,
-            "description": "Ab diesem Byte – das bisherige Ende",
-            "schema": {
-              "type": "integer"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/octet-stream": {
-              "schema": {
-                "type": "string",
-                "format": "binary"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Erfolg",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SicherungHolen"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Nicht angemeldet oder Schlüssel ungültig",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Werkbank: nie mit einem API-Schlüssel (#818), nur in der Oberfläche im Verwaltungsmodus; oder Schlüssel nur zum Lesen oder nur Zähler",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Nicht gefunden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/sicherungen/{name}/extern": {
       "put": {
         "tags": [
           "Werkbank"
         ],
         "summary": "Stand der Kopie außer Haus melden (Pakete, veraltet)",
-        "description": "Veraltet seit 0.158.1 (#636), entfällt mit Ablago 1.0.0: Pakete haben nur noch einen Leseschlüssel und melden ihren Stand als „extern“ im JSON-Ergebnis des Ereignisses sicherung.fertig – dieselben Felder wie hier, auch neben „weiter“. Ohne „extern“ gilt: Rückgabewert 2 → fehlgeschlagen (endgültig), anderer Fehler → läuft mit der Meldung als Grund. Rückmeldung des Pakets je Sicherung (#585): laeuft (mit bytes/gesamt), hochgeladen (pruefung groesse oder keine), geprueft (pruefung pruefsumme oder stichprobe), fehlgeschlagen (grund Pflicht; endgueltig=true, wenn eine Wiederholung nicht hilft – dann bekommen die Administratoren eine E-Mail). ziel nennt das Ziel in Worten, ohne Zugangsdaten (Adressen werden davon befreit). Werkbank → Sicherung zeigt den Stand je Sicherung. Gibt Ablago das Ereignis nach allen Wiederholungen auf, setzt es selbst „fehlgeschlagen“.",
+        "description": "Veraltet seit 0.158.1 (#636), fällt mit der übernächsten Fassung weg: Pakete haben nur noch einen Leseschlüssel und melden ihren Stand als „extern“ im JSON-Ergebnis des Ereignisses sicherung.fertig – dieselben Felder wie hier, auch neben „weiter“. Ohne „extern“ gilt: Rückgabewert 2 → fehlgeschlagen (endgültig), anderer Fehler → läuft mit der Meldung als Grund. Rückmeldung des Pakets je Sicherung (#585): laeuft (mit bytes/gesamt), hochgeladen (pruefung groesse oder keine), geprueft (pruefung pruefsumme oder stichprobe), fehlgeschlagen (grund Pflicht; endgueltig=true, wenn eine Wiederholung nicht hilft – dann bekommen die Administratoren eine E-Mail). ziel nennt das Ziel in Worten, ohne Zugangsdaten (Adressen werden davon befreit). Werkbank → Sicherung zeigt den Stand je Sicherung. Gibt Ablago das Ereignis nach allen Wiederholungen auf, setzt es selbst „fehlgeschlagen“.",
         "operationId": "putSicherungenMitnameExtern",
         "parameters": [
           {
@@ -11151,224 +8849,6 @@
           },
           "422": {
             "description": "Eingaben ungültig (details: Prüfergebnis)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/paketdaten/einrichtung/{bereich}": {
-      "get": {
-        "tags": [
-          "Werkbank"
-        ],
-        "summary": "Einrichtung eines Bereichs (Pakete)",
-        "description": "Für Pakete mit dem Recht „Einrichtung lesen“ (code.rechte.einrichtung, #1054) und nur für Bereiche, die der Administrator in den Paket-Einstellungen angehakt hat: flache Einträge mit fester Kennung (z. B. ablage.pflicht), eindeutigem Pfad, lesbarer Bezeichnung und Wert – ohne Zeitstempel, ohne Benutzerlisten, nie Passwörter oder andere Geheimnisse (#1055). Adressen nur mit Rechner. 403 mit dem Namen des Bereichs, wenn er nicht angefragt, nicht angehakt oder die Person, die ihn freigegeben hat, ihn nicht mehr verwaltet; 403 auch für Personen und ihre API-Schlüssel.",
-        "operationId": "getPaketdatenEinrichtungMitbereich",
-        "parameters": [
-          {
-            "name": "bereich",
-            "in": "path",
-            "required": true,
-            "description": "allgemein, belegeingang, ablage, zugang, betrieb, sicherung, unveraenderbarkeit, datenschutz oder betriebspruefung",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Erfolg",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/EinrichtungStand"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Nicht angemeldet oder Schlüssel ungültig",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Werkbank: nie mit einem API-Schlüssel (#818), nur in der Oberfläche im Verwaltungsmodus; oder Schlüssel nur zum Lesen oder nur Zähler",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Nicht gefunden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/paketdaten/einrichtung/{bereich}/vergleich": {
-      "post": {
-        "tags": [
-          "Werkbank"
-        ],
-        "summary": "Einrichtung mit einem gemerkten Stand vergleichen (Pakete)",
-        "description": "Wie GET /paketdaten/einrichtung/{bereich}; dazu die Änderungen vom mitgeschickten Stand (vorher: ein früherer EinrichtungStand oder seine Einträge) zum jetzigen – je Änderung Kennung, Pfad, Art (neu, geaendert, entfernt), vorher, nachher und ein lesbarer Satz. Ändert nichts.",
-        "operationId": "postPaketdatenEinrichtungMitbereichVergleich",
-        "parameters": [
-          {
-            "name": "bereich",
-            "in": "path",
-            "required": true,
-            "description": "Bereich wie oben",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/EinrichtungVergleichEingabe"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Erfolg",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/EinrichtungVergleich"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Nicht angemeldet oder Schlüssel ungültig",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Werkbank: nie mit einem API-Schlüssel (#818), nur in der Oberfläche im Verwaltungsmodus; oder Schlüssel nur zum Lesen oder nur Zähler",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Nicht gefunden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Eingaben ungültig (details: Prüfergebnis)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/paketdaten/nachweise/{bereich}/{monat}": {
-      "get": {
-        "tags": [
-          "Werkbank"
-        ],
-        "summary": "Nachweise eines Monats (Pakete)",
-        "description": "Für Pakete mit dem Recht „Nachweise lesen“ (code.rechte.nachweise, #1054), nur angehakte Bereiche, freigegeben von einer Person mit Gesamter Verwaltung: Benutzer zum Stichtag, Rechteänderungen, Fehlanmeldungen (Konto nur, wenn es das Konto gibt; Adresse gekürzt auf /24 bzw. /48 mit heimnetz; unbekannte Konten nur als Anzahl), Sicherungsläufe, Prüfungen und Proben, Läufe von „Alle Dateien prüfen“, Updates, Paket-Verlauf, Wartungszeiten, Löschungen nach Fristende, geleerter Papierkorb, Auskünfte, Post je Weg. Fehler wie bei der Einrichtung; 422 bei einem ungültigen Monat.",
-        "operationId": "getPaketdatenNachweiseMitbereichMitmonat",
-        "parameters": [
-          {
-            "name": "bereich",
-            "in": "path",
-            "required": true,
-            "description": "belegeingang, zugang, betrieb, sicherung, unveraenderbarkeit oder datenschutz",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "monat",
-            "in": "path",
-            "required": true,
-            "description": "JJJJ-MM, nicht in der Zukunft",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Erfolg",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/NachweiseStand"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Nicht angemeldet oder Schlüssel ungültig",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Werkbank: nie mit einem API-Schlüssel (#818), nur in der Oberfläche im Verwaltungsmodus; oder Schlüssel nur zum Lesen oder nur Zähler",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Fehler"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Nicht gefunden",
             "content": {
               "application/json": {
                 "schema": {
@@ -11479,7 +8959,7 @@
         "properties": {
           "key": {
             "type": "string",
-            "pattern": "^[a-z][a-z0-9_]{0,59}$"
+            "pattern": "^[a-z][a-z0-9_]{0,39}$"
           },
           "label": {
             "type": "string"
@@ -11496,21 +8976,14 @@
               "janein",
               "auswahl",
               "referenz",
-              "passwort",
-              "zeitraum",
-              "prozent",
-              "tabelle",
-              "zusammengesetzt"
-            ],
-            "description": "Feldart als feste Kennung, in jeder Sprache gleich. Namen in der Oberfläche (de / en): text = Text / Text; langtext = Langtext / Long text; formatiert = Formatierter Text / Formatted text; zahl = Zahl / Number; betrag = Betrag / Amount; datum = Datum / Date; janein = Ja/Nein / Yes/No; auswahl = Auswahlliste / Choice list; referenz = Verweis / Link; passwort = Passwort / Password; zeitraum = Zeitraum / Period; prozent = Prozent / Percentage; tabelle = Tabelle / Table; zusammengesetzt = Zusammengesetzt / Combined."
+              "passwort"
+            ]
           },
           "pflicht": {
-            "type": "boolean",
-            "description": "Nie bei typ=tabelle und typ=zusammengesetzt"
+            "type": "boolean"
           },
           "eindeutig": {
-            "type": "boolean",
-            "description": "Bei typ=text, zahl und zusammengesetzt (#1050: die Kombination; bei Doppelung 422 mit der Meldung am ersten beteiligten Feld)"
+            "type": "boolean"
           },
           "hilfe": {
             "type": "string"
@@ -11530,7 +9003,7 @@
                 "type": "string"
               }
             ],
-            "description": "Zahl, Betrag und Prozent: Zahl. Datum (#535): „heute“ oder JJJJ-MM-TT – frühestes erlaubtes Datum"
+            "description": "Zahl und Betrag: Zahl. Datum (#535): „heute“ oder JJJJ-MM-TT – frühestes erlaubtes Datum"
           },
           "max": {
             "oneOf": [
@@ -11541,27 +9014,10 @@
                 "type": "string"
               }
             ],
-            "description": "Zahl, Betrag und Prozent: Zahl. Datum (#535): „heute“ oder JJJJ-MM-TT – spätestes erlaubtes Datum, z. B. heute für einen Geburtstag"
+            "description": "Zahl und Betrag: Zahl. Datum (#535): „heute“ oder JJJJ-MM-TT – spätestes erlaubtes Datum, z. B. heute für einen Geburtstag"
           },
           "nachkomma": {
-            "type": "integer",
-            "description": "Zahl und Prozent: höchstens so viele Nachkommastellen"
-          },
-          "negativ": {
-            "type": "boolean",
-            "description": "Nur bei typ=betrag (#1035): negative Beträge erlaubt (Gutschrift, Erstattung). Fehlt = nein – dann gilt ≥ 0."
-          },
-          "standard": {
-            "oneOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "boolean"
-              }
-            ],
-            "nullable": true,
-            "description": "Standardwert für neue Mappen. Zeitraum (#1035) als P3M oder „3 Monate“ (gespeichert P3M), Prozent als Zahl („19“)."
+            "type": "integer"
           },
           "muster": {
             "type": "string"
@@ -11581,32 +9037,10 @@
           "mehrfach": {
             "type": "boolean"
           },
-          "zielTypen": {
-            "type": "array",
-            "maxItems": 50,
-            "items": {
-              "type": "string"
-            },
-            "description": "Bei typ=referenz (#1036): Ids der Ziel-Mappentypen – einer oder mehrere; [\"*\"] = jede Mappe (nur Systemfelder). Beim Speichern prüft Ablago, dass jede verwiesene Mappe einen dieser Typen hat. Leer nur, wenn zielOptional etwas nennt."
-          },
           "zielTyp": {
             "type": "string",
             "format": "uuid",
-            "deprecated": true,
-            "description": "Veraltet (#1036), statt dessen zielTypen. Beim Lesen bei genau einem Zieltyp (oder \"*\") gesetzt, bei mehreren nicht; beim Schreiben gilt es nur ohne zielTypen."
-          },
-          "gleicherTyp": {
-            "type": "boolean",
-            "description": "Bei typ=referenz mit mehrfach (#1036): alle gewählten Mappen vom selben Mappentyp – ist die erste ein Fahrzeug, dürfen die weiteren nur Fahrzeuge sein. Prüft Ablago beim Speichern."
-          },
-          "zielOptional": {
-            "type": "array",
-            "maxItems": 50,
-            "items": {
-              "type": "string",
-              "pattern": "^(?:[a-z][a-z0-9_]{1,39}(?:\\.[a-z][a-z0-9_]{0,19})?:)?[a-z][a-z0-9_]{0,59}$"
-            },
-            "description": "Bei typ=referenz (#1036, aus Paketen): Kennungen paket:schluessel von Zieltypen anderer Pakete, von denen das Paket nicht abhängt. Sobald es einen davon gibt, steht seine Id in zielTypen."
+            "description": "Bei typ=referenz: Id des Ziel-Mappentyps"
           },
           "verweisart": {
             "type": "string",
@@ -11635,30 +9069,10 @@
               }
             }
           },
-          "vorbelegen": {
-            "type": "array",
-            "maxItems": 50,
-            "description": "Bei typ=referenz (#1037): „beim Auswählen übernehmen“ – Paare von (Feld der Mappe, auf die verwiesen wird) → nach (Feld dieser Mappe), z. B. kuendigungsfrist → kuendigungsfrist. Wählt man eine Mappe, schlägt die Oberfläche deren Werte in leeren Feldern vor (sichtbar, änderbar, nie überschrieben); „Aus Dokument ausfüllen“ liefert sie als Vorschläge mit aus. Gleiche Feldart nötig (Text auch in Langtext, Mehrfachwerte nur in Mehrfachfelder, Auswahlwerte und Verweisziele enthalten); nie aus oder in Passwortfelder, nie in berechnete Felder; nur Werte, die der Schlüssel lesen darf. Mehrere Zieltypen: gilt für jeden, der das Feld von hat. Speichern füllt nichts von selbst.",
-            "items": {
-              "type": "object",
-              "required": [
-                "von",
-                "nach"
-              ],
-              "properties": {
-                "von": {
-                  "type": "string"
-                },
-                "nach": {
-                  "type": "string"
-                }
-              }
-            }
-          },
           "erkennung": {
             "type": "object",
             "nullable": true,
-            "description": "Aus Dokument füllen (#336, #391; bis #938 „Für die Erkennung nutzen“); vorhanden = an. Nur bei Text, Langtext, Zahl, Betrag, Datum, Auswahl, Verweis, Zeitraum und Prozent. art: was im Feld steht (fehlt = aus Feldart und Bezeichnung), hinweis: Erkennungshinweis, z. B. „Muster 100-####“ (# = Ziffer).",
+            "description": "Aus Dokument füllen (#336, #391; bis #938 „Für die Erkennung nutzen“); vorhanden = an. Nur bei Text, Langtext, Zahl, Betrag, Datum, Auswahl und Verweis. art: was im Feld steht (fehlt = aus Feldart und Bezeichnung), hinweis: Erkennungshinweis, z. B. „Muster 100-####“ (# = Ziffer).",
             "properties": {
               "art": {
                 "type": "string",
@@ -11681,8 +9095,6 @@
                   "ort",
                   "datum",
                   "betrag",
-                  "zeitraum",
-                  "prozent",
                   "verweis",
                   "auswahl"
                 ]
@@ -11740,133 +9152,6 @@
                 }
               }
             }
-          },
-          "anzeigen": {
-            "$ref": "#/components/schemas/Anzeigeregel"
-          },
-          "quelle": {
-            "type": "object",
-            "required": [
-              "typId",
-              "feldKey"
-            ],
-            "description": "Nur bei typ=tabelle (#1030): Die Tabelle zeigt die Mappen vom Typ typId, die über das Verweisfeld feldKey hierher verweisen, mit den Spalten der Trefferliste trefferliste des anderen Typs (fehlt = Standard; Passwortfelder nie). neu beschriftet „+ Neu“ unter der Tabelle (höchstens 40 Zeichen, sonst „+ <Typname>“; andere Sprachen unter beschriftungen.<sprache>.neu). Eine Tabelle hat keinen eigenen Wert: nicht in werte, nicht im Export, nicht in Bedingungen, Spalten oder der Titel-Vorlage; nie Pflicht. Ihre Zeilen liefert GET /mappen/{id}/tabelle/{feld}.",
-            "properties": {
-              "typId": {
-                "type": "string",
-                "format": "uuid"
-              },
-              "feldKey": {
-                "type": "string"
-              },
-              "trefferliste": {
-                "type": "string"
-              },
-              "neu": {
-                "type": "string",
-                "maxLength": 40
-              }
-            }
-          },
-          "merkmal": {
-            "type": "string",
-            "enum": [
-              "eigeneOrganisation"
-            ],
-            "description": "Nur am Ja/Nein-Feld (#995): ja heißt, die Mappe ist eine eigene Organisation. Kommt aus dem Paket (Basis); beim Ändern des Mappentyps bleibt es, wie es ist."
-          },
-          "schreibschutz": {
-            "type": "string",
-            "enum": [
-              "verwaltung"
-            ],
-            "description": "Geschütztes Feld (#995): ändern nur im Verwaltungsmodus mit dem Bereich „Eigene Organisation“ oder mit einer dort freigegebenen Rolle, sonst 403. Kommt aus dem Paket; beim Ändern des Mappentyps bleibt es, wie es ist."
-          },
-          "vorlage": {
-            "type": "string",
-            "maxLength": 300,
-            "example": "{von} · {rechnungsnummer}",
-            "description": "Nur bei typ=zusammengesetzt (#1050): Platzhalter und Filter wie titelVorlage, aus Feldern dieses Typs der Arten text, zahl, betrag, prozent, datum, zeitraum, janein, auswahl und referenz (ohne Nummernkreis). Ablago setzt den Wert beim Speichern: gespeichert wird ein Schlüssel ohne Sprache (Datum JJJJ-MM-TT, Zahlen mit Punkt, Auswahl als fester Wert, Verweise als Mappen-Id – nie ein Titel). Wird die Vorlage geändert, rechnet Ablago alle Mappen neu."
-          },
-          "berechnetVon": {
-            "type": "string",
-            "nullable": true,
-            "description": "Berechnet (#1034): Id des Pakets, dessen Code den Wert schreibt (im Paketformat berechnet: true). In der Oberfläche nur lesbar; andere Schreiber bekommen 400. Setzen kann es nur die Paketverwaltung; null beim Ändern des Mappentyps gibt das Feld wieder frei („Feld wieder freigeben“, Werkbank)."
-          }
-        }
-      },
-      "Anzeigeregel": {
-        "type": "object",
-        "required": [
-          "modus",
-          "bedingungen"
-        ],
-        "description": "Anzeigen, wenn … (#1033) an Feld oder Abschnitt: Das Formular der Oberfläche zeigt es nur, wenn die Regel zutrifft (Apps sollten es genauso halten). Nur Ordnung, kein Schutz – Werte bleiben gespeichert und sind über die API les- und schreibbar; Pflicht ist ein Feld nur, solange es zu sehen ist (der Server wertet dafür genauso aus wie die Oberfläche). Ein ausgeblendeter Abschnitt blendet alle Felder bis zum nächsten Abschnitt aus. Bedingungen mit Problem (Feld entfernt) zählen nicht; ohne gültige Bedingung ist alles zu sehen. Nie an Systemfeldern. Ohne die Angabe bleibt beim Speichern die bisherige Regel; null bzw. ohne Bedingung entfernt sie.",
-        "properties": {
-          "modus": {
-            "type": "string",
-            "enum": [
-              "alle",
-              "eine"
-            ],
-            "description": "alle: jede Bedingung trifft zu; eine: mindestens eine"
-          },
-          "bedingungen": {
-            "type": "array",
-            "maxItems": 10,
-            "items": {
-              "type": "object",
-              "required": [
-                "art"
-              ],
-              "properties": {
-                "art": {
-                  "type": "string",
-                  "enum": [
-                    "merkmal",
-                    "feld",
-                    "verweistyp",
-                    "eigeneOrganisation"
-                  ],
-                  "description": "merkmal: Merkmal der Ablage (#1032); feld: Feldwert der Mappe wie eine Feldbedingung der Ansichten (nur feste Werte oder heute; „zeigt auf“ mit Mappen-Ids = Verweis zeigt auf eine bestimmte Mappe); verweistyp: ein Verweisfeld zeigt auf eine Mappe des Mappentyps typ; eigeneOrganisation (#995): ein Verweisfeld zeigt auf eine eigene Organisation"
-                },
-                "nicht": {
-                  "type": "boolean",
-                  "description": "umgekehrt"
-                },
-                "merkmal": {
-                  "type": "string",
-                  "enum": [
-                    "beruflich"
-                  ]
-                },
-                "bedingung": {
-                  "type": "object",
-                  "description": "Bei art=feld: { art: \"feld\", feld, op, wert?, bis? } wie in Ansichten"
-                },
-                "feld": {
-                  "type": "string",
-                  "description": "Bei art=verweistyp und art=eigeneOrganisation: Kennung des Verweisfelds"
-                },
-                "typ": {
-                  "type": "string",
-                  "format": "uuid",
-                  "description": "Bei art=verweistyp: Id des Mappentyps"
-                }
-              }
-            }
-          }
-        }
-      },
-      "Merkmale": {
-        "type": "object",
-        "required": [
-          "beruflich"
-        ],
-        "description": "Merkmale der Ablage (#1032) – bewusst nur eines. beruflich: Die Ablage wird auch beruflich genutzt (Vorgabe nein). Nutzbar in Anzeige-Bedingungen und in Bedingungen von Rechten, Ansichten und Automatisierungen. Einstellen in Werkbank → Ablage aufbauen → Nutzung (nur Gesamte Verwaltung).",
-        "properties": {
-          "beruflich": {
-            "type": "boolean"
           }
         }
       },
@@ -11946,9 +9231,6 @@
                       }
                     }
                   }
-                },
-                "anzeigen": {
-                  "$ref": "#/components/schemas/Anzeigeregel"
                 }
               }
             }
@@ -11971,8 +9253,7 @@
                 "rechte",
                 "herunterladen",
                 "api",
-                "webdav",
-                "aktionen"
+                "webdav"
               ]
             },
             "description": "Register „Historie“ (#800): welche Gruppen von Einträgen es zeigt; fehlt = Vorauswahl ohne Abrufe"
@@ -12145,13 +9426,6 @@
                 "type": "string",
                 "nullable": true,
                 "description": "Kennung eines Datumsfelds; null = Anlagedatum"
-              },
-              "leererStichtag": {
-                "type": "string",
-                "enum": [
-                  "laeuftNicht"
-                ],
-                "description": "Ist der Stichtag leer (#1051): laeuftNicht = die Frist läuft noch nicht, die Mappe bleibt gesperrt, bis das Feld gefüllt ist. Fehlt = ab Anlagedatum (Vorgabe). Nur mit stichtag; „anlage“ wird beim Speichern weggelassen."
               }
             }
           },
@@ -12160,22 +9434,6 @@
             "default": true,
             "deprecated": true,
             "description": "Ohne Wirkung seit 0.32 – wer anlegen darf, regeln die Berechtigungen (Recht C)"
-          },
-          "teilVon": {
-            "type": "string",
-            "nullable": true,
-            "example": "rechnung",
-            "description": "Ist Teil einer anderen Mappe (#1031): Kennung des Verweisfelds, über das jede Mappe dieses Typs zu ihrer übergeordneten Mappe gehört (Verweis auf genau einen anderen Mappentyp, eine Mappe, Pflicht, immer sichtbar; keine Ketten, nie an Systemtypen). Solche Mappen (Teile) erscheinen nicht in Ansichten, Trefferlisten über mehrere Typen, Volltext und erweiterter Suche, nicht unter „Zuletzt geöffnet“ und nicht bei „Wohin gehört das?“; der Typ bekommt keine eigene Ansicht. Über die Schnittstelle, den Export, die Sicherung und direkte Links bleiben sie erreichbar – Ausblenden ist kein Schutz, geschützt wird über Rechte. Beim Einschalten übernimmt ein Typ ohne eigene Berechtigungen einmal die Leserechte des übergeordneten Typs. Wird die übergeordnete Mappe gelöscht, gehen die Teile mit (ein Vorgang im Papierkorb; 403 mit Anzahl, wenn das Recht an einem Teil fehlt); wiederhergestellt ebenso. null = eigenständig. Ohne die Angabe bleibt beim Speichern die bisherige Einstellung."
-          },
-          "inSuche": {
-            "type": "boolean",
-            "nullable": true,
-            "description": "In der allgemeinen Suche zeigen (#1220): false = Mappen dieses Typs fehlen in der erweiterten Suche ohne gewählten Mappentyp (Suchfeld in der Kopfzeile) und als Quelle von „Frag deine Ablage“ – z. B. für Listen, die nur Werte für ein Auswahlfeld liefern. Mit dem Typ als Filter findet die erweiterte Suche sie; Ansichten, Auswahl- und Verweisfelder, die Schnittstelle und der Export bleiben unverändert. null = Vorgabe (ja). Ohne die Angabe bleibt beim Speichern die bisherige Einstellung."
-          },
-          "doppelteBestaetigt": {
-            "type": "boolean",
-            "writeOnly": true,
-            "description": "Nur beim Ändern (#1050): Hätten nach der Änderung eines eindeutigen zusammengesetzten Felds mehrere Mappen dieselbe Kombination, kommt ohne diese Angabe 409 mit details.zusammengesetzt (je Feld feld, label, anzahl) und nichts wird gespeichert. Mit true speichert Ablago trotzdem; die Mappen passen dann nicht zur Definition, bis man sie ändert."
           },
           "sichtAnlegen": {
             "type": "boolean",
@@ -12227,21 +9485,6 @@
                 "nullable": true,
                 "description": "Systemmappentyp: lässt sich erweitern, aber nicht löschen"
               },
-              "berechnung": {
-                "type": "object",
-                "description": "Nur beim Lesen, nur mit berechneten Feldern (#1034): je Paket-Id aus berechnetVon der Name und ob es noch rechnet (aktiv = false: „nicht mehr berechnet“, der letzte Wert bleibt)",
-                "additionalProperties": {
-                  "type": "object",
-                  "properties": {
-                    "name": {
-                      "type": "string"
-                    },
-                    "aktiv": {
-                      "type": "boolean"
-                    }
-                  }
-                }
-              },
               "stempel": {
                 "type": "object",
                 "nullable": true,
@@ -12270,188 +9513,16 @@
           "$ref": "#/components/schemas/Mappentyp"
         }
       },
-      "Urheber": {
-        "type": "object",
-        "required": [
-          "art"
-        ],
-        "description": "Wer gespeichert hat (#1006)",
-        "properties": {
-          "art": {
-            "type": "string",
-            "enum": [
-              "person",
-              "paket",
-              "automatisierung",
-              "update",
-              "system"
-            ]
-          },
-          "id": {
-            "type": "string",
-            "description": "Person, Paket bzw. Automatisierung"
-          },
-          "name": {
-            "type": "string",
-            "nullable": true,
-            "description": "Paket: Name"
-          },
-          "version": {
-            "type": "string",
-            "nullable": true,
-            "description": "Paket bzw. Update: Version"
-          },
-          "person": {
-            "type": "string",
-            "nullable": true,
-            "description": "Paket: wer es angestoßen hat"
-          }
-        }
-      },
-      "Fassung": {
-        "type": "object",
-        "required": [
-          "nr",
-          "zeit",
-          "bis",
-          "urheber",
-          "wer",
-          "aenderungen",
-          "aktuell"
-        ],
-        "properties": {
-          "nr": {
-            "type": "integer"
-          },
-          "zeit": {
-            "type": "string",
-            "format": "date-time",
-            "description": "Beginn"
-          },
-          "bis": {
-            "type": "string",
-            "format": "date-time",
-            "description": "Letzte Änderung (dieselbe Person innerhalb von 10 Minuten schreibt die Fassung fort)"
-          },
-          "name": {
-            "type": "string"
-          },
-          "urheber": {
-            "$ref": "#/components/schemas/Urheber"
-          },
-          "wer": {
-            "type": "string",
-            "description": "Urheber lesbar"
-          },
-          "wiederhergestellt": {
-            "type": "integer",
-            "nullable": true,
-            "description": "Aus welcher Fassung wiederhergestellt"
-          },
-          "geloescht": {
-            "type": "object",
-            "nullable": true,
-            "description": "Löschvermerk",
-            "properties": {
-              "zeit": {
-                "type": "string",
-                "format": "date-time"
-              },
-              "urheber": {
-                "$ref": "#/components/schemas/Urheber"
-              },
-              "wer": {
-                "type": "string"
-              }
-            }
-          },
-          "aenderungen": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "description": "Lesbare Änderungen zur Fassung davor"
-          },
-          "aktuell": {
-            "type": "boolean"
-          }
-        }
-      },
-      "FassungsListe": {
-        "type": "object",
-        "properties": {
-          "fassungen": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Fassung"
-            }
-          },
-          "stand": {
-            "type": "string",
-            "nullable": true,
-            "description": "Stand der neuesten Fassung – beim Wiederherstellen mitschicken"
-          },
-          "gesamt": {
-            "type": "integer"
-          }
-        }
-      },
-      "FassungsVorschau": {
-        "type": "object",
-        "properties": {
-          "nr": {
-            "type": "integer"
-          },
-          "aenderungen": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "hinweise": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "stand": {
-            "type": "string",
-            "nullable": true
-          }
-        }
-      },
-      "FassungWiederherstellen": {
-        "type": "object",
-        "properties": {
-          "stand": {
-            "type": "string",
-            "nullable": true
-          },
-          "bestaetigt": {
-            "type": "boolean",
-            "description": "Danach dürfte niemand mehr lesen – trotzdem"
-          },
-          "doppelteBestaetigt": {
-            "type": "boolean",
-            "description": "Zusammengesetzte Felder: Doppelte trotzdem"
-          }
-        }
-      },
       "Werte": {
         "type": "object",
         "additionalProperties": true,
-        "description": "Werte je Feldschlüssel (Post: Die Systemfelder der Post heißen seit 0.242 von („Von“, bisher absender) und an („An“, Verweis auf einen Benutzer, bisher fuer); das frühere Textfeld an (Adressen einer versendeten E-Mail) heißt an_adresse. Übergang bis 1.0.0: absender und fuer werden beim Schreiben als von und an angenommen (der neue Name geht vor) und beim Lesen einer Post zusätzlich mit demselben Wert geliefert; das Ereignis post.angelegt trägt an und fuer. Das frühere an (Adresse) gibt es unter diesem Namen nicht mehr.): Text und Datum (JJJJ-MM-TT) als string, Zahl als number, Ja/Nein als boolean, Betrag als {betrag, waehrung} (negativ nur mit negativ am Feld, #1035), Prozent als number (19 für 19 %; „19 %“ als Text geht beim Schreiben auch), Zeitraum als {anzahl, einheit} mit anzahl 0–9999 und einheit tage|wochen|monate|jahre (beim Schreiben auch „P3M“ oder „3 Monate“), Auswahl als string (mehrfach: string[]), Verweis als Mappen-Id (mehrfach: string[]). Passwort: beim Lesen nur {gesetzt, lesbar} (Klartext mit ?passwoerter=anzeigen); zum Setzen ein Text oder {neu}, zum Entfernen null, unverändert lassen durch Weglassen. Zusammengesetzt (#1050): nur lesen – der Schlüssel als string, Verweise darin als Mappen-Id (den Text mit Titeln baut der Client aus vorlage, den Werten und bezuege; nicht lesbare Mappen sind dort verborgen); gesendete Werte übergeht Ablago und setzt das Feld aus seinen Teilen.",
+        "description": "Werte je Feldschlüssel: Text und Datum (JJJJ-MM-TT) als string, Zahl als number, Ja/Nein als boolean, Betrag als {betrag, waehrung}, Auswahl als string (mehrfach: string[]), Verweis als Mappen-Id (mehrfach: string[]). Passwort: beim Lesen nur {gesetzt, lesbar} (Klartext mit ?passwoerter=anzeigen); zum Setzen ein Text oder {neu}, zum Entfernen null, unverändert lassen durch Weglassen.",
         "example": {
           "rechnungsnummer": "R-2026-17",
           "rechnungsdatum": "2026-10-01",
           "betrag": {
             "betrag": 49.9,
             "waehrung": "EUR"
-          },
-          "steuersatz": 19,
-          "kuendigungsfrist": {
-            "anzahl": 3,
-            "einheit": "monate"
           },
           "bezahlt": false
         }
@@ -12507,10 +9578,6 @@
             "type": "string",
             "nullable": true,
             "description": "Mappen, die das System pflegt, z. B. rolle:mitglied"
-          },
-          "vorgabe": {
-            "type": "string",
-            "description": "Vorgabe aus einem Paket (#1038): feste Kennung paket:<id>:<schluessel>. Fehlt bei allen anderen Mappen. Ein Paket ändert und löscht keine Vorgabe eines anderen Pakets und löscht keine Dokumente daran (403)."
           }
         }
       },
@@ -12723,10 +9790,6 @@
           "verweiseEntfallen": {
             "type": "integer",
             "description": "Verweise auf Mappen, die es nicht mehr gibt"
-          },
-          "teile": {
-            "type": "integer",
-            "description": "Teile (#1031), die mit der Mappe gelöscht wurden und mit ihr zurückkamen; fehlt ohne"
           }
         }
       },
@@ -13011,7 +10074,6 @@
               "zurueckgeholt",
               "bearbeitet",
               "geschwaerzt",
-              "vorlage",
               null
             ],
             "description": "Woher die aktuelle Version kam"
@@ -13024,201 +10086,6 @@
           "aeltere": {
             "type": "integer",
             "description": "Anzahl älterer Versionen"
-          },
-          "leerseiten": {
-            "$ref": "#/components/schemas/Leerseiten",
-            "nullable": true,
-            "description": "Leerseiten (#997): Markierung eines Pakets und Wahl je Seite; fehlt ohne Markierung. Gilt nur, solange sha256 gleich ist."
-          },
-          "anlageZu": {
-            "type": "string",
-            "format": "uuid",
-            "nullable": true,
-            "description": "Anlagen (#998): Id des Hauptdokuments, an dem dieses Dokument als Anlage hängt (gleiche Mappe, gleiches Register); fehlt bei eigenen Dokumenten"
-          },
-          "anlageNr": {
-            "type": "integer",
-            "nullable": true,
-            "description": "Anlagen (#998): Reihenfolge ab 1 („Anlage 1“); nur mit anlageZu"
-          },
-          "eingangNr": {
-            "type": "integer",
-            "nullable": true,
-            "description": "E-Mail-Postfach (#999): Platz in der Eingangsreihenfolge der Post (1, 2, 3 … wie die Anhänge in der E-Mail stehen); fehlt bei allem, was nicht aus dem Postfach kam"
-          },
-          "originalEmail": {
-            "type": "boolean",
-            "description": "E-Mail-Postfach (#999): die abgeholte E-Mail selbst („Original-E-Mail“, .eml) – letzte Anlage am letzten Anhang oder, ohne Anhänge, das Hauptdokument; Erkennung und KI lassen sie weg. Fehlt sonst."
-          }
-        }
-      },
-      "Anlagen": {
-        "type": "object",
-        "description": "Ein Dokument und seine Anlagen (#998)",
-        "properties": {
-          "dokument": {
-            "$ref": "#/components/schemas/Dokument"
-          },
-          "anlagen": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Dokument"
-            },
-            "description": "Anlage 1 zuerst"
-          }
-        }
-      },
-      "AnlageAnhaengen": {
-        "type": "object",
-        "required": [
-          "dokument"
-        ],
-        "properties": {
-          "dokument": {
-            "type": "string",
-            "format": "uuid",
-            "description": "Dokument derselben Mappe, das Anlage wird"
-          },
-          "name": {
-            "type": "string",
-            "maxLength": 200,
-            "description": "Neuer Name (sonst bleibt seiner)"
-          }
-        }
-      },
-      "AnlagenReihenfolge": {
-        "type": "object",
-        "required": [
-          "reihenfolge"
-        ],
-        "properties": {
-          "reihenfolge": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "format": "uuid"
-            },
-            "description": "Alle Anlagen des Dokuments in neuer Reihenfolge"
-          }
-        }
-      },
-      "AnlageName": {
-        "type": "object",
-        "required": [
-          "name"
-        ],
-        "properties": {
-          "name": {
-            "type": "string",
-            "maxLength": 200
-          }
-        }
-      },
-      "Leerseiten": {
-        "type": "object",
-        "description": "Markierung leerer Seiten (#997)",
-        "properties": {
-          "paket": {
-            "type": "string",
-            "nullable": true,
-            "description": "Id des Pakets, das markiert hat; null, wenn nur eine Person gewählt hat"
-          },
-          "paketName": {
-            "type": "string",
-            "nullable": true
-          },
-          "sha256": {
-            "type": "string",
-            "description": "Prüfwert der Datei, für die die Markierung gilt"
-          },
-          "seiten": {
-            "type": "integer",
-            "description": "Seitenzahl der Datei"
-          },
-          "erkannt": {
-            "type": "array",
-            "items": {
-              "type": "integer"
-            },
-            "description": "Vom Paket als leer erkannte Seiten"
-          },
-          "behalten": {
-            "type": "array",
-            "items": {
-              "type": "integer"
-            },
-            "description": "„Doch behalten“: erkannte Seiten, die bleiben"
-          },
-          "weglassen": {
-            "type": "array",
-            "items": {
-              "type": "integer"
-            },
-            "description": "„Auch weglassen“: weitere Seiten, die beim Übernehmen wegfallen"
-          },
-          "geaendert": {
-            "type": "string",
-            "format": "date-time"
-          }
-        }
-      },
-      "LeerseitenStand": {
-        "type": "object",
-        "properties": {
-          "dokument": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "sha256": {
-            "type": "string"
-          },
-          "seiten": {
-            "type": "integer"
-          },
-          "leerseiten": {
-            "$ref": "#/components/schemas/Leerseiten",
-            "nullable": true
-          },
-          "wegfallend": {
-            "type": "array",
-            "items": {
-              "type": "integer"
-            },
-            "description": "Seiten, die beim Übernehmen wegfallen (erkannt ohne behalten, dazu weglassen)"
-          }
-        }
-      },
-      "LeerseitenMarkieren": {
-        "type": "object",
-        "required": [
-          "sha256",
-          "seiten"
-        ],
-        "properties": {
-          "sha256": {
-            "type": "string",
-            "description": "Prüfwert der geprüften Datei (aus GET /mappen/{id} bzw. dem Ereignis)"
-          },
-          "seiten": {
-            "type": "array",
-            "items": {
-              "type": "integer",
-              "minimum": 1
-            },
-            "maxItems": 400,
-            "description": "Leere Seiten (ab 1); leer = keine"
-          }
-        }
-      },
-      "LeerseiteWahl": {
-        "type": "object",
-        "required": [
-          "weglassen"
-        ],
-        "properties": {
-          "weglassen": {
-            "type": "boolean",
-            "description": "true = fällt beim Übernehmen weg, false = bleibt"
           }
         }
       },
@@ -13278,454 +10145,9 @@
           }
         }
       },
-      "VorlagenListe": {
-        "type": "object",
-        "description": "Text-Vorlagen einer Mappe (#1040)",
-        "properties": {
-          "vorlagen": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "dokumentId": {
-                  "type": "string",
-                  "format": "uuid"
-                },
-                "name": {
-                  "type": "string"
-                },
-                "quelle": {
-                  "type": "object",
-                  "properties": {
-                    "mappeId": {
-                      "type": "string",
-                      "format": "uuid"
-                    },
-                    "titel": {
-                      "type": "string"
-                    }
-                  }
-                },
-                "paket": {
-                  "type": "object",
-                  "nullable": true,
-                  "properties": {
-                    "id": {
-                      "type": "string"
-                    },
-                    "name": {
-                      "type": "string"
-                    }
-                  }
-                },
-                "platzhalter": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "name": {
-                        "type": "string"
-                      },
-                      "beschriftung": {
-                        "type": "string"
-                      },
-                      "fehlt": {
-                        "type": "boolean"
-                      },
-                      "feld": {
-                        "type": "string",
-                        "description": "Feld der Mappe (erster Teil des Platzhalters)"
-                      }
-                    }
-                  }
-                },
-                "absender": {
-                  "type": "string",
-                  "nullable": true,
-                  "description": "Name im Briefkopf"
-                },
-                "empfaenger": {
-                  "type": "string",
-                  "nullable": true,
-                  "description": "Name in der Anschrift"
-                }
-              }
-            }
-          },
-          "register": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "key": {
-                  "type": "string"
-                },
-                "name": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": "Dokumentenregister zum Ablegen"
-          },
-          "ablegen": {
-            "type": "boolean",
-            "description": "Recht Bearbeiten an der Mappe"
-          },
-          "herunterladen": {
-            "type": "boolean",
-            "description": "Lesen und Exportrecht E"
-          }
-        }
-      },
-      "TextSetzen": {
-        "type": "object",
-        "properties": {
-          "ziel": {
-            "type": "string",
-            "enum": [
-              "ablegen",
-              "herunterladen"
-            ],
-            "description": "Standard: ablegen"
-          },
-          "register": {
-            "type": "string",
-            "description": "Kennung eines Dokumentenregisters (nur ablegen)"
-          },
-          "lauf": {
-            "type": "string",
-            "description": "Paket-Aktion mit dms:vorlage (#1039): nur Vorlagen dieses Pakets; Historie nennt Person und Paket"
-          }
-        }
-      },
-      "TextGesetzt": {
-        "type": "object",
-        "description": "Abgelegt (#1040); mit ziel = herunterladen kommt stattdessen das PDF (application/pdf)",
-        "properties": {
-          "pdf": {
-            "$ref": "#/components/schemas/Dokument"
-          },
-          "text": {
-            "$ref": "#/components/schemas/Dokument"
-          },
-          "luecken": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "description": "Platzhalter, die als Lücke im Brief stehen"
-          }
-        }
-      },
-      "AktionenAnMappe": {
-        "type": "object",
-        "description": "Aktionen von Paketen an einer Mappe (#1039)",
-        "properties": {
-          "aktionen": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "paket": {
-                  "type": "object",
-                  "properties": {
-                    "id": {
-                      "type": "string"
-                    },
-                    "name": {
-                      "type": "string"
-                    }
-                  }
-                },
-                "schluessel": {
-                  "type": "string"
-                },
-                "name": {
-                  "type": "string"
-                },
-                "beschreibung": {
-                  "type": "string"
-                },
-                "rechte": {
-                  "type": "array",
-                  "items": {
-                    "type": "string",
-                    "enum": [
-                      "lesen",
-                      "dokument_hinzufuegen",
-                      "aendern",
-                      "mappen_anlegen",
-                      "herausgeben"
-                    ]
-                  }
-                },
-                "dialog": {
-                  "type": "string",
-                  "enum": [
-                    "dms:vorlage"
-                  ]
-                },
-                "gesperrt": {
-                  "type": "string",
-                  "description": "Grund, solange die Bedingung nicht zutrifft"
-                }
-              }
-            }
-          },
-          "eingebautAus": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "enum": [
-                "aufgabe",
-                "erinnern",
-                "email",
-                "drucken",
-                "link"
-              ]
-            }
-          }
-        }
-      },
-      "AktionsSchritt": {
-        "type": "object",
-        "description": "Antwort eines Schritts (#1039): dialog, ergebnis oder kern",
-        "properties": {
-          "lauf": {
-            "type": "string"
-          },
-          "paket": {
-            "type": "object",
-            "properties": {
-              "id": {
-                "type": "string"
-              },
-              "name": {
-                "type": "string"
-              }
-            }
-          },
-          "aktion": {
-            "type": "string"
-          },
-          "name": {
-            "type": "string"
-          },
-          "schritt": {
-            "type": "integer"
-          },
-          "dialog": {
-            "type": "object",
-            "properties": {
-              "titel": {
-                "type": "string"
-              },
-              "knopf": {
-                "type": "string"
-              },
-              "gefahr": {
-                "type": "boolean"
-              },
-              "felder": {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "properties": {
-                    "art": {
-                      "type": "string",
-                      "enum": [
-                        "text",
-                        "auswahl",
-                        "haken",
-                        "textfeld",
-                        "datum"
-                      ]
-                    },
-                    "schluessel": {
-                      "type": "string"
-                    },
-                    "name": {
-                      "type": "string"
-                    },
-                    "text": {
-                      "type": "string"
-                    },
-                    "hilfe": {
-                      "type": "string"
-                    },
-                    "optionen": {
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "properties": {
-                          "wert": {
-                            "type": "string"
-                          },
-                          "name": {
-                            "type": "string"
-                          }
-                        }
-                      }
-                    },
-                    "mehrfach": {
-                      "type": "boolean"
-                    },
-                    "pflicht": {
-                      "type": "boolean"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "ergebnis": {
-            "type": "object",
-            "properties": {
-              "meldung": {
-                "type": "string"
-              },
-              "dokument": {
-                "type": "object",
-                "properties": {
-                  "id": {
-                    "type": "string",
-                    "format": "uuid"
-                  },
-                  "name": {
-                    "type": "string"
-                  },
-                  "registerKey": {
-                    "type": "string"
-                  }
-                }
-              },
-              "geaendert": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
-              },
-              "mappen": {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "properties": {
-                    "id": {
-                      "type": "string",
-                      "format": "uuid"
-                    },
-                    "typId": {
-                      "type": "string",
-                      "format": "uuid"
-                    },
-                    "titel": {
-                      "type": "string"
-                    }
-                  }
-                }
-              },
-              "datei": {
-                "type": "object",
-                "properties": {
-                  "name": {
-                    "type": "string"
-                  },
-                  "groesse": {
-                    "type": "integer"
-                  }
-                }
-              }
-            }
-          },
-          "kern": {
-            "type": "string",
-            "enum": [
-              "dms:vorlage"
-            ]
-          }
-        }
-      },
-      "AktionsAntworten": {
-        "type": "object",
-        "properties": {
-          "antworten": {
-            "type": "object",
-            "additionalProperties": true
-          }
-        }
-      },
-      "HinweisEingabe": {
-        "type": "object",
-        "required": [
-          "text"
-        ],
-        "properties": {
-          "text": {
-            "type": "string",
-            "maxLength": 300,
-            "description": "Nur Text, ohne HTML, Markdown und Links"
-          }
-        }
-      },
-      "PaketHinweis": {
-        "type": "object",
-        "description": "Hinweis eines Pakets an einer Mappe (#1034)",
-        "properties": {
-          "paket": {
-            "type": "string",
-            "description": "Id des Pakets"
-          },
-          "paketName": {
-            "type": "string"
-          },
-          "schluessel": {
-            "type": "string"
-          },
-          "text": {
-            "type": "string"
-          },
-          "gesetzt": {
-            "type": "string",
-            "format": "date-time"
-          }
-        }
-      },
       "MappeDetails": {
         "type": "object",
         "properties": {
-          "hinweise": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/PaketHinweis"
-            },
-            "description": "Hinweise von Paketen (#1034), älteste zuerst – für alle, die die Mappe lesen"
-          },
-          "vorgabe": {
-            "type": "object",
-            "description": "Vorgabe aus einem Paket (#1038), solange es installiert ist: Id und Name des Pakets",
-            "properties": {
-              "paket": {
-                "type": "string"
-              },
-              "paketName": {
-                "type": "string"
-              }
-            }
-          },
-          "erinnerungen": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/MappenAblauf"
-            },
-            "description": "Geplante Mappen-Abläufe (#1044; bis 0.255 nur Erinnerungen) – der Bereich „Geplant“"
-          },
-          "ablaufvorlagen": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/VorlageZumAnwenden"
-            },
-            "description": "Automatisierungsvorlagen, die man an dieser Mappe anwenden kann (#1044, Menü „Mappe“)"
-          },
           "mappe": {
             "$ref": "#/components/schemas/Mappe"
           },
@@ -13785,10 +10207,6 @@
             "nullable": true,
             "description": "Archivmodus (#212): Ende der Aufbewahrungsfrist (JJJJ-12-31); vorher antwortet Löschen mit 409"
           },
-          "fristBeginntMit": {
-            "type": "string",
-            "description": "Archivmodus mit „Ist der Stichtag leer: läuft noch nicht ab“ (#1051) und leerem Stichtag: Beschriftung des Stichtag-Felds. Die Frist läuft noch nicht (aufbewahrenBis ist null), Löschen antwortet trotzdem mit 409. Fehlt sonst."
-          },
           "unpassend": {
             "type": "object",
             "additionalProperties": {
@@ -13830,13 +10248,10 @@
           },
           "loeschbar": {
             "type": "object",
-            "description": "Ob die Mappe gelöscht werden kann; sonst Grund und die Mappen, die das verhindern. Teile (#1031) verhindern nichts – sie gehen beim Löschen mit (teile: ihre Anzahl; fehlt das Recht an einem, antwortet DELETE mit 403).",
+            "description": "Ob die Mappe gelöscht werden kann; sonst Grund und die Mappen, die das verhindern",
             "properties": {
               "ok": {
                 "type": "boolean"
-              },
-              "teile": {
-                "type": "integer"
               },
               "grund": {
                 "type": "string"
@@ -13863,46 +10278,6 @@
                   }
                 }
               }
-            }
-          }
-        }
-      },
-      "Tabellenseite": {
-        "type": "object",
-        "description": "Zeilen einer Tabelle (#1030): nur lesbare Mappen, auch gesamt zählt nur sie.",
-        "properties": {
-          "typId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "spalten": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "description": "Spalten der Trefferliste des anderen Typs, ohne Passwortfelder"
-          },
-          "gesamt": {
-            "type": "integer"
-          },
-          "verborgen": {
-            "type": "integer",
-            "description": "Seit #1208: Zahl der Zeilen, die es gibt, die der Aufrufer aber nicht lesen darf – nur die Zahl, keine Titel, Werte oder Ids. Mit vollem Leserecht 0."
-          },
-          "von": {
-            "type": "integer"
-          },
-          "mappen": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Mappe"
-            },
-            "description": "Je Mappe nur die Werte der Spalten"
-          },
-          "bezuege": {
-            "type": "object",
-            "additionalProperties": {
-              "$ref": "#/components/schemas/Bezug"
             }
           }
         }
@@ -13945,7 +10320,7 @@
           },
           "ausschnitte": {
             "type": "object",
-            "description": "Nur mit volltext=true (bzw. bei Funden in Teilen, #1031): Fundstelle je Mappen-Id; Treffer zwischen den Steuerzeichen U+0002 und U+0003. Mit teil stand der Begriff in einem Teil dieser Mappe (z. B. einer Rechnungsposition), den der Schlüssel lesen darf; dokument und text sind dann die Fundstelle im Teil (leer, wenn er in seinen Feldern steht).",
+            "description": "Nur mit volltext=true: Fundstelle je Mappen-Id; Treffer zwischen den Steuerzeichen U+0002 und U+0003",
             "additionalProperties": {
               "type": "object",
               "properties": {
@@ -13954,29 +10329,13 @@
                 },
                 "text": {
                   "type": "string"
-                },
-                "teil": {
-                  "type": "object",
-                  "properties": {
-                    "id": {
-                      "type": "string",
-                      "format": "uuid"
-                    },
-                    "typId": {
-                      "type": "string",
-                      "format": "uuid"
-                    },
-                    "titel": {
-                      "type": "string"
-                    }
-                  }
                 }
               }
             }
           },
           "unscharf": {
             "type": "object",
-            "description": "Unscharfe Suche (#356): Gab es keinen genauen Treffer, sucht Ablago mit ähnlich geschriebenen Wörtern aus dem Wörterverzeichnis weiter (Werkbank → Suche); dann stehen hier der gesuchte Text (statt), „Meintest du …?“ (vorschlag, oder null) und die ähnlichen Wörter je Begriff. Fehlt bei genauen Treffern – außer mit „Meintest du …? auch bei Treffern“ (#1191): Findet die Suche mit einer ähnlichen Schreibweise mehr, stehen hier statt, vorschlag und treffer (so viele Mappen findet der Vorschlag); die Treffer bleiben die genauen, begriffe ist leer.",
+            "description": "Unscharfe Suche (#356): Gab es keinen genauen Treffer, sucht Ablago mit ähnlich geschriebenen Wörtern aus dem Wörterverzeichnis weiter (Werkbank → Suche); dann stehen hier der gesuchte Text (statt), „Meintest du …?“ (vorschlag, oder null) und die ähnlichen Wörter je Begriff. Fehlt bei genauen Treffern.",
             "properties": {
               "statt": {
                 "type": "string"
@@ -13993,9 +10352,6 @@
                     "type": "string"
                   }
                 }
-              },
-              "treffer": {
-                "type": "integer"
               }
             }
           },
@@ -14223,73 +10579,6 @@
           }
         }
       },
-      "Erwaehnungen": {
-        "type": "object",
-        "description": "Erwähnungen einer Mappe (#889)",
-        "properties": {
-          "erwaehnt": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "id": {
-                  "type": "string",
-                  "format": "uuid"
-                },
-                "sichtbarkeit": {
-                  "type": "string",
-                  "enum": [
-                    "sichtbar",
-                    "verborgen",
-                    "geloescht"
-                  ]
-                },
-                "titel": {
-                  "type": "string"
-                },
-                "typId": {
-                  "type": "string",
-                  "format": "uuid"
-                }
-              }
-            }
-          },
-          "erwaehntIn": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "mappeId": {
-                  "type": "string",
-                  "format": "uuid"
-                },
-                "titel": {
-                  "type": "string"
-                },
-                "typId": {
-                  "type": "string",
-                  "format": "uuid"
-                },
-                "stelle": {
-                  "type": "string",
-                  "enum": [
-                    "notiz",
-                    "feld"
-                  ]
-                },
-                "feld": {
-                  "type": "string",
-                  "description": "Beschriftung des Felds bei stelle „feld“"
-                },
-                "am": {
-                  "type": "string",
-                  "format": "date-time"
-                }
-              }
-            }
-          }
-        }
-      },
       "Notiz": {
         "type": "object",
         "properties": {
@@ -14342,25 +10631,14 @@
             "type": "string",
             "format": "date"
           },
-          "von": {
-            "type": "string",
-            "description": "Wer die Post geschickt hat („Von“, #1042); ohne Angabe leer (bis 0.99: Name des Benutzers, #494)"
-          },
-          "an": {
-            "type": "string",
-            "format": "uuid",
-            "description": "Id eines Benutzers („An“, #1042): Mit der Automatisierung „Post für dich“ (Paket Benachrichtigungen, #1001) bekommt er eine Aufgabe unter „Zu erledigen“, solange die Post neu ist."
-          },
           "absender": {
             "type": "string",
-            "deprecated": true,
-            "description": "Alter Name für von (bis 1.0.0, #1042); gilt nur ohne von"
+            "description": "Wer die Post geschickt hat; ohne Angabe leer (bis 0.99: Name des Benutzers, #494)"
           },
           "fuer": {
             "type": "string",
             "format": "uuid",
-            "deprecated": true,
-            "description": "Alter Name für an (bis 1.0.0, #1042); gilt nur ohne an"
+            "description": "Id eines Benutzers: Er bekommt die Aufgabe „Post für dich“ unter „Zu erledigen“, solange die Post neu ist."
           },
           "nachricht": {
             "type": "string"
@@ -14413,18 +10691,6 @@
           "aufloesen": {
             "type": "boolean",
             "description": "Post auflösen (#936, #934): aus der Post wird die Zielmappe (neu oder bestehend); siehe Beschreibung"
-          },
-          "originalEmail": {
-            "type": "boolean",
-            "description": "Original-E-Mail (#999): geht mit dem Dokument, an dem sie hängt (Standard: ja); false – sie bleibt als eigenes Dokument in der Post, denn sie enthält alle Anhänge der Mail"
-          },
-          "leerseiten": {
-            "type": "string",
-            "enum": [
-              "weglassen",
-              "behalten"
-            ],
-            "description": "Leerseiten (#997): weglassen (Standard) – markierte Seiten fallen weg, das Dokument in der Mappe ist eine neue Fassung ohne sie, das Original bleibt als frühere Version; behalten – alle Seiten bleiben"
           }
         }
       },
@@ -14500,36 +10766,6 @@
               "$ref": "#/components/schemas/Abgleichtreffer"
             },
             "description": "Nur mit typ: Mappen dieses Typs, deren Werte zum Wiederfinden alle im Dokument stehen"
-          },
-          "dazu": {
-            "type": "array",
-            "items": {
-              "allOf": [
-                {
-                  "$ref": "#/components/schemas/Abgleichtreffer"
-                },
-                {
-                  "type": "object",
-                  "properties": {
-                    "feldKey": {
-                      "type": "string"
-                    },
-                    "feld": {
-                      "type": "string"
-                    }
-                  }
-                }
-              ]
-            },
-            "description": "Nur mit typ (#1043): Mappen anderer Typen mit eigenem starkem Beleg im Dokument, deren Verweisfeld feldKey auf diesen Typ zeigt und noch leer ist – z. B. der Lieferschein zur Rechnung"
-          },
-          "eigene": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "format": "uuid"
-            },
-            "description": "Treffer, die eigene Organisationen oder Personen des Haushalts sind (#1043) – nie als „von“ vorgeschlagen"
           },
           "bezuege": {
             "type": "object",
@@ -14667,10 +10903,6 @@
           "hinweis": {
             "type": "string",
             "description": "aufloesen war gewünscht, ging aber nicht (z. B. kein Recht zum Löschen der Post) – die Post ist nur zugeordnet"
-          },
-          "leerseiten": {
-            "type": "integer",
-            "description": "Leerseiten (#997): so viele markierte Seiten sind weggelassen (fehlt ohne)"
           }
         }
       },
@@ -14871,10 +11103,6 @@
             "type": "string",
             "format": "uuid",
             "description": "Mappe dieses Typs, die gefüllt wird"
-          },
-          "positionen": {
-            "type": "boolean",
-            "description": "E-Rechnung (#1043): Positionen auch liefern, wenn die Mappe schon welche hat (sonst bleibt zeilen dann leer)"
           }
         }
       },
@@ -14965,23 +11193,6 @@
                       }
                     }
                   }
-                },
-                "aus": {
-                  "type": "object",
-                  "description": "Beim Auswählen übernehmen (#1037): Der Wert stammt aus der Mappe mappe, die für das Verweisfeld feld vorgeschlagen ist – nicht aus dem Dokument.",
-                  "properties": {
-                    "feld": {
-                      "type": "string"
-                    },
-                    "mappe": {
-                      "type": "string",
-                      "format": "uuid"
-                    }
-                  }
-                },
-                "hinweis": {
-                  "type": "string",
-                  "description": "Hinweis des Kerns (#1043), z. B. „Gutschrift – als negativer Betrag übernommen“ oder „ausgehend? Bitte prüfen“ – nie aus einem Paket"
                 }
               }
             },
@@ -15032,95 +11243,6 @@
           "zeichen": {
             "type": "integer",
             "description": "Länge des gelesenen Texts"
-          },
-          "erechnung": {
-            "type": "object",
-            "description": "Nur, wenn eine E-Rechnung gelesen wurde (#1043; XRechnung UBL/CII als Datei bzw. Dokument, ZUGFeRD/Factur-X aus dem PDF-Anhang) – ihre Werte gehen vor",
-            "properties": {
-              "syntax": {
-                "type": "string",
-                "enum": [
-                  "ubl",
-                  "cii"
-                ]
-              },
-              "gutschrift": {
-                "type": "boolean"
-              },
-              "profil": {
-                "type": "string"
-              },
-              "nummer": {
-                "type": "string"
-              }
-            }
-          },
-          "positionen": {
-            "type": "object",
-            "description": "Nur mit E-Rechnung (#1043): Positionen für die Tabelle feld; je Zeile Werte für eine Mappe des Typs typId, deren Feld feldKey auf die neue Mappe zeigen soll. Nur, wenn der Schlüssel Mappen dieses Typs anlegen darf; angelegt wird nichts.",
-            "properties": {
-              "feld": {
-                "type": "string"
-              },
-              "typId": {
-                "type": "string",
-                "format": "uuid"
-              },
-              "feldKey": {
-                "type": "string"
-              },
-              "zeilen": {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "additionalProperties": true
-                }
-              },
-              "weitere": {
-                "type": "integer",
-                "description": "Positionen über der Grenze (500), nicht übernommen"
-              },
-              "vorhanden": {
-                "type": "integer",
-                "description": "So viele lesbare Positionen hat die Mappe (mappe) schon"
-              },
-              "zurueckgehalten": {
-                "type": "integer",
-                "description": "Hat die Mappe schon Positionen und fehlt positionen: true in der Anfrage, bleibt zeilen leer – so viele wären es gewesen"
-              }
-            }
-          },
-          "dazu": {
-            "type": "array",
-            "description": "Gehört dazu (#1043): lesbare Mappen anderer Typen, die im Dokument stehen und über ihr leeres Verweisfeld feldKey zu einer Mappe dieses Typs gehören könnten (z. B. Lieferschein → Rechnung)",
-            "items": {
-              "type": "object",
-              "properties": {
-                "mappeId": {
-                  "type": "string",
-                  "format": "uuid"
-                },
-                "typId": {
-                  "type": "string",
-                  "format": "uuid"
-                },
-                "titel": {
-                  "type": "string"
-                },
-                "feldKey": {
-                  "type": "string"
-                },
-                "feld": {
-                  "type": "string"
-                },
-                "gruende": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
-                }
-              }
-            }
           },
           "text": {
             "type": "string",
@@ -15262,18 +11384,6 @@
                     }
                   }
                 }
-              },
-              "gutschrift": {
-                "type": "object",
-                "description": "#1043: „Gutschrift“, „Erstattung“ oder „Rückzahlung“ im Kopf bzw. neben dem Betrag (wert = das Wort)",
-                "properties": {
-                  "wert": {
-                    "type": "string"
-                  },
-                  "fundstelle": {
-                    "type": "string"
-                  }
-                }
               }
             }
           },
@@ -15290,19 +11400,6 @@
                 "additionalProperties": {
                   "type": "string"
                 }
-              },
-              "fundstelle": {
-                "type": "string"
-              }
-            }
-          },
-          "ausgehend": {
-            "type": "object",
-            "nullable": true,
-            "description": "Ausgehend? (#1043): In der Absenderzeile steht eine eigene Organisation bzw. Person des Haushalts – nur ein Hinweis, die Richtung ändert die Erkennung nie; solche Post wird nie automatisch zugeordnet. titel nur, wenn lesbar.",
-            "properties": {
-              "titel": {
-                "type": "string"
               },
               "fundstelle": {
                 "type": "string"
@@ -15366,16 +11463,9 @@
           "betreff": {
             "type": "string"
           },
-          "an": {
-            "type": "string",
-            "format": "uuid",
-            "description": "Id eines Benutzers („An“, #1042)"
-          },
           "fuer": {
             "type": "string",
-            "format": "uuid",
-            "deprecated": true,
-            "description": "Alter Name für an (bis 1.0.0, #1042)"
+            "format": "uuid"
           }
         }
       },
@@ -15464,14 +11554,6 @@
               "format": "uuid"
             },
             "description": "Ids von Dokumenten dieser Mappe"
-          },
-          "mitAnlagen": {
-            "type": "boolean",
-            "description": "Anlagen (#998): hinter jedem gewählten Dokument seine Anlagen (Standard: ja)"
-          },
-          "originalEmail": {
-            "type": "boolean",
-            "description": "Original-E-Mail (#999): geht als Anlage mit (Standard: ja); false lässt sie weg – sie enthält alle Anhänge der Mail"
           }
         }
       },
@@ -15531,195 +11613,6 @@
             "type": "string",
             "format": "uuid",
             "nullable": true
-          },
-          "hinweis": {
-            "type": "string",
-            "description": "Wenn der Empfänger die Mappe nicht lesen darf"
-          }
-        }
-      },
-      "MappenAblauf": {
-        "type": "object",
-        "description": "Geplanter Mappen-Ablauf (#1044; früher Erinnerung)",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "vorlage": {
-            "type": "string",
-            "description": "Kennung der Vorlage, z. B. erinnern oder benachrichtigungen:wiedervorlage"
-          },
-          "vorlageName": {
-            "type": "string"
-          },
-          "mappeId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "empfaengerId": {
-            "type": "string",
-            "format": "uuid",
-            "nullable": true
-          },
-          "datum": {
-            "type": "string",
-            "format": "date",
-            "description": "Wann er läuft"
-          },
-          "text": {
-            "type": "string"
-          },
-          "erstellt": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "erstelltVon": {
-            "type": "string",
-            "format": "uuid",
-            "nullable": true,
-            "description": "Mit dessen Rechten er läuft"
-          },
-          "angehalten": {
-            "type": "object",
-            "nullable": true,
-            "properties": {
-              "grund": {
-                "type": "string",
-                "enum": [
-                  "person",
-                  "deaktiviert",
-                  "leserecht",
-                  "vorlage"
-                ]
-              },
-              "text": {
-                "type": "string"
-              },
-              "zeit": {
-                "type": "string",
-                "format": "date-time"
-              }
-            }
-          },
-          "hinweis": {
-            "type": "string",
-            "description": "Wenn der Empfänger die Mappe nicht lesen darf"
-          }
-        }
-      },
-      "VorlageZumAnwenden": {
-        "type": "object",
-        "properties": {
-          "kennung": {
-            "type": "string"
-          },
-          "name": {
-            "type": "string"
-          },
-          "beschreibung": {
-            "type": "string"
-          },
-          "reihenfolge": {
-            "type": "integer"
-          },
-          "fragen": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "enum": [
-                "empfaenger",
-                "datum",
-                "text"
-              ]
-            }
-          },
-          "wann": {
-            "type": "object",
-            "properties": {
-              "art": {
-                "type": "string",
-                "enum": [
-                  "sofort",
-                  "datum",
-                  "in"
-                ]
-              },
-              "anzahl": {
-                "type": "integer"
-              },
-              "einheit": {
-                "type": "string",
-                "enum": [
-                  "tage",
-                  "wochen",
-                  "monate"
-                ]
-              }
-            }
-          }
-        }
-      },
-      "MappenAblaeufe": {
-        "type": "object",
-        "properties": {
-          "geplant": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/MappenAblauf"
-            }
-          },
-          "vorlagen": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/VorlageZumAnwenden"
-            }
-          }
-        }
-      },
-      "AblaufEingabe": {
-        "type": "object",
-        "required": [
-          "vorlage"
-        ],
-        "properties": {
-          "vorlage": {
-            "type": "string",
-            "description": "Kennung der Vorlage"
-          },
-          "empfaengerId": {
-            "type": "string",
-            "format": "uuid",
-            "description": "Antwort auf „Empfänger“; fehlt bei einer geplanten = der Benutzer des Schlüssels"
-          },
-          "datum": {
-            "type": "string",
-            "format": "date",
-            "description": "Antwort auf „Datum“"
-          },
-          "text": {
-            "type": "string",
-            "description": "Antwort auf „Text“"
-          }
-        }
-      },
-      "AblaufErgebnis": {
-        "type": "object",
-        "properties": {
-          "aufgaben": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Aufgabe"
-            }
-          },
-          "ablauf": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/MappenAblauf"
-              }
-            ],
-            "nullable": true,
-            "description": "Der geplante Ablauf; null, wenn die Vorlage sofort läuft"
           },
           "hinweis": {
             "type": "string",
@@ -16379,7 +12272,7 @@
           },
           "gesperrt": {
             "type": "boolean",
-            "description": "in der Aufbewahrungsfrist (#212) – auch ohne aufbewahrenBis, wenn die Frist noch nicht läuft (#1051)"
+            "description": "in der Aufbewahrungsfrist (#212)"
           },
           "rechte": {
             "type": "object",
@@ -17203,14 +13096,6 @@
             },
             "description": "Positionen in seiten, an denen ein neuer Teil beginnt"
           },
-          "anlagen": {
-            "type": "array",
-            "items": {
-              "type": "integer",
-              "minimum": 1
-            },
-            "description": "Anlagen (#998, nur Post): Positionen in seiten, an denen eine Anlage zum vorherigen Teil beginnt; Pakete brauchen dms:anlagen"
-          },
           "bestaetigt": {
             "type": "boolean",
             "description": "Ersetzen ohne Versionierung bestätigen"
@@ -17331,14 +13216,6 @@
                 }
               }
             ]
-          },
-          "mitAnlagen": {
-            "type": "boolean",
-            "description": "Anlagen (#998): hinter jedem gewählten Dokument seine Anlagen (Standard: ja); false mit dokumente=alle lässt Anlagen weg"
-          },
-          "originalEmail": {
-            "type": "boolean",
-            "description": "Original-E-Mail (#999): geht als Anlage mit (Standard: ja); false lässt sie weg – mit dokumente=alle auch eine Original-E-Mail ohne Anhänge; sie enthält alle Anhänge der Mail"
           }
         }
       },
@@ -17426,157 +13303,6 @@
           },
           "dimension": {
             "type": "integer"
-          }
-        }
-      },
-      "EinrichtungEintrag": {
-        "type": "object",
-        "properties": {
-          "kennung": {
-            "type": "string",
-            "description": "Feste Art der Angabe, z. B. ablage.pflicht"
-          },
-          "pfad": {
-            "type": "string",
-            "description": "Eindeutig im Bereich, z. B. ablage.pflicht:rechnung/betrag"
-          },
-          "bezeichnung": {
-            "type": "string"
-          },
-          "wert": {
-            "description": "Text, Zahl, ja/nein, null oder Liste von Texten"
-          }
-        }
-      },
-      "EinrichtungStand": {
-        "type": "object",
-        "description": "Stand eines Bereichs der Einrichtung (#1053).",
-        "properties": {
-          "format": {
-            "type": "integer",
-            "enum": [
-              1
-            ]
-          },
-          "art": {
-            "type": "string",
-            "enum": [
-              "einrichtung"
-            ]
-          },
-          "bereich": {
-            "type": "string"
-          },
-          "version": {
-            "type": "string"
-          },
-          "eintraege": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/EinrichtungEintrag"
-            }
-          }
-        }
-      },
-      "EinrichtungVergleichEingabe": {
-        "type": "object",
-        "properties": {
-          "vorher": {
-            "description": "Früherer EinrichtungStand oder seine Einträge (höchstens 20.000)"
-          }
-        }
-      },
-      "EinrichtungVergleich": {
-        "type": "object",
-        "properties": {
-          "bereich": {
-            "type": "string"
-          },
-          "version": {
-            "type": "string"
-          },
-          "stand": {
-            "$ref": "#/components/schemas/EinrichtungStand"
-          },
-          "aenderungen": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "kennung": {
-                  "type": "string"
-                },
-                "pfad": {
-                  "type": "string"
-                },
-                "bezeichnung": {
-                  "type": "string"
-                },
-                "art": {
-                  "type": "string",
-                  "enum": [
-                    "neu",
-                    "geaendert",
-                    "entfernt"
-                  ]
-                },
-                "vorher": {},
-                "nachher": {},
-                "satz": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      },
-      "NachweiseStand": {
-        "type": "object",
-        "description": "Nachweise eines Bereichs für einen Monat (#1053).",
-        "properties": {
-          "format": {
-            "type": "integer",
-            "enum": [
-              1
-            ]
-          },
-          "art": {
-            "type": "string",
-            "enum": [
-              "nachweise"
-            ]
-          },
-          "bereich": {
-            "type": "string"
-          },
-          "monat": {
-            "type": "string"
-          },
-          "stichtag": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "weitere": {
-            "type": "integer",
-            "description": "Einträge über der Grenze je Monat, nur gezählt"
-          },
-          "eintraege": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "kennung": {
-                  "type": "string"
-                },
-                "zeit": {
-                  "type": "string",
-                  "format": "date-time"
-                },
-                "daten": {
-                  "type": "object"
-                }
-              }
-            }
           }
         }
       },
@@ -17714,19 +13440,6 @@
           "am": {
             "type": "string",
             "format": "date-time"
-          }
-        }
-      },
-      "SicherungHolen": {
-        "type": "object",
-        "description": "Stand beim Zurückholen einer Sicherung (#976)",
-        "properties": {
-          "versatz": {
-            "type": "integer",
-            "description": "Bisher angekommene Bytes – ab hier das nächste Stück"
-          },
-          "groesse": {
-            "type": "integer"
           }
         }
       },
@@ -18616,17 +14329,8 @@
                   "type": "string",
                   "enum": [
                     "manuell",
-                    "erste_anmeldung",
-                    "nach_installation",
-                    "nach_update"
+                    "erste_anmeldung"
                   ]
-                },
-                "oeffne": {
-                  "type": "object",
-                  "description": "{ seite } oder { mappe: <Mappentyp> } bzw. { neu: <Mappentyp> }"
-                },
-                "ersatz": {
-                  "type": "string"
                 },
                 "titel": {
                   "type": "string"
@@ -18705,10 +14409,6 @@
                     "seite": {
                       "type": "string",
                       "description": "Pfad in der Oberfläche, z. B. /ablage/start"
-                    },
-                    "typ": {
-                      "type": "string",
-                      "description": "Ohne seite: Die Stelle liegt in einer Mappe dieses Typs"
                     }
                   }
                 },
@@ -18749,38 +14449,6 @@
           }
         }
       },
-      "TippHandlung": {
-        "type": "object",
-        "required": [
-          "aktion"
-        ],
-        "properties": {
-          "aktion": {
-            "type": "string",
-            "enum": [
-              "gezeigt",
-              "erledigt",
-              "ausblenden",
-              "einblenden"
-            ]
-          }
-        }
-      },
-      "RundgangMerker": {
-        "type": "object",
-        "required": [
-          "stand"
-        ],
-        "properties": {
-          "stand": {
-            "type": "string",
-            "enum": [
-              "gesehen",
-              "spaeter"
-            ]
-          }
-        }
-      },
       "AbwesenheitStand": {
         "type": "object",
         "properties": {
@@ -18807,7 +14475,7 @@
           "neuePost": {
             "type": "integer",
             "minimum": 0,
-            "description": "Post im Stand „Neu“ für dich oder ohne „An“ (bis 0.241 „Für“)"
+            "description": "Post im Stand „Neu“ für dich oder ohne „Für“"
           },
           "zuErledigen": {
             "type": "integer",

@@ -1,0 +1,31 @@
+# Nur Werkzeug-Einstellungen für die Integration; gebaut oder veröffentlicht wird hier nichts.
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+testpaths = ["tests"]
+markers = ["ablago: braucht ein laufendes Ablago (ABLAGO_URL, ABLAGO_SCHLUESSEL)"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py314"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "SIM", "RUF"]
+
+[tool.ruff.lint.isort]
+# Wie in Home Assistant: homeassistant als eigene Gruppe nach den Bibliotheken.
+known-first-party = ["custom_components", "homeassistant"]
+known-third-party = ["ablago"]
+force-sort-within-sections = true
+combine-as-imports = true
+
+[tool.mypy]
+python_version = "3.14"
+strict = true
+packages = ["custom_components.ablago"]
+
+[[tool.mypy.overrides]]
+# Home Assistant importiert in seinen Komponenten Namen weiter (z. B. BinarySensorDeviceClass); im eigenen
+# Repository prüft es mit denselben Einstellungen.
+module = ["homeassistant.*"]
+implicit_reexport = true

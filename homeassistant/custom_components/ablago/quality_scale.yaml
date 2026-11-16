@@ -1,0 +1,94 @@
+# Quality scale of Home Assistant (https://developers.home-assistant.io/docs/core/integration-quality-scale/).
+# Kept up to date here so the integration can be submitted to home-assistant/core as it is.
+# "todo" under docs and brands: these live in other repositories (home-assistant.io, home-assistant/brands)
+# and are written when the integration is submitted.
+rules:
+  # Bronze
+  action-setup:
+    status: exempt
+    comment: The integration does not register actions.
+  appropriate-polling:
+    status: done
+    comment: Once a minute; Ablago answers unchanged counters with 304 and no body.
+  brands: todo
+  common-modules: done
+  config-flow-test-coverage: done
+  config-flow: done
+  dependency-transparency: done
+  docs-actions:
+    status: exempt
+    comment: The integration does not register actions.
+  docs-high-level-description: todo
+  docs-installation-instructions: todo
+  docs-removal-instructions: todo
+  entity-event-setup:
+    status: exempt
+    comment: Entities do not subscribe to events.
+  entity-unique-id: done
+  has-entity-name: done
+  runtime-data: done
+  test-before-configure: done
+  test-before-setup: done
+  unique-config-entry:
+    status: done
+    comment: |
+      A key of the level "counters only" cannot read who it belongs to, so there is no unique id.
+      Entries with the same address and key are rejected instead.
+
+  # Silver
+  action-exceptions:
+    status: exempt
+    comment: The integration does not register actions.
+  config-entry-unloading: done
+  docs-configuration-parameters:
+    status: exempt
+    comment: No options flow.
+  docs-installation-parameters: todo
+  entity-unavailable: done
+  integration-owner: done
+  log-when-unavailable: done
+  parallel-updates: done
+  reauthentication-flow: done
+  test-coverage: done
+
+  # Gold
+  devices: done
+  diagnostics: done
+  discovery-update-info:
+    status: exempt
+    comment: Ablago does not announce itself in the network.
+  discovery:
+    status: exempt
+    comment: Ablago does not announce itself in the network.
+  docs-data-update: todo
+  docs-examples: todo
+  docs-known-limitations: todo
+  docs-supported-devices:
+    status: exempt
+    comment: Service integration, no devices.
+  docs-supported-functions: todo
+  docs-troubleshooting: todo
+  docs-use-cases: todo
+  dynamic-devices:
+    status: exempt
+    comment: Service integration with one device per entry.
+  entity-category: done
+  entity-device-class: done
+  entity-disabled-by-default:
+    status: exempt
+    comment: Every entity is useful by default.
+  entity-translations: done
+  exception-translations: done
+  icon-translations: done
+  reconfiguration-flow: done
+  repair-issues:
+    status: exempt
+    comment: Every problem is solved by reauthentication or reconfiguration.
+  stale-devices:
+    status: exempt
+    comment: Service integration with one device per entry.
+
+  # Platinum
+  async-dependency: done
+  inject-websession: done
+  strict-typing: done

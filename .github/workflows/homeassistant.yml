@@ -1,0 +1,118 @@
+# Integration für Home Assistant (homeassistant/, #3): Stil, Typen, Tests mit dem Testwerkzeug von Home Assistant,
+# die Prüfung hassfest von Home Assistant – und ein Lauf gegen ein echtes Ablago (Image dms-komplett).
+# Startet bei jedem Pull Request und auf main (ohne Pfadfilter, damit eine verlangte Prüfung nie hängen bleibt).
+# Ändert ein Pull Request nichts an der Integration, entfallen die Schritte; die Prüfungen sind dann sofort grün.
+name: Home Assistant
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  aenderungen:
+    name: Home Assistant betroffen?
+    runs-on: ubuntu-latest
+    outputs:
+      homeassistant: ${{ steps.pruefen.outputs.homeassistant }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - id: pruefen
+        env:
+          EREIGNIS: ${{ github.event_name }}
+          BASIS: ${{ github.event.pull_request.base.sha }}
+          KOPF: ${{ github.event.pull_request.head.sha }}
+        run: |
+          if [ "$EREIGNIS" != pull_request ]; then echo "homeassistant=true" >> "$GITHUB_OUTPUT"; exit 0; fi
+          if git diff --name-only "$BASIS...$KOPF" | grep -qE '^(homeassistant/|\.github/workflows/homeassistant\.yml$|\.github/scripts/ablago-starten\.sh$)'; then
+            echo "homeassistant=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "homeassistant=false" >> "$GITHUB_OUTPUT"
+            echo "Keine Änderung an homeassistant/ – Tests entfallen." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+  tests:
+    name: Home Assistant (Tests)
+    needs: aenderungen
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: homeassistant
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        if: needs.aenderungen.outputs.homeassistant == 'true'
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        if: needs.aenderungen.outputs.homeassistant == 'true'
+        with:
+          # Wie Home Assistant selbst.
+          python-version: '3.14'
+      - name: Werkzeuge installieren
+        if: needs.aenderungen.outputs.homeassistant == 'true'
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r anforderungen-test.txt -r anforderungen-werkzeuge.txt
+          python -c "import homeassistant.const as c; print('Home Assistant', c.__version__)" | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Stil und Typen
+        if: needs.aenderungen.outputs.homeassistant == 'true'
+        run: |
+          ruff format --check .
+          ruff check .
+          mypy
+      - name: Tests (Abdeckung 100 %)
+        if: needs.aenderungen.outputs.homeassistant == 'true'
+        run: pytest -q -p no:sugar --cov=custom_components.ablago --cov-report=term-missing --cov-fail-under=100
+
+  hassfest:
+    name: Home Assistant (hassfest)
+    needs: aenderungen
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        if: needs.aenderungen.outputs.homeassistant == 'true'
+        with:
+          persist-credentials: false
+      - name: hassfest
+        if: needs.aenderungen.outputs.homeassistant == 'true'
+        # Wie die Action home-assistant/actions/hassfest, nur mit dem Ordner homeassistant/ als Arbeitsbereich:
+        # hassfest sucht die Integration unter custom_components/.
+        run: docker run --rm -v "$GITHUB_WORKSPACE/homeassistant://github/workspace" ghcr.io/home-assistant/hassfest
+
+  ablago:
+    name: Home Assistant gegen Ablago
+    needs: aenderungen
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: homeassistant
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        if: needs.aenderungen.outputs.homeassistant == 'true'
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        if: needs.aenderungen.outputs.homeassistant == 'true'
+        with:
+          python-version: '3.14'
+      - name: Ablago starten und einrichten
+        if: needs.aenderungen.outputs.homeassistant == 'true'
+        # Dieselbe Ablago-Version, gegen die der Python-Client geprüft ist.
+        run: ../.github/scripts/ablago-starten.sh "ghcr.io/motom001/dms-komplett:$(cat ../python/openapi/ABLAGO_VERSION)"
+      - name: Integration gegen Ablago
+        if: needs.aenderungen.outputs.homeassistant == 'true'
+        run: |
+          set -o pipefail
+          pip install -r anforderungen-test.txt
+          pytest -q -p no:sugar -m ablago -rs | tee /tmp/ergebnis.txt
+          # Übersprungene Tests hießen hier: kein Ablago – das darf nicht still durchgehen.
+          if grep -q " skipped" /tmp/ergebnis.txt; then echo "::error::Test gegen Ablago übersprungen"; exit 1; fi
+      - name: Protokoll von Ablago bei Fehlern
+        if: failure() && needs.aenderungen.outputs.homeassistant == 'true'
+        run: docker logs --tail 80 ablago-test 2>&1 || true

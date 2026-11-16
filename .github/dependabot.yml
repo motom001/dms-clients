@@ -24,3 +24,13 @@ updates:
         patterns: ["*"]
         exclude-patterns: ["aiohttp", "openapi-python-client"]
     commit-message: { prefix: "Python" }
+  - package-ecosystem: pip
+    directory: "/homeassistant"
+    schedule: { interval: weekly, day: monday, time: "05:00", timezone: Europe/Berlin }
+    # ablago steht auch in custom_components/ablago/manifest.json; ein Test verlangt, dass beide gleich sind.
+    # Deshalb bleibt ablago ein eigener Pull Request, in dem das Manifest von Hand nachgezogen wird.
+    groups:
+      homeassistant-werkzeuge:
+        patterns: ["*"]
+        exclude-patterns: ["ablago"]
+    commit-message: { prefix: "Home Assistant" }

@@ -1,0 +1,4 @@
+# Für die Tests der Integration (CI und lokal), Python 3.14 wie Home Assistant: pip install -r anforderungen-test.txt
+# ablago muss dieselbe Fassung sein wie in custom_components/ablago/manifest.json (Test test_dateien.py).
+ablago==0.1.0
+pytest-homeassistant-custom-component==0.13.375

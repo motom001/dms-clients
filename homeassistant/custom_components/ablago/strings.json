@@ -1,0 +1,92 @@
+{
+  "config": {
+    "abort": {
+      "already_configured": "This key is already set up for this Ablago.",
+      "reauth_successful": "The new key works.",
+      "reconfigure_successful": "The changes work."
+    },
+    "error": {
+      "cannot_connect": "Ablago is not reachable at this address. Check the address and whether Ablago is running.",
+      "invalid_api_key": "Ablago does not accept this key. It may be mistyped, revoked or expired.",
+      "invalid_url": "Enter the address with http:// or https://, for example https://ablago.example.org.",
+      "not_ablago": "No Ablago answers at this address, or it is too old. Use the address you open Ablago with in the browser.",
+      "redirect": "The address redirects elsewhere. Use the address Ablago ends up at, usually with https://.",
+      "ssl_error": "The certificate of Ablago is not trusted (expired, self-signed or for another name). Fix the certificate or turn off the certificate check.",
+      "unknown": "Unexpected error. Details are in the Home Assistant log."
+    },
+    "step": {
+      "user": {
+        "title": "Connect Ablago",
+        "description": "Every person adds their own entry. Create a key of the level \"counters only\" in Ablago under My account → Security → API keys. Afterwards, rename the device after the person, for example \"Ablago · Lena\".",
+        "data": {
+          "url": "Address",
+          "api_key": "API key",
+          "verify_ssl": "Verify certificate"
+        },
+        "data_description": {
+          "url": "The address you open Ablago with in the browser, for example https://ablago.example.org.",
+          "api_key": "Key of the level \"counters only\" from My account → Security → API keys. It can only read the counters.",
+          "verify_ssl": "Leave this on. Turn it off only for a self-signed certificate in your home network."
+        }
+      },
+      "reconfigure": {
+        "title": "Change Ablago connection",
+        "data": {
+          "url": "Address",
+          "api_key": "API key",
+          "verify_ssl": "Verify certificate"
+        },
+        "data_description": {
+          "url": "The address you open Ablago with in the browser, for example https://ablago.example.org.",
+          "api_key": "Key of the level \"counters only\" from My account → Security → API keys. It can only read the counters.",
+          "verify_ssl": "Leave this on. Turn it off only for a self-signed certificate in your home network."
+        }
+      },
+      "reauth_confirm": {
+        "title": "New key for Ablago",
+        "description": "Ablago at {url} no longer accepts the key. Create a new key of the level \"counters only\" under My account → Security → API keys and enter it here.",
+        "data": {
+          "api_key": "API key"
+        },
+        "data_description": {
+          "api_key": "Key of the level \"counters only\" from My account → Security → API keys. It can only read the counters."
+        }
+      }
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "has_new_mail": {
+        "name": "New mail waiting"
+      }
+    },
+    "sensor": {
+      "new_mail": {
+        "name": "New mail"
+      },
+      "to_do": {
+        "name": "To do"
+      },
+      "overdue": {
+        "name": "Overdue"
+      },
+      "last_change": {
+        "name": "Last change"
+      }
+    }
+  },
+  "exceptions": {
+    "cannot_connect": {
+      "message": "Ablago is not reachable."
+    },
+    "invalid_api_key": {
+      "message": "Ablago does not accept the API key."
+    },
+    "ssl_error": {
+      "message": "The certificate of Ablago is not trusted."
+    },
+    "unexpected_response": {
+      "message": "Unexpected answer from Ablago: {error}"
+    }
+  }
+}

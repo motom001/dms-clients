@@ -1,0 +1,26 @@
+{
+  "entity": {
+    "binary_sensor": {
+      "has_new_mail": {
+        "default": "mdi:email-outline",
+        "state": {
+          "on": "mdi:email-alert"
+        }
+      }
+    },
+    "sensor": {
+      "new_mail": {
+        "default": "mdi:email-outline"
+      },
+      "to_do": {
+        "default": "mdi:clipboard-check-outline"
+      },
+      "overdue": {
+        "default": "mdi:calendar-alert"
+      },
+      "last_change": {
+        "default": "mdi:clock-outline"
+      }
+    }
+  }
+}

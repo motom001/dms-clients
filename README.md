@@ -13,7 +13,7 @@ Jeder Client liegt in einem **eigenen Ordner direkt unter der Wurzel**. Ein Ordn
 | Bereich | Ordner | Was es ist | Stand |
 | --- | --- | --- | --- |
 | Hausautomatisierung | [`homey/`](homey/) | App „Ablago“ für Homey Pro: neue Post, Zu erledigen und Überfälliges als Werte und Flow-Karten | Version 1.2.0, Homey App Store folgt ([#2](https://github.com/motom001/dms-clients/issues/2)) |
-| Hausautomatisierung | `homeassistant/` | Integration für Home Assistant: dieselben Zahlen als Sensoren | nach dem Python-Client ([#3](https://github.com/motom001/dms-clients/issues/3)) |
+| Hausautomatisierung | [`homeassistant/`](homeassistant/) | Integration „Ablago“ für Home Assistant: neue Post, Zu erledigen und Überfälliges als Sensoren, je Person ein Gerät | Version 0.1.0 zum Ausprobieren, Aufnahme in Home Assistant folgt ([#3](https://github.com/motom001/dms-clients/issues/3)) |
 | Entwickeln | [`python/`](python/) | Python-Client [`ablago`](https://pypi.org/project/ablago/) für eigene Skripte, Monitoring und die Integration für Home Assistant: Zähler und Erreichbarkeit, dazu die vollständige API aus der API-Beschreibung erzeugt | Version 0.1.0 ([#22](https://github.com/motom001/dms-clients/issues/22)) |
 | Handy und Tablet | `ios/`, `android/` (oder gemeinsam `app/`) | Apps für iPhone, iPad und Android: Scannen, Teilen-Menü, Mitteilungen, Face ID | Konzept ([motom001/dms#340](https://github.com/motom001/dms/issues/340)) |
 | Büro | `office/` | Add-ins für Word, Excel und Outlook: Dokument oder E-Mail in Ablago ablegen | Idee (aus [motom001/dms#340](https://github.com/motom001/dms/issues/340)) |

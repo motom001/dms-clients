@@ -44,8 +44,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # 3.12: älteste unterstützte Fassung; 3.13: wie Home Assistant.
-        python: ['3.12', '3.13']
+        # 3.12: älteste unterstützte Fassung; 3.14: wie Home Assistant.
+        python: ['3.12', '3.13', '3.14']
     defaults:
       run:
         working-directory: python

@@ -1,0 +1,92 @@
+{
+  "config": {
+    "abort": {
+      "already_configured": "Dieser Schlüssel ist für diese Ablago schon eingerichtet.",
+      "reauth_successful": "Der neue Schlüssel funktioniert.",
+      "reconfigure_successful": "Die Änderungen funktionieren."
+    },
+    "error": {
+      "cannot_connect": "Unter dieser Adresse ist Ablago nicht erreichbar. Prüfe die Adresse und ob Ablago läuft.",
+      "invalid_api_key": "Ablago nimmt diesen Schlüssel nicht an. Vielleicht ist er falsch abgetippt, widerrufen oder abgelaufen.",
+      "invalid_url": "Gib die Adresse mit http:// oder https:// an, zum Beispiel https://ablago.example.org.",
+      "not_ablago": "Unter dieser Adresse antwortet keine Ablago, oder sie ist zu alt. Nimm die Adresse, mit der du Ablago im Browser öffnest.",
+      "redirect": "Die Adresse leitet woandershin um. Nimm die Adresse, bei der Ablago am Ende ankommt, meist mit https://.",
+      "ssl_error": "Dem Zertifikat von Ablago wird nicht vertraut (abgelaufen, selbst signiert oder für einen anderen Namen). Bring das Zertifikat in Ordnung oder schalte die Prüfung des Zertifikats aus.",
+      "unknown": "Unerwarteter Fehler. Einzelheiten stehen im Protokoll von Home Assistant."
+    },
+    "step": {
+      "user": {
+        "title": "Ablago verbinden",
+        "description": "Jede Person richtet ihren eigenen Eintrag ein. Den Schlüssel der Stufe „nur Zähler“ legst du in Ablago unter Mein Konto → Sicherheit → API-Schlüssel an. Benenne das Gerät danach nach der Person, zum Beispiel „Ablago · Lena“.",
+        "data": {
+          "url": "Adresse",
+          "api_key": "API-Schlüssel",
+          "verify_ssl": "Zertifikat prüfen"
+        },
+        "data_description": {
+          "url": "Die Adresse, mit der du Ablago im Browser öffnest, zum Beispiel https://ablago.example.org.",
+          "api_key": "Schlüssel der Stufe „nur Zähler“ aus Mein Konto → Sicherheit → API-Schlüssel. Er kann nur die Zahlen lesen.",
+          "verify_ssl": "Lass das an. Schalte es nur für ein selbst signiertes Zertifikat im Heimnetz aus."
+        }
+      },
+      "reconfigure": {
+        "title": "Verbindung zu Ablago ändern",
+        "data": {
+          "url": "Adresse",
+          "api_key": "API-Schlüssel",
+          "verify_ssl": "Zertifikat prüfen"
+        },
+        "data_description": {
+          "url": "Die Adresse, mit der du Ablago im Browser öffnest, zum Beispiel https://ablago.example.org.",
+          "api_key": "Schlüssel der Stufe „nur Zähler“ aus Mein Konto → Sicherheit → API-Schlüssel. Er kann nur die Zahlen lesen.",
+          "verify_ssl": "Lass das an. Schalte es nur für ein selbst signiertes Zertifikat im Heimnetz aus."
+        }
+      },
+      "reauth_confirm": {
+        "title": "Neuer Schlüssel für Ablago",
+        "description": "Ablago unter {url} nimmt den Schlüssel nicht mehr an. Lege unter Mein Konto → Sicherheit → API-Schlüssel einen neuen Schlüssel der Stufe „nur Zähler“ an und trage ihn hier ein.",
+        "data": {
+          "api_key": "API-Schlüssel"
+        },
+        "data_description": {
+          "api_key": "Schlüssel der Stufe „nur Zähler“ aus Mein Konto → Sicherheit → API-Schlüssel. Er kann nur die Zahlen lesen."
+        }
+      }
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "has_new_mail": {
+        "name": "Neue Post da"
+      }
+    },
+    "sensor": {
+      "new_mail": {
+        "name": "Neue Post"
+      },
+      "to_do": {
+        "name": "Zu erledigen"
+      },
+      "overdue": {
+        "name": "Überfällig"
+      },
+      "last_change": {
+        "name": "Letzte Änderung"
+      }
+    }
+  },
+  "exceptions": {
+    "cannot_connect": {
+      "message": "Ablago ist nicht erreichbar."
+    },
+    "invalid_api_key": {
+      "message": "Ablago nimmt den API-Schlüssel nicht an."
+    },
+    "ssl_error": {
+      "message": "Dem Zertifikat von Ablago wird nicht vertraut."
+    },
+    "unexpected_response": {
+      "message": "Unerwartete Antwort von Ablago: {error}"
+    }
+  }
+}

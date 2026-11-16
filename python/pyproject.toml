@@ -1,5 +1,5 @@
 [build-system]
-requires = ["hatchling==1.27.0"]
+requires = ["hatchling==1.33.0"]
 build-backend = "hatchling.build"
 
 [project]
@@ -54,6 +54,7 @@ include = ["src/ablago", "openapi", "werkzeuge", "tests", "README.md", "README.e
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
 testpaths = ["tests"]
 markers = ["ablago: braucht ein laufendes Ablago (ABLAGO_URL, ABLAGO_SCHLUESSEL)"]
 

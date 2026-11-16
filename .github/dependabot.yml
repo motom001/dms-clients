@@ -17,4 +17,10 @@ updates:
   - package-ecosystem: pip
     directory: "/python"
     schedule: { interval: weekly, day: monday, time: "05:00", timezone: Europe/Berlin }
+    # Werkzeuge für Tests und Bau gesammelt in einem Pull Request. Eigene Pull Requests behalten aiohttp (steckt im
+    # Paket) und openapi-python-client (ändert den erzeugten Teil ablago.api).
+    groups:
+      python-werkzeuge:
+        patterns: ["*"]
+        exclude-patterns: ["aiohttp", "openapi-python-client"]
     commit-message: { prefix: "Python" }

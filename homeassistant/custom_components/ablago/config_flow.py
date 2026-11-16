@@ -23,6 +23,8 @@ STEP_USER_DATA_SCHEMA = probatio.Schema(
     }
 )
 STEP_REAUTH_DATA_SCHEMA = probatio.Schema({probatio.Required(probatio.Secret(CONF_API_KEY)): str})
+# Home Assistant keeps URLs out of translated strings; the example comes in as a placeholder.
+PLACEHOLDERS = {"example_url": "https://ablago.example.org"}
 
 
 def _title(url: str) -> str:
@@ -51,6 +53,7 @@ class AblagoConfigFlow(ConfigFlow, domain=DOMAIN):
         return self.async_show_form(
             step_id="user",
             data_schema=self.add_suggested_values_to_schema(STEP_USER_DATA_SCHEMA, user_input),
+            description_placeholders=PLACEHOLDERS,
             errors=errors,
         )
 
@@ -72,6 +75,7 @@ class AblagoConfigFlow(ConfigFlow, domain=DOMAIN):
         return self.async_show_form(
             step_id="reconfigure",
             data_schema=self.add_suggested_values_to_schema(STEP_USER_DATA_SCHEMA, suggested),
+            description_placeholders=PLACEHOLDERS,
             errors=errors,
         )
 

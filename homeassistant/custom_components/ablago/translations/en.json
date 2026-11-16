@@ -8,9 +8,9 @@
     "error": {
       "cannot_connect": "Ablago is not reachable at this address. Check the address and whether Ablago is running.",
       "invalid_api_key": "Ablago does not accept this key. It may be mistyped, revoked or expired.",
-      "invalid_url": "Enter the address with http:// or https://, for example https://ablago.example.org.",
+      "invalid_url": "Enter the full address including http or https, for example {example_url}.",
       "not_ablago": "No Ablago answers at this address, or it is too old. Use the address you open Ablago with in the browser.",
-      "redirect": "The address redirects elsewhere. Use the address Ablago ends up at, usually with https://.",
+      "redirect": "The address redirects elsewhere. Use the address Ablago ends up at, usually one starting with https.",
       "ssl_error": "The certificate of Ablago is not trusted (expired, self-signed or for another name). Fix the certificate or turn off the certificate check.",
       "unknown": "Unexpected error. Details are in the Home Assistant log."
     },
@@ -24,7 +24,7 @@
           "verify_ssl": "Verify certificate"
         },
         "data_description": {
-          "url": "The address you open Ablago with in the browser, for example https://ablago.example.org.",
+          "url": "The address you open Ablago with in the browser, for example {example_url}.",
           "api_key": "Key of the level \"counters only\" from My account → Security → API keys. It can only read the counters.",
           "verify_ssl": "Leave this on. Turn it off only for a self-signed certificate in your home network."
         }
@@ -37,7 +37,7 @@
           "verify_ssl": "Verify certificate"
         },
         "data_description": {
-          "url": "The address you open Ablago with in the browser, for example https://ablago.example.org.",
+          "url": "The address you open Ablago with in the browser, for example {example_url}.",
           "api_key": "Key of the level \"counters only\" from My account → Security → API keys. It can only read the counters.",
           "verify_ssl": "Leave this on. Turn it off only for a self-signed certificate in your home network."
         }

@@ -27,7 +27,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: [actions, javascript-typescript]   # javascript-typescript: homey/ (#2)
+        language: [actions, javascript-typescript, python]   # javascript-typescript: homey/ (#2), python: python/ (#22)
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:

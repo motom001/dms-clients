@@ -1,0 +1,69 @@
+[build-system]
+requires = ["hatchling==1.27.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "ablago"
+dynamic = ["version"]
+description = "Python client for Ablago, the self-hosted document filing for home and small businesses"
+readme = "README.en.md"
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE"]
+authors = [{ name = "Thomas Meissner" }]
+requires-python = ">=3.12"
+keywords = ["ablago", "dms", "documents", "paperwork", "home-assistant"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Framework :: AsyncIO",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Office/Business",
+    "Typing :: Typed",
+]
+# Die Handschicht braucht nur aiohttp – so kann Home Assistant seine eigene Sitzung mitgeben.
+dependencies = ["aiohttp>=3.9"]
+
+[project.optional-dependencies]
+# Der erzeugte Teil ablago.api (vollständige API) bringt eigene Abhängigkeiten mit.
+api = ["httpx2>=2.13.1,<3", "attrs>=22.2.0"]
+
+[project.urls]
+Homepage = "https://ablago.app"
+Documentation = "https://help.ablago.app/admin/aktuell/api/"
+Source = "https://github.com/motom001/dms-clients/tree/main/python"
+Issues = "https://github.com/motom001/dms-clients/issues"
+Changelog = "https://github.com/motom001/dms-clients/blob/main/python/CHANGELOG.md"
+
+[tool.hatch.version]
+# Die Version steht in VERSION – so liest sie auch der Workflow „Release“ dieses Repositorys (.github/scripts/releases.sh).
+path = "VERSION"
+pattern = "^(?P<version>\\d+\\.\\d+\\.\\d+)\\s*$"
+
+[tool.hatch.build]
+# src/ablago/api ist erzeugt und steht deshalb in .gitignore – mitbauen muss es trotzdem.
+ignore-vcs = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/ablago"]
+
+[tool.hatch.build.targets.sdist]
+include = ["src/ablago", "openapi", "werkzeuge", "tests", "README.md", "README.en.md", "CHANGELOG.md", "VERSION", "LICENSE", "NOTICE"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+markers = ["ablago: braucht ein laufendes Ablago (ABLAGO_URL, ABLAGO_SCHLUESSEL)"]
+
+[tool.ruff]
+line-length = 120
+extend-exclude = ["src/ablago/api"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "ASYNC"]
+
+[tool.mypy]
+strict = true
+exclude = ["src/ablago/api/"]

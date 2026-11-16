@@ -20,7 +20,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           TEXT: ${{ github.event.issue.body }}
           NUMMER: ${{ github.event.issue.number }}
-          BEKANNT: homey homeassistant ios android office thunderbird browser kurzbefehle beispiele
+          BEKANNT: homey homeassistant python ios android office thunderbird browser kurzbefehle beispiele
         run: |
           kennung=$(printf '%s\n' "$TEXT" | awk '/^### Welcher Client\?/{f=1; next} f && NF {print; exit}' | sed -nE 's/.*\(([a-z][a-z0-9_]{1,19})\)[[:space:]]*$/\1/p')
           case " $BEKANNT " in *" $kennung "*) ;; *) echo "Kein bekannter Client im Formular – kein Label."; exit 0 ;; esac

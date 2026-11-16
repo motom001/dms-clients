@@ -1,0 +1,153 @@
+# Python-Client mit Ablago Schritt halten (#22): Einmal am Tag schauen, ob es ein neues Ablago-Release gibt. Wenn ja,
+# die API-Beschreibung dieser Version aus dem Image holen, ablago.api neu erzeugen, testen und – wenn sich die API
+# geändert hat – einen Pull Request öffnen:
+#   - nur Neues            → Minor-Version, Label „api: nur neu“, darf nach grüner Prüfung gemergt werden
+#   - Wegfallendes/Anderes → Minor-Version (vor 1.0), Label „api: bricht“, wird von Hand entschieden
+# Kein Anstoß aus dem Repository dms: Das bräuchte dort einen Schlüssel mit Schreibrechten auf dieses Repository.
+#
+# Pull Requests, die ein Workflow mit dem GITHUB_TOKEN anlegt, lösen keine weiteren Workflows aus. Die Pflicht-
+# prüfungen starten deshalb erst, wenn jemand den Pull Request einmal schließt und wieder öffnet (steht im PR-Text).
+# Die Tests laufen vorher schon hier, gegen genau diese Ablago-Version.
+name: 'Python: API abgleichen'
+
+on:
+  schedule:
+    - cron: '17 4 * * *'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Ablago-Version (leer = neuestes Release)'
+        required: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: python-abgleich
+  cancel-in-progress: false
+
+jobs:
+  abgleich:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    defaults:
+      run:
+        working-directory: python
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Neues Ablago-Release?
+        id: version
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GEWUENSCHT: ${{ inputs.version }}
+        run: |
+          neu="${GEWUENSCHT:-$(gh api repos/motom001/dms/releases/latest -q .tag_name)}"
+          neu="${neu#v}"
+          [[ "$neu" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "::error::Unbrauchbare Ablago-Version: $neu"; exit 1; }
+          bisher=$(cat openapi/ABLAGO_VERSION)
+          zweig="python/api-$neu"
+          echo "neu=$neu" >> "$GITHUB_OUTPUT"; echo "zweig=$zweig" >> "$GITHUB_OUTPUT"
+          if [ "$neu" = "$bisher" ]; then
+            echo "weiter=false" >> "$GITHUB_OUTPUT"; echo "Ablago $neu ist schon die Grundlage – nichts zu tun." >> "$GITHUB_STEP_SUMMARY"
+          elif git ls-remote --exit-code --heads origin "$zweig" >/dev/null; then
+            echo "weiter=false" >> "$GITHUB_OUTPUT"; echo "Für Ablago $neu gibt es schon den Zweig $zweig." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "weiter=true" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        if: steps.version.outputs.weiter == 'true'
+        with:
+          python-version: '3.13'
+      - name: Ablago starten und API-Beschreibung holen
+        if: steps.version.outputs.weiter == 'true'
+        env:
+          NEU: ${{ steps.version.outputs.neu }}
+        run: |
+          ../.github/scripts/ablago-starten.sh "ghcr.io/motom001/dms-komplett:$NEU"
+          url=$(grep '^ABLAGO_URL=' "$GITHUB_ENV" | tail -1 | cut -d= -f2-)
+          cp openapi/openapi.json /tmp/alt.json
+          curl -fsS "$url/api/v1/openapi.json" | jq . > openapi/openapi.json
+      - name: Hat sich die API geändert?
+        id: art
+        if: steps.version.outputs.weiter == 'true'
+        env:
+          NEU: ${{ steps.version.outputs.neu }}
+        run: |
+          if cmp -s <(jq -S 'del(.servers)' /tmp/alt.json) <(jq -S 'del(.servers)' openapi/openapi.json); then
+            echo "geaendert=false" >> "$GITHUB_OUTPUT"
+            echo "API von Ablago $NEU unverändert – kein Pull Request." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          echo "geaendert=true" >> "$GITHUB_OUTPUT"
+          # oasdiff in fester Version, Prüfsumme aus dem Release v1.38.0.
+          curl -fsSL -o /tmp/oasdiff.tgz https://github.com/oasdiff/oasdiff/releases/download/v1.38.0/oasdiff_1.38.0_linux_amd64.tar.gz
+          echo "613037fd6a1d3362a1b742d6d86c338c0eb5ab3511f4942ce3948e78720ea2da  /tmp/oasdiff.tgz" | sha256sum -c -
+          tar -xzf /tmp/oasdiff.tgz -C /tmp oasdiff
+          if /tmp/oasdiff breaking /tmp/alt.json openapi/openapi.json --fail-on ERR > /tmp/bricht.txt 2>&1; then
+            echo "bricht=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "bricht=true" >> "$GITHUB_OUTPUT"
+          fi
+          python werkzeuge/abgleich.py /tmp/alt.json openapi/openapi.json > /tmp/zusammenfassung.md
+      - name: Version, Changelog, erzeugen und testen
+        if: steps.art.outputs.geaendert == 'true'
+        env:
+          NEU: ${{ steps.version.outputs.neu }}
+          BRICHT: ${{ steps.art.outputs.bricht }}
+        run: |
+          echo "$NEU" > openapi/ABLAGO_VERSION
+          IFS=. read -r a b _ < VERSION
+          version="$a.$((b + 1)).0"
+          echo "$version" > VERSION
+          {
+            echo "## $version"
+            echo
+            if [ "$BRICHT" = true ]; then
+              echo "API von Ablago $NEU (automatischer Abgleich). **Achtung: Es fällt etwas weg oder ändert sich** – Aufrufer prüfen."
+            else
+              echo "API von Ablago $NEU (automatischer Abgleich): nur Neues."
+            fi
+            echo
+            cat /tmp/zusammenfassung.md
+          } > /tmp/abschnitt.md
+          awk 'NR==FNR { neu = neu $0 "\n"; next } /^## / && !fertig { printf "%s\n", neu; fertig = 1 } { print }' /tmp/abschnitt.md CHANGELOG.md > /tmp/changelog.md
+          mv /tmp/changelog.md CHANGELOG.md
+          echo "version=$version" >> "$GITHUB_ENV"
+          pip install -r werkzeuge/anforderungen-erzeugen.txt -r anforderungen-test.txt
+          python werkzeuge/erzeugen.py
+          pip install -e ".[api]"
+          pytest -q
+      - name: Pull Request öffnen
+        if: steps.art.outputs.geaendert == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NEU: ${{ steps.version.outputs.neu }}
+          ZWEIG: ${{ steps.version.outputs.zweig }}
+          BRICHT: ${{ steps.art.outputs.bricht }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -c "$ZWEIG"
+          git add openapi/ VERSION CHANGELOG.md
+          git commit -s -m "Python-Client: API von Ablago $NEU (#22)"
+          git push "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "$ZWEIG"
+          if [ "$BRICHT" = true ]; then label="api: bricht"; titel="⚠ Python-Client: API von Ablago $NEU – bricht etwas"; else label="api: nur neu"; titel="Python-Client: API von Ablago $NEU"; fi
+          {
+            echo "Automatischer Abgleich mit Ablago $NEU (#22). Python-Client wird **$version**."
+            echo
+            if [ "$BRICHT" = true ]; then
+              echo "> **Achtung:** oasdiff meldet Änderungen, die bestehende Aufrufer brechen können. Bitte von Hand entscheiden."
+              echo
+              echo '```'; head -60 /tmp/bricht.txt; echo '```'
+              echo
+            fi
+            cat /tmp/zusammenfassung.md
+            echo
+            echo "Die Tests liefen schon gegen Ablago $NEU. **Damit die Pflichtprüfungen starten, diesen Pull Request einmal schließen und wieder öffnen** (von einem Workflow angelegte Pull Requests lösen keine Prüfungen aus)."
+          } > /tmp/pr.md
+          gh label create "$label" --color "$([ "$BRICHT" = true ] && echo d93f0b || echo 0e8a16)" --description "Automatischer API-Abgleich des Python-Clients" 2>/dev/null || true
+          gh pr create --base main --head "$ZWEIG" --title "$titel" --body-file /tmp/pr.md --label "$label" --label "client: python"

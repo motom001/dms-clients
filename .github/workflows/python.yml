@@ -1,0 +1,125 @@
+# Python-Client (python/, #22): Stil, Typen, Tests gegen einen nachgebauten Server, Bau des Pakets – und Tests gegen
+# ein echtes Ablago (Image dms-komplett in der Version aus python/openapi/ABLAGO_VERSION).
+# Startet bei jedem Pull Request und auf main (ohne Pfadfilter, damit eine verlangte Prüfung nie hängen bleibt).
+# Ändert ein Pull Request nichts am Python-Client, entfallen die Schritte; die Prüfungen sind dann sofort grün.
+name: Python
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  aenderungen:
+    name: Python betroffen?
+    runs-on: ubuntu-latest
+    outputs:
+      python: ${{ steps.pruefen.outputs.python }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - id: pruefen
+        env:
+          EREIGNIS: ${{ github.event_name }}
+          BASIS: ${{ github.event.pull_request.base.sha }}
+          KOPF: ${{ github.event.pull_request.head.sha }}
+        run: |
+          if [ "$EREIGNIS" != pull_request ]; then echo "python=true" >> "$GITHUB_OUTPUT"; exit 0; fi
+          if git diff --name-only "$BASIS...$KOPF" | grep -qE '^(python/|\.github/workflows/(python|python-abgleich|release)\.yml$)'; then
+            echo "python=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "python=false" >> "$GITHUB_OUTPUT"
+            echo "Keine Änderung an python/ – Tests entfallen." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+  python:
+    name: Python ${{ matrix.python }}
+    needs: aenderungen
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # 3.12: älteste unterstützte Fassung; 3.13: wie Home Assistant.
+        python: ['3.12', '3.13']
+    defaults:
+      run:
+        working-directory: python
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        if: needs.aenderungen.outputs.python == 'true'
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        if: needs.aenderungen.outputs.python == 'true'
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Werkzeuge installieren und ablago.api erzeugen
+        if: needs.aenderungen.outputs.python == 'true'
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r werkzeuge/anforderungen-erzeugen.txt -r anforderungen-test.txt
+          python werkzeuge/erzeugen.py
+          pip install -e ".[api]"
+      - name: Lizenz wie im Repository
+        if: needs.aenderungen.outputs.python == 'true'
+        run: cmp LICENSE ../LICENSE && cmp NOTICE ../NOTICE
+      - name: Stil und Typen
+        if: needs.aenderungen.outputs.python == 'true'
+        run: |
+          ruff format --check .
+          ruff check .
+          mypy src
+      - name: Tests gegen den Nachbau
+        if: needs.aenderungen.outputs.python == 'true'
+        run: pytest -q
+      - name: Paket bauen und prüfen
+        if: needs.aenderungen.outputs.python == 'true'
+        run: |
+          python -m build
+          twine check --strict dist/*
+          # Der erzeugte Teil muss im Paket stecken, obwohl er nicht im Repository steht.
+          unzip -l dist/*.whl | grep -q 'ablago/api/client.py' || { echo "::error::ablago.api fehlt im Paket"; exit 1; }
+
+  ablago:
+    name: Python gegen Ablago
+    needs: aenderungen
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: python
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        if: needs.aenderungen.outputs.python == 'true'
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        if: needs.aenderungen.outputs.python == 'true'
+        with:
+          python-version: '3.13'
+      - name: Ablago starten und einrichten
+        if: needs.aenderungen.outputs.python == 'true'
+        run: ../.github/scripts/ablago-starten.sh "ghcr.io/motom001/dms-komplett:$(cat openapi/ABLAGO_VERSION)"
+      - name: API-Beschreibung im Repository passt zu dieser Ablago-Version
+        if: needs.aenderungen.outputs.python == 'true'
+        run: |
+          curl -fsS "$ABLAGO_URL/api/v1/openapi.json" | jq -S 'del(.servers)' > /tmp/aus-ablago.json
+          jq -S 'del(.servers)' openapi/openapi.json > /tmp/im-repo.json
+          diff -u /tmp/im-repo.json /tmp/aus-ablago.json | head -40 || true
+          cmp -s /tmp/im-repo.json /tmp/aus-ablago.json || { echo "::error::openapi/openapi.json passt nicht zu Ablago $(cat openapi/ABLAGO_VERSION)"; exit 1; }
+      - name: Tests gegen Ablago
+        if: needs.aenderungen.outputs.python == 'true'
+        run: |
+          pip install -r werkzeuge/anforderungen-erzeugen.txt -r anforderungen-test.txt
+          python werkzeuge/erzeugen.py
+          pip install -e ".[api]"
+          pytest -q -m ablago -rs
+          # Übersprungene Tests hießen hier: kein Ablago – das darf nicht still durchgehen.
+          pytest -q -m ablago -rs | grep -q " skipped" && { echo "::error::Tests gegen Ablago übersprungen"; exit 1; } || true
+      - name: Protokoll von Ablago bei Fehlern
+        if: failure() && needs.aenderungen.outputs.python == 'true'
+        run: docker logs --tail 80 ablago-test 2>&1 || true

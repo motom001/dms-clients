@@ -1,0 +1,2 @@
+# Werkzeug zum Erzeugen von ablago.api (werkzeuge/erzeugen.py) – feste Fassung, damit jedes Erzeugen gleich ausfällt.
+openapi-python-client==0.30.0

@@ -17,10 +17,12 @@ Python 3.12 oder neuer.
 import asyncio
 from ablago import AblagoClient, AblagoAuthError, AblagoConnectionError
 
+
 async def main():
     async with AblagoClient("https://ablago.example.org", api_key="dms_…") as client:
         stand = await client.zaehler()
         print(stand.neue_post, stand.zu_erledigen, stand.ueberfaellig)
+
 
 asyncio.run(main())
 ```

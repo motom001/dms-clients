@@ -8,9 +8,9 @@
     "error": {
       "cannot_connect": "Unter dieser Adresse ist Ablago nicht erreichbar. Prüfe die Adresse und ob Ablago läuft.",
       "invalid_api_key": "Ablago nimmt diesen Schlüssel nicht an. Vielleicht ist er falsch abgetippt, widerrufen oder abgelaufen.",
-      "invalid_url": "Gib die Adresse mit http:// oder https:// an, zum Beispiel https://ablago.example.org.",
+      "invalid_url": "Gib die vollständige Adresse mit http oder https an, zum Beispiel {example_url}.",
       "not_ablago": "Unter dieser Adresse antwortet keine Ablago, oder sie ist zu alt. Nimm die Adresse, mit der du Ablago im Browser öffnest.",
-      "redirect": "Die Adresse leitet woandershin um. Nimm die Adresse, bei der Ablago am Ende ankommt, meist mit https://.",
+      "redirect": "Die Adresse leitet woandershin um. Nimm die Adresse, bei der Ablago am Ende ankommt, meist eine mit https.",
       "ssl_error": "Dem Zertifikat von Ablago wird nicht vertraut (abgelaufen, selbst signiert oder für einen anderen Namen). Bring das Zertifikat in Ordnung oder schalte die Prüfung des Zertifikats aus.",
       "unknown": "Unerwarteter Fehler. Einzelheiten stehen im Protokoll von Home Assistant."
     },
@@ -24,7 +24,7 @@
           "verify_ssl": "Zertifikat prüfen"
         },
         "data_description": {
-          "url": "Die Adresse, mit der du Ablago im Browser öffnest, zum Beispiel https://ablago.example.org.",
+          "url": "Die Adresse, mit der du Ablago im Browser öffnest, zum Beispiel {example_url}.",
           "api_key": "Schlüssel der Stufe „nur Zähler“ aus Mein Konto → Sicherheit → API-Schlüssel. Er kann nur die Zahlen lesen.",
           "verify_ssl": "Lass das an. Schalte es nur für ein selbst signiertes Zertifikat im Heimnetz aus."
         }
@@ -37,7 +37,7 @@
           "verify_ssl": "Zertifikat prüfen"
         },
         "data_description": {
-          "url": "Die Adresse, mit der du Ablago im Browser öffnest, zum Beispiel https://ablago.example.org.",
+          "url": "Die Adresse, mit der du Ablago im Browser öffnest, zum Beispiel {example_url}.",
           "api_key": "Schlüssel der Stufe „nur Zähler“ aus Mein Konto → Sicherheit → API-Schlüssel. Er kann nur die Zahlen lesen.",
           "verify_ssl": "Lass das an. Schalte es nur für ein selbst signiertes Zertifikat im Heimnetz aus."
         }

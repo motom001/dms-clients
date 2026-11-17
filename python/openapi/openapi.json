@@ -3340,7 +3340,7 @@
           "Ablage"
         ],
         "summary": "Notiz anlegen",
-        "description": "text als formatierter Text (Markdown).",
+        "description": "text als formatierter Text (Markdown). Erwähnungen als @[](mappe:<id>) – ein Titel in den Klammern wird nicht gespeichert (#1293), aktuelle Titel liefert GET /mappen/{id}/erwaehnungen.",
         "operationId": "postMappenMitidNotizen",
         "parameters": [
           {
@@ -3423,7 +3423,7 @@
           "Ablage"
         ],
         "summary": "Erwähnungen einer Mappe (#889)",
-        "description": "erwaehnt: wen oder was die Mappe in Notizen und formatierten Feldern mit @ erwähnt (Markdown @[Titel](mappe:<id>), ältere Notizen auch benutzer:<id>) – mit aktuellem Titel und Mappentyp, wenn lesbar, sonst nur sichtbarkeit „verborgen“ bzw. „geloescht“. erwaehntIn: wo die Mappe selbst erwähnt ist (Hinweis „Erwähnt in einer Notiz bei …“), nur Stellen in Mappen, die du lesen darfst, neueste zuerst, höchstens 20.",
+        "description": "erwaehnt: wen oder was die Mappe in Notizen und formatierten Feldern mit @ erwähnt (Markdown @[](mappe:<id>), ältere Notizen auch benutzer:<id>; #1293: Notizen und Felder enthalten nur die Kennung, ein mitgeschickter Titel wird nicht gespeichert – den Titel liefert diese Abfrage) – mit aktuellem Titel und Mappentyp, wenn lesbar, sonst nur sichtbarkeit „verborgen“ bzw. „geloescht“. erwaehntIn: wo die Mappe selbst erwähnt ist (Hinweis „Erwähnt in einer Notiz bei …“), nur Stellen in Mappen, die du lesen darfst, neueste zuerst, höchstens 20.",
         "operationId": "getMappenMitidErwaehnungen",
         "parameters": [
           {

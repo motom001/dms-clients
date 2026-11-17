@@ -2,6 +2,12 @@
 
 Änderungen des Python-Clients `ablago` je Version. Ein Release bekommt den Tag `python-v<version>` und landet auf [PyPI](https://pypi.org/project/ablago/).
 
+## 0.2.0
+
+API von Ablago 0.290.10 (automatischer Abgleich): nur Neues.
+
+Nur Beschreibungen, Beispiele oder Einzelheiten geändert – keine neuen oder weggefallenen Routen, Objekte oder Felder.
+
 ## 0.1.0
 
 Erste Fassung (#22).

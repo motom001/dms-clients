@@ -1,9 +1,13 @@
-# Python-Client mit Ablago Schritt halten (#22): Einmal am Tag schauen, ob es ein neues Ablago-Release gibt. Wenn ja,
+# Python-Client mit Ablago Schritt halten (#22): Einmal am Tag schauen, ob es ein neues stabiles Ablago gibt. Wenn ja,
 # die API-Beschreibung dieser Version aus dem Image holen, ablago.api neu erzeugen, testen und – wenn sich die API
 # geändert hat – einen Pull Request öffnen:
 #   - nur Neues            → Minor-Version, Label „api: nur neu“, darf nach grüner Prüfung gemergt werden
 #   - Wegfallendes/Anderes → Minor-Version (vor 1.0), Label „api: bricht“, wird von Hand entschieden
 # Kein Anstoß aus dem Repository dms: Das bräuchte dort einen Schlüssel mit Schreibrechten auf dieses Repository.
+#
+# Maßstab ist die stabile Fassung, die die meisten Haushalte betreiben: Im Repository dms trägt das Release von :stabil
+# die Markierung „Latest“ (dms #907), nicht das neueste Release. Ältere Fassungen als die bisherige Grundlage werden
+# nie übernommen – sonst sähe der Abgleich weggefallene Routen, wo nur zurückgeschaut wird (PR #31).
 #
 # Pull Requests, die ein Workflow mit dem GITHUB_TOKEN anlegt, lösen keine weiteren Workflows aus. Die Pflicht-
 # prüfungen starten deshalb erst, wenn jemand den Pull Request einmal schließt und wieder öffnet (steht im PR-Text).
@@ -16,7 +20,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Ablago-Version (leer = neuestes Release)'
+        description: 'Ablago-Version (leer = stabile Fassung, Markierung „Latest“ im Repository dms)'
         required: false
 
 permissions:
@@ -53,6 +57,8 @@ jobs:
           echo "neu=$neu" >> "$GITHUB_OUTPUT"; echo "zweig=$zweig" >> "$GITHUB_OUTPUT"
           if [ "$neu" = "$bisher" ]; then
             echo "weiter=false" >> "$GITHUB_OUTPUT"; echo "Ablago $neu ist schon die Grundlage – nichts zu tun." >> "$GITHUB_STEP_SUMMARY"
+          elif [ "$(printf '%s\n%s\n' "$neu" "$bisher" | sort -V | tail -1)" = "$bisher" ]; then
+            echo "weiter=false" >> "$GITHUB_OUTPUT"; echo "Ablago $neu ist älter als die Grundlage $bisher – nichts zu tun." >> "$GITHUB_STEP_SUMMARY"
           elif git ls-remote --exit-code --heads origin "$zweig" >/dev/null; then
             echo "weiter=false" >> "$GITHUB_OUTPUT"; echo "Für Ablago $neu gibt es schon den Zweig $zweig." >> "$GITHUB_STEP_SUMMARY"
           else

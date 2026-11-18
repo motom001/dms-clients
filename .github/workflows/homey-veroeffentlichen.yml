@@ -1,0 +1,92 @@
+# Homey-App zu Athom hochladen (#12). Läuft nach einem neuen Release homey-v<version> aus dem Workflow „Release“,
+# oder von Hand für ein bestehendes Release (Tag angeben) – nie bei Pull Requests, nie aus Forks.
+#
+# Hochgeladen wird genau die Version aus dem Tag; das Homey-CLI zählt nichts hoch und committet nichts
+# (HOMEY_HEADLESS). Danach liegt die Version in den Homey Developer Tools als Entwurf: Ob sie als Testversion oder zur
+# Prüfung durch Athom an alle geht, entscheidet der Maintainer dort von Hand.
+#
+# Voraussetzungen (homey/README.md, „Neue Version veröffentlichen“): Umgebung „homey-app-store“ mit dem Secret
+# HOMEY_PAT (persönlicher Zugangsschlüssel aus https://tools.developer.homey.app/me) und die Variable
+# HOMEY_VEROEFFENTLICHEN = ja.
+name: 'Homey: veröffentlichen'
+
+on:
+  workflow_call:
+    inputs:
+      tag:
+        description: 'Tag des Releases, z. B. homey-v1.2.0'
+        type: string
+        required: true
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag eines bestehenden Releases, z. B. homey-v1.2.0'
+        type: string
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: homey-veroeffentlichen
+  cancel-in-progress: false
+
+jobs:
+  hochladen:
+    name: Homey-App zu Athom hochladen
+    if: github.repository == 'motom001/dms-clients' && vars.HOMEY_VEROEFFENTLICHEN == 'ja'
+    runs-on: ubuntu-latest
+    environment:
+      name: homey-app-store
+      url: https://tools.developer.homey.app/apps/app/app.ablago.clients.homey
+    steps:
+      - name: Tag prüfen
+        env:
+          TAG: ${{ inputs.tag }}
+        run: '[[ "$TAG" =~ ^homey-v[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "::error::Kein Tag der Homey-App: $TAG"; exit 1; }'
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: refs/tags/${{ inputs.tag }}
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          # Das Homey-CLI braucht Node 24.
+          node-version: 24
+      - name: Version wie im Tag
+        working-directory: homey
+        env:
+          TAG: ${{ inputs.tag }}
+        run: |
+          version="${TAG#homey-v}"
+          test "$(node -p 'require("./app.json").version')" = "$version" || { echo "::error::app.json passt nicht zu $TAG"; exit 1; }
+          test "$(node -p 'require("./package.json").version')" = "$version" || { echo "::error::package.json passt nicht zu $TAG"; exit 1; }
+          node -e 'const l=require("./.homeychangelog.json")[process.argv[1]]; if(!l||!l.en){console.error("Eintrag in .homeychangelog.json fehlt");process.exit(1)}' "$version"
+      - name: Tests und Prüfung wie beim Veröffentlichen
+        working-directory: homey
+        run: |
+          npm ci --no-audit --no-fund
+          npm test
+          npm run validieren
+      - name: Homey-CLI in fester Version
+        working-directory: .github/homey-cli
+        run: npm ci --no-audit --no-fund --ignore-scripts
+      - name: Hochladen
+        id: hochladen
+        working-directory: homey
+        env:
+          HOMEY_HEADLESS: '1'
+          HOMEY_PAT: ${{ secrets.HOMEY_PAT }}
+        run: |
+          [ -n "$HOMEY_PAT" ] || { echo "::error::Secret HOMEY_PAT fehlt in der Umgebung homey-app-store"; exit 1; }
+          # Werkzeuge der Tests gehören nicht in die App (.homeyignore schließt node_modules nicht aus).
+          rm -rf node_modules
+          ../.github/homey-cli/node_modules/.bin/homey app publish
+      - name: Nächster Schritt
+        env:
+          TAG: ${{ inputs.tag }}
+        run: |
+          {
+            echo "### ${TAG#homey-} ist bei Athom"
+            echo
+            echo "Jetzt in den Homey Developer Tools freigeben: [Ablago → Builds](https://tools.developer.homey.app/apps/app/app.ablago.clients.homey) → neueste Version → **Test** (nur mit Link) oder **Zur Prüfung einreichen** (an alle, nach der Prüfung durch Athom)."
+          } >> "$GITHUB_STEP_SUMMARY"

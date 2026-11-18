@@ -25,7 +25,7 @@ A key of the level "counters only" gives nothing more: no titles, no senders, no
 
 ## Install (to try it out)
 
-1. Copy the folder [`custom_components/ablago`](custom_components/ablago/) into the folder `custom_components` of your Home Assistant configuration, so that `custom_components/ablago/manifest.json` is there.
+1. From the latest [release "Ablago für Home Assistant"](https://github.com/motom001/dms-clients/releases?q=homeassistant-v&expanded=true), download `ablago.zip` and unpack it into the folder `custom_components` of your Home Assistant configuration, so that `custom_components/ablago/manifest.json` is there. (Or copy the folder [`custom_components/ablago`](custom_components/ablago/) from here.)
 2. Restart Home Assistant.
 
 Home Assistant fetches the library `ablago` from PyPI on the first start.

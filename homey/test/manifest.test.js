@@ -26,6 +26,17 @@ describe('Manifest', () => {
     assert.ok(homeyLog[app.version] && homeyLog[app.version].en && homeyLog[app.version].de, '.homeychangelog.json hat die Version');
   });
 
+  it('Store-Changelog (.homeychangelog.json) hat die aktuelle Version auf Englisch und Deutsch', () => {
+    // Ohne diesen Eintrag bricht „homey app publish“ im Workflow ab (HOMEY_HEADLESS fragt nicht nach, #12).
+    const log = JSON.parse(fs.readFileSync(path.join(wurzel, '.homeychangelog.json'), 'utf8'));
+    const eintrag = log[app.version];
+    assert.ok(eintrag, `Eintrag für ${app.version} fehlt`);
+    for (const sprache of ['en', 'de']) {
+      assert.ok(typeof eintrag[sprache] === 'string' && eintrag[sprache].length > 3, `Text ${sprache} fehlt`);
+      assert.ok(eintrag[sprache].length <= 400, `Text ${sprache} zu lang für den Store`);
+    }
+  });
+
   it('jede Zahl hat eine eigene Capability mit deutschem und englischem Titel', () => {
     assert.deepEqual(app.drivers[0].capabilities.sort(), Object.values(WERTE).sort());
     for (const cap of Object.values(WERTE)) {

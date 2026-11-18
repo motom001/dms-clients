@@ -1,8 +1,11 @@
 # Tags und Releases je Client (#9): Bei jedem Push auf main bekommt jede Client-Version, für die es noch keinen
 # Tag <ordner>-v<version> gibt, Tag und Release – mit dem passenden Abschnitt aus <ordner>/CHANGELOG.md als Text.
 # Die Logik steht in .github/scripts/releases.sh; die Probe für Pull Requests läuft im Workflow „Prüfen“.
-# Bestehende Tags und Releases werden nie verändert. Veröffentlichen in fremden Stores bleibt Handarbeit – außer PyPI:
-# Den Python-Client (python/, #22) lädt der Job „pypi“ hoch, sobald seine Version noch nicht auf PyPI steht.
+# Bestehende Tags und Releases werden nie verändert. Danach:
+# - Den Python-Client (python/, #22) lädt der Job „pypi“ hoch, sobald seine Version noch nicht auf PyPI steht.
+# - Die Homey-App (homey/, #12) lädt der Job „homey“ zu Athom hoch, wenn ein neues Release homey-v… entstanden ist;
+#   freigeben im Homey App Store bleibt Handarbeit.
+# - Die Integration für Home Assistant (homeassistant/) bekommt das Archiv ablago.zip am Release (Job „homeassistant“).
 name: Release
 
 on:
@@ -23,11 +26,15 @@ jobs:
     permissions:
       contents: write
     runs-on: ubuntu-latest
+    outputs:
+      tag_homey: ${{ steps.anlegen.outputs.tag_homey }}
+      tag_homeassistant: ${{ steps.anlegen.outputs.tag_homeassistant }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
       - name: Tags und Releases für neue Versionen anlegen
+        id: anlegen
         env:
           GH_TOKEN: ${{ github.token }}
           ZIEL: ${{ github.sha }}
@@ -84,3 +91,43 @@ jobs:
         env:
           VERSION: ${{ steps.stand.outputs.version }}
         run: echo "ablago $VERSION auf PyPI veröffentlicht – https://pypi.org/project/ablago/$VERSION/" >> "$GITHUB_STEP_SUMMARY"
+
+  # Homey-App zu Athom hochladen (#12), nur für ein neu angelegtes Release homey-v…; Einzelheiten und Voraussetzungen
+  # im Workflow homey-veroeffentlichen.yml.
+  homey:
+    name: Homey-App zu Athom
+    needs: release
+    if: needs.release.outputs.tag_homey != ''
+    permissions:
+      contents: read
+    uses: ./.github/workflows/homey-veroeffentlichen.yml
+    with:
+      tag: ${{ needs.release.outputs.tag_homey }}
+
+  # Integration für Home Assistant: das Archiv ablago.zip ans neue Release homeassistant-v… hängen. Es enthält den
+  # Ordner custom_components/ablago und dient der Installation von Hand (homeassistant/README.md).
+  homeassistant:
+    name: Home Assistant – Archiv am Release
+    needs: release
+    if: needs.release.outputs.tag_homeassistant != ''
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: refs/tags/${{ needs.release.outputs.tag_homeassistant }}
+          persist-credentials: false
+      - name: ablago.zip bauen und anhängen
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          TAG: ${{ needs.release.outputs.tag_homeassistant }}
+        run: |
+          cd homeassistant/custom_components
+          zip -r -X ../../ablago.zip ablago -x '*/__pycache__/*'
+          cd ../..
+          unzip -l ablago.zip | tail -n +1
+          test "$(unzip -p ablago.zip ablago/manifest.json | jq -r .version)" = "${TAG#homeassistant-v}" || { echo "::error::manifest.json passt nicht zu $TAG"; exit 1; }
+          gh release upload "$TAG" ablago.zip
+          echo "ablago.zip hängt am Release $TAG." >> "$GITHUB_STEP_SUMMARY"

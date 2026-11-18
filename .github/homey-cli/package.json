@@ -1,0 +1,9 @@
+{
+  "name": "homey-cli-veroeffentlichen",
+  "private": true,
+  "description": "Homey-CLI nur für den Workflow „Homey: veröffentlichen“ (#12): feste Version samt aller Abhängigkeiten über package-lock.json.",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "homey": "4.6.2"
+  }
+}

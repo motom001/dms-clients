@@ -100,7 +100,27 @@ npm run validieren  # manifest, images and Flow cards like "homey app validate -
 - Terms, paths and icons follow the rules for all clients (see [CONTRIBUTING.en.md](../CONTRIBUTING.en.md)); the tests check them too.
 - Try it on a Homey Pro: `npx homey app run` (Homey CLI, requires signing in with Athom).
 - Images: sources as SVG in `bilder/`; the PNGs in `assets/images/` and `drivers/dms/assets/images/` are rendered from them (e.g. `rsvg-convert -w 1000 -h 700 bilder/app-bild.svg -o assets/images/xlarge.png`). The value icons in `assets/capabilities/` come from [Lucide](https://lucide.dev) (ISC license, see `LICENSE-lucide.txt`).
-- New version: bump `version` in `package.json` and `app.json`, add to `CHANGELOG.md` and `.homeychangelog.json`. A release gets the tag `homey-v<version>` and is uploaded with `npx homey app publish`.
+- New version: bump `version` in `package.json` and `app.json`, add to `CHANGELOG.md` and `.homeychangelog.json` (section below).
+
+## Publishing a new version
+
+**What happens automatically** (#12):
+1. After the merge, the workflow "Release" creates the tag `homey-v<version>` and the release.
+2. Right after that, the workflow "Homey: veröffentlichen" uploads exactly this version to Athom – after the tests and the check of level `publish`. It bumps no version and commits nothing.
+3. The run summary links to the next step.
+
+**What you do by hand:** In the [Homey Developer Tools](https://tools.developer.homey.app/apps/app/app.ablago.clients.homey), open the new version and choose **Test** (reachable by link only) or **Submit for review** (for everyone after Athom's review).
+
+**Set up once:**
+1. In the Homey Developer Tools under [My account](https://tools.developer.homey.app/me), copy the Personal Access Token.
+2. In the repository under **Settings → Environments**, create the environment `homey-app-store`: set "Deployment branches and tags" to **Selected branches and tags** with only `main`, and add the secret `HOMEY_PAT` with the token.
+3. Under **Settings → Secrets and variables → Actions → Variables**, add the variable `HOMEY_VEROEFFENTLICHEN` with the value `ja`. Without it, the workflow uploads nothing.
+
+**Renewing the token:** create a new one in the Developer Tools and replace the secret `HOMEY_PAT` in the environment `homey-app-store`.
+
+**Uploading a release again:** Actions → "Homey: veröffentlichen" → *Run workflow* (branch `main`) with the tag, e.g. `homey-v1.2.0`. Athom rejects a version it already has.
+
+**By hand, if the workflow ever fails:** in the folder `homey/` at the state of the tag, run `npx homey@4.6.2 login`, then `npx homey@4.6.2 app publish`, and answer **No** to the question about a new version number.
 
 ## License
 

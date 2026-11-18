@@ -14,6 +14,12 @@ updates:
     directory: "/homey"
     schedule: { interval: weekly, day: monday, time: "05:00", timezone: Europe/Berlin }
     commit-message: { prefix: "Homey" }
+  - package-ecosystem: npm
+    # Homey-CLI für den Workflow „Homey: veröffentlichen“ (#12), nur das CLI selbst; Updates monatlich reichen.
+    directory: "/.github/homey-cli"
+    schedule: { interval: monthly, time: "05:00", timezone: Europe/Berlin }
+    allow: [{ dependency-name: homey }]
+    commit-message: { prefix: "Homey-CLI" }
   - package-ecosystem: pip
     directory: "/python"
     schedule: { interval: weekly, day: monday, time: "05:00", timezone: Europe/Berlin }

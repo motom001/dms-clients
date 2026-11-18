@@ -4,7 +4,8 @@
 #   releases.sh pruefen   zeigt, welche Releases nach dem Merge entstünden, und prüft die CHANGELOG-Abschnitte
 #                         (ohne Schreibrechte, für Pull Requests)
 #   releases.sh anlegen   legt für jede Version ohne Tag den Tag <ordner>-v<version> und das Release an
-#                         (nur auf main, braucht GH_TOKEN mit contents: write und ZIEL = Commit)
+#                         (nur auf main, braucht GH_TOKEN mit contents: write und ZIEL = Commit);
+#                         schreibt je Ordner den neuen Tag als „tag_<ordner>“ nach $GITHUB_OUTPUT
 #
 # Version: <ordner>/package.json (Feld version), sonst <ordner>/VERSION. Text: Abschnitt „## <version>“ aus
 # <ordner>/CHANGELOG.md. Titel: erste Überschrift aus <ordner>/README.md und die Version.
@@ -28,6 +29,7 @@ git ls-remote --tags --refs origin | awk '{sub("refs/tags/", "", $2); print $2}'
 
 fehler=0
 neu=0
+angelegt=()
 shopt -s nullglob
 for pfad in */; do
   ordner="${pfad%/}"
@@ -73,8 +75,13 @@ for pfad in */; do
   else
     gh release create "$tag" --target "$ZIEL" --title "$titel" --notes-file "$notizen" --latest=false
     echo "- Angelegt: Release **$titel** (Tag \`$tag\`)" >> "$ausgabe"
+    angelegt+=("$tag")
   fi
 done
 
 [ "$neu" -gt 0 ] || echo "Keine neue Version – kein Release." >> "$ausgabe"
+# Für Jobs danach (z. B. Homey hochladen): je Ordner der neu angelegte Tag als „tag_<ordner>“.
+if [ "$modus" = anlegen ] && [ -n "${GITHUB_OUTPUT:-}" ]; then
+  for t in "${angelegt[@]}"; do echo "tag_${t%-v*}=$t" >> "$GITHUB_OUTPUT"; done
+fi
 exit $fehler

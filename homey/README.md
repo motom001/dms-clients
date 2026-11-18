@@ -98,7 +98,27 @@ npm run validieren  # Manifest, Bilder und Flow-Karten wie „homey app validate
 - Begriffe, Wege und Symbole folgen den Regeln für alle Clients (siehe [CONTRIBUTING.md](../CONTRIBUTING.md)); die Tests prüfen das mit.
 - Ausprobieren auf einem Homey Pro: `npx homey app run` (Homey-CLI, Anmeldung bei Athom nötig).
 - Bilder: Quellen als SVG in `bilder/`; die PNG unter `assets/images/` und `drivers/dms/assets/images/` sind daraus gerendert (z. B. `rsvg-convert -w 1000 -h 700 bilder/app-bild.svg -o assets/images/xlarge.png`). Die Symbole der Werte in `assets/capabilities/` stammen aus [Lucide](https://lucide.dev) (ISC-Lizenz, siehe `LICENSE-lucide.txt`).
-- Neue Version: `version` in `package.json` und `app.json`, `CHANGELOG.md` und `.homeychangelog.json` ergänzen. Ein Release bekommt den Tag `homey-v<version>` und wird mit `npx homey app publish` hochgeladen.
+- Neue Version: `version` in `package.json` und `app.json`, `CHANGELOG.md` und `.homeychangelog.json` ergänzen (Abschnitt unten).
+
+## Neue Version veröffentlichen
+
+**Was automatisch passiert** (#12):
+1. Nach dem Merge legt der Workflow „Release“ den Tag `homey-v<version>` und das Release an.
+2. Gleich danach lädt der Workflow „Homey: veröffentlichen“ genau diese Version zu Athom hoch – vorher laufen Tests und die Prüfung der Stufe `publish`. Er zählt keine Version hoch und committet nichts.
+3. In der Zusammenfassung des Laufs steht der Link für den nächsten Schritt.
+
+**Was du von Hand machst:** In den [Homey Developer Tools](https://tools.developer.homey.app/apps/app/app.ablago.clients.homey) die neue Version öffnen und **Test** (nur mit Link erreichbar) oder **Zur Prüfung einreichen** (nach der Prüfung durch Athom für alle) wählen.
+
+**Einmal einrichten:**
+1. In den Homey Developer Tools unter [Mein Konto](https://tools.developer.homey.app/me) den persönlichen Zugangsschlüssel (Personal Access Token) kopieren.
+2. Im Repository unter **Settings → Environments** die Umgebung `homey-app-store` anlegen: „Deployment branches and tags“ auf **Selected branches and tags** mit nur `main`, dort das Secret `HOMEY_PAT` mit dem Zugangsschlüssel.
+3. Unter **Settings → Secrets and variables → Actions → Variables** die Variable `HOMEY_VEROEFFENTLICHEN` mit dem Wert `ja` anlegen. Ohne sie lädt der Workflow nichts hoch.
+
+**Zugangsschlüssel erneuern:** neuen Schlüssel in den Developer Tools erzeugen und in der Umgebung `homey-app-store` das Secret `HOMEY_PAT` ersetzen.
+
+**Ein Release noch einmal hochladen:** Actions → „Homey: veröffentlichen“ → *Run workflow* (Branch `main`) mit dem Tag, z. B. `homey-v1.2.0`. Eine Version, die Athom schon hat, lehnt Athom ab.
+
+**Von Hand, falls der Workflow einmal nicht geht:** im Ordner `homey/` auf dem Stand des Tags `npx homey@4.6.2 login`, dann `npx homey@4.6.2 app publish` und die Frage nach einer neuen Versionsnummer mit **Nein** beantworten.
 
 ## Lizenz
 

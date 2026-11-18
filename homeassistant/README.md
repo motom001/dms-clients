@@ -25,7 +25,7 @@ Mehr gibt ein Schlüssel „nur Zähler“ nicht her: keine Titel, keine Absende
 
 ## Installieren (zum Ausprobieren)
 
-1. Den Ordner [`custom_components/ablago`](custom_components/ablago/) in den Ordner `custom_components` deiner Home-Assistant-Konfiguration kopieren, sodass dort `custom_components/ablago/manifest.json` liegt.
+1. Am neuesten [Release „Ablago für Home Assistant“](https://github.com/motom001/dms-clients/releases?q=homeassistant-v&expanded=true) das Archiv `ablago.zip` herunterladen und in den Ordner `custom_components` deiner Home-Assistant-Konfiguration auspacken, sodass dort `custom_components/ablago/manifest.json` liegt. (Oder den Ordner [`custom_components/ablago`](custom_components/ablago/) von hier kopieren.)
 2. Home Assistant neu starten.
 
 Home Assistant lädt die Bibliothek `ablago` beim ersten Start selbst von PyPI.

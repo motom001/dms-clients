@@ -8,7 +8,7 @@ const z = (neuePost, zuErledigen, ueberfaellig) => ({ neuePost, zuErledigen, ueb
 
 describe('Auswertung der Zahlen', () => {
   it('ordnet die Zahlen den Werten des Geräts zu', () => {
-    assert.deepEqual(geraetewerte(z(2, 5, 1)), { dms_neue_post: 2, dms_zu_erledigen: 5, dms_ueberfaellig: 1 });
+    assert.deepEqual(geraetewerte(z(2, 5, 1)), { measure_neue_post: 2, measure_zu_erledigen: 5, measure_ueberfaellig: 1 });
   });
 
   it('löst beim ersten Abruf nichts aus', () => {

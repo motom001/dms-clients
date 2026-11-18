@@ -3,7 +3,7 @@
 const Homey = require('homey');
 const { DmsFehler, DmsVerbindung } = require('../../lib/dms');
 const { Zaehlerabfrage } = require('../../lib/abfrage');
-const { WERTE, ENTFALLEN, geraetewerte, abstandMs } = require('../../lib/auswertung');
+const { WERTE, ENTFALLEN, UMBENANNT, geraetewerte, abstandMs } = require('../../lib/auswertung');
 
 /**
  * Gerät „Ablago“: fragt die Zahlen im eingestellten Abstand ab (mit If-None-Match), zeigt sie als Werte und löst die
@@ -14,7 +14,14 @@ module.exports = class DmsDevice extends Homey.Device {
   async onInit() {
     this.lauf = 0;
     this.fehlercode = null;
-    // Werte früherer Versionen entfernen (1.1.x: „Fällig in 7 Tagen“, entfällt mit dms #725).
+    // Umbenannte Werte (bis 1.2.x „dms_…“, #37): neuen Wert anlegen und die letzte Zahl mitnehmen.
+    for (const [alt, neu] of Object.entries(UMBENANNT)) {
+      if (this.hasCapability(alt) && !this.hasCapability(neu)) {
+        await this.addCapability(neu);
+        await this.setCapabilityValue(neu, this.getCapabilityValue(alt));
+      }
+    }
+    // Werte früherer Versionen entfernen (1.1.x: „Fällig in 7 Tagen“, entfällt mit dms #725; bis 1.2.x „dms_…“).
     for (const cap of ENTFALLEN) {
       if (this.hasCapability(cap)) await this.removeCapability(cap);
     }

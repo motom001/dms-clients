@@ -1,4 +1,8 @@
 {
+  "1.3.0": {
+    "en": "Pick new mail, to do or overdue as status indicator, so the device tile shows the number. Description of Ablago in the App Store.",
+    "de": "Neue Post, Zu erledigen oder Überfällig als Statusanzeige wählbar, damit die Kachel die Zahl zeigt. Beschreibung von Ablago im App Store."
+  },
   "1.2.0": {
     "en": "First version in the App Store: new mail, to-dos and overdue items from Ablago as values and Flow cards, with the same icons as in Ablago.",
     "de": "Erste Version im App Store: neue Post, Zu erledigen und Überfälliges aus Ablago als Werte und Flow-Karten, mit denselben Symbolen wie in Ablago."

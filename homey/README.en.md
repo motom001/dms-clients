@@ -51,7 +51,7 @@ If you no longer need the key, delete it in Ablago under "Mein Konto" → "Siche
 | **Something is overdue** | Trigger | The number "Overdue" goes up. Tokens: *Overdue in total*, *Newly overdue* |
 | **There is new mail** | Condition | "New mail" is greater than 0 (can be inverted: *no* new mail) |
 
-All three values are also available as Flow tokens and in Insights (history).
+All three values are also available as Flow tokens and in Insights (history). In the device settings, pick a value under **Status indicator**, for example "New mail"; the tile then shows the number.
 
 ## Polling
 
@@ -96,7 +96,7 @@ npm test            # logic and device against a fake server (node --test)
 npm run validieren  # manifest, images and Flow cards like "homey app validate --level publish"
 ```
 
-- Layout: `lib/` holds the logic without the Homey runtime (polling with ETag, evaluation, error mapping), `drivers/dms/` the device and setup, `locales/` the texts (de, en). The manifest is written directly in `app.json` (without Homey Compose). Internal identifiers (`dms_…`, `drivers/dms/`) stay as they are on purpose.
+- Layout: `lib/` holds the logic without the Homey runtime (polling with ETag, evaluation, error mapping), `drivers/dms/` the device and setup, `locales/` the texts (de, en). The manifest is written directly in `app.json` (without Homey Compose). The values are named `measure_…` because Homey only offers such values as status indicator (#37); the driver stays `drivers/dms/`.
 - Terms, paths and icons follow the rules for all clients (see [CONTRIBUTING.en.md](../CONTRIBUTING.en.md)); the tests check them too.
 - Try it on a Homey Pro: `npx homey app run` (Homey CLI, requires signing in with Athom).
 - Images: sources as SVG in `bilder/`; the PNGs in `assets/images/` and `drivers/dms/assets/images/` are rendered from them (e.g. `rsvg-convert -w 1000 -h 700 bilder/app-bild.svg -o assets/images/xlarge.png`). The value icons in `assets/capabilities/` come from [Lucide](https://lucide.dev) (ISC license, see `LICENSE-lucide.txt`).

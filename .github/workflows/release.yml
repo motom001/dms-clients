@@ -103,6 +103,9 @@ jobs:
     uses: ./.github/workflows/homey-veroeffentlichen.yml
     with:
       tag: ${{ needs.release.outputs.tag_homey }}
+    # HOMEY_PAT darf als Secret der Umgebung homey-app-store oder des Repositorys liegen; ein aufgerufener Workflow
+    # sieht Secrets des Repositorys nur, wenn sie weitergereicht werden.
+    secrets: inherit
 
   # Integration für Home Assistant: das Archiv ablago.zip ans neue Release homeassistant-v… hängen. Es enthält den
   # Ordner custom_components/ablago und dient der Installation von Hand (homeassistant/README.md).

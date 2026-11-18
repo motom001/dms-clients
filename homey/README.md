@@ -49,7 +49,7 @@ Brauchst du den Schlüssel nicht mehr, löschst du ihn in Ablago unter **Mein Ko
 | **Etwas ist überfällig** | Auslöser | Die Zahl „Überfällig“ steigt. Tokens: *Überfällig insgesamt*, *Neu überfällig* |
 | **Es liegt neue Post vor** | Bedingung | „Neue Post“ ist größer als 0 (auch umkehrbar: *keine* neue Post) |
 
-Alle drei Werte stehen außerdem als Tokens in Flows und in Insights (Verlauf) zur Verfügung.
+Alle drei Werte stehen außerdem als Tokens in Flows und in Insights (Verlauf) zur Verfügung. In den Einstellungen des Geräts kannst du unter **Statusanzeige** einen Wert wählen, etwa „Neue Post“; die Kachel zeigt dann die Zahl.
 
 ## Abfrage
 
@@ -94,7 +94,7 @@ npm test            # Logik und Gerät gegen einen nachgebauten Server (node --t
 npm run validieren  # Manifest, Bilder und Flow-Karten wie „homey app validate --level publish“
 ```
 
-- Aufbau: `lib/` enthält die Logik ohne Homey-Laufzeit (Abruf mit ETag, Auswertung, Fehlerzuordnung), `drivers/dms/` das Gerät und das Einrichten, `locales/` die Texte (de, en). Das Manifest steht direkt in `app.json` (ohne Homey Compose). Interne Kennungen (`dms_…`, `drivers/dms/`) bleiben bewusst so.
+- Aufbau: `lib/` enthält die Logik ohne Homey-Laufzeit (Abruf mit ETag, Auswertung, Fehlerzuordnung), `drivers/dms/` das Gerät und das Einrichten, `locales/` die Texte (de, en). Das Manifest steht direkt in `app.json` (ohne Homey Compose). Die Werte heißen `measure_…`, weil Homey nur solche als Statusanzeige anbietet (#37); der Treiber heißt weiter `drivers/dms/`.
 - Begriffe, Wege und Symbole folgen den Regeln für alle Clients (siehe [CONTRIBUTING.md](../CONTRIBUTING.md)); die Tests prüfen das mit.
 - Ausprobieren auf einem Homey Pro: `npx homey app run` (Homey-CLI, Anmeldung bei Athom nötig).
 - Bilder: Quellen als SVG in `bilder/`; die PNG unter `assets/images/` und `drivers/dms/assets/images/` sind daraus gerendert (z. B. `rsvg-convert -w 1000 -h 700 bilder/app-bild.svg -o assets/images/xlarge.png`). Die Symbole der Werte in `assets/capabilities/` stammen aus [Lucide](https://lucide.dev) (ISC-Lizenz, siehe `LICENSE-lucide.txt`).

@@ -15,13 +15,24 @@
 
 /** Zuordnung der Zahlen von Ablago zu den Werten (Capabilities) des Geräts. */
 const WERTE = {
-  neuePost: 'dms_neue_post',
-  zuErledigen: 'dms_zu_erledigen',
-  ueberfaellig: 'dms_ueberfaellig',
+  neuePost: 'measure_neue_post',
+  zuErledigen: 'measure_zu_erledigen',
+  ueberfaellig: 'measure_ueberfaellig',
 };
 
-/** Werte früherer Versionen, die das Gerät beim Start entfernt (1.1.x: „Fällig in 7 Tagen“). */
-const ENTFALLEN = ['dms_faellig_7_tage'];
+/**
+ * Werte früherer Versionen, die das Gerät beim Start entfernt: 1.1.x „Fällig in 7 Tagen“; bis 1.2.x die drei Werte mit
+ * `dms_` am Anfang. Seit 1.3.0 beginnen sie mit `measure_`, weil Homey nur solche Werte als Statusanzeige auf der
+ * Kachel anbietet (#37).
+ */
+const ENTFALLEN = ['dms_faellig_7_tage', 'dms_neue_post', 'dms_zu_erledigen', 'dms_ueberfaellig'];
+
+/** Umbenannte Werte (alt → neu): Die Zahl zieht beim Start mit um, damit danach kein Auslöser grundlos feuert. */
+const UMBENANNT = {
+  dms_neue_post: WERTE.neuePost,
+  dms_zu_erledigen: WERTE.zuErledigen,
+  dms_ueberfaellig: WERTE.ueberfaellig,
+};
 
 /** @typedef {{ neuePost: number, zuErledigen: number, ueberfaellig: number }} Zahlen */
 /**
@@ -86,4 +97,4 @@ function abstandMs(minuten) {
   return sicher * 60 * 1000;
 }
 
-module.exports = { WERTE, ENTFALLEN, ausloeser, geraetewerte, vollstaendig, abstandMs };
+module.exports = { WERTE, ENTFALLEN, UMBENANNT, ausloeser, geraetewerte, vollstaendig, abstandMs };

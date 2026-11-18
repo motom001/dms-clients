@@ -131,14 +131,14 @@ describe('Treiber und Gerät (mit Ersatz für Homey)', () => {
     dms.setze({ neuePost: 0, zuErledigen: 2, anstehend: 1, ueberfaellig: 0 });
     const g = new DmsDevice(driver, { adresse: dms.adresse, schluessel: 'dms_zaehlerLenaTestschluessel', intervall: 5 });
     await g.onInit();
-    await bis(() => g.getCapabilityValue('dms_zu_erledigen') === 2);
-    assert.deepEqual(g.werte, { dms_neue_post: 0, dms_zu_erledigen: 2, dms_ueberfaellig: 0 });
+    await bis(() => g.getCapabilityValue('measure_zu_erledigen') === 2);
+    assert.deepEqual(g.werte, { measure_neue_post: 0, measure_zu_erledigen: 2, measure_ueberfaellig: 0 });
     assert.equal(g.warnung, null);
     assert.equal(await karten.neue_post_vorhanden.lauscher({ device: g }), false);
 
     dms.setze({ neuePost: 1, zuErledigen: 3, anstehend: 0, ueberfaellig: 1 });
     await g.abfrage.runde();
-    assert.equal(g.getCapabilityValue('dms_neue_post'), 1);
+    assert.equal(g.getCapabilityValue('measure_neue_post'), 1);
     assert.equal(await karten.neue_post_vorhanden.lauscher({ device: g }), true);
     const post = ausgeloest.find((a) => a.id === 'neue_post');
     assert.deepEqual(post.tokens, { neue_post: 1, dazu: 1 });
@@ -181,10 +181,11 @@ describe('Treiber und Gerät (mit Ersatz für Homey)', () => {
       }
       await g.onInit();
       assert.equal(g.hasCapability('dms_faellig_7_tage'), false);
+      for (const alt of ['dms_neue_post', 'dms_zu_erledigen', 'dms_ueberfaellig']) assert.equal(g.hasCapability(alt), false);
       dms.setze({ neuePost: 0, zuErledigen: 2, ueberfaellig: 0 });
-      await bis(() => g.getCapabilityValue('dms_zu_erledigen') === 2);
+      await bis(() => g.getCapabilityValue('measure_zu_erledigen') === 2);
       assert.equal(g.verfuegbar, true);
-      assert.deepEqual(g.werte, { dms_neue_post: 0, dms_zu_erledigen: 2, dms_ueberfaellig: 0 });
+      assert.deepEqual(g.werte, { measure_neue_post: 0, measure_zu_erledigen: 2, measure_ueberfaellig: 0 });
       assert.deepEqual(ausgeloest.at(-1), { ...ausgeloest.at(-1), id: 'neue_aufgabe', tokens: { zu_erledigen: 2, dazu: 1 } });
       await g.onDeleted();
     } finally {
@@ -195,7 +196,7 @@ describe('Treiber und Gerät (mit Ersatz für Homey)', () => {
   it('Schlüssel „nur lesen“ geht mit Hinweis, „lesen und schreiben“ macht das Gerät nicht verfügbar', async () => {
     const lesen = new DmsDevice(driver, { adresse: dms.adresse, schluessel: 'dms_lesenLenaTestschluessel00', intervall: 5 });
     await lesen.onInit();
-    await bis(() => lesen.getCapabilityValue('dms_neue_post') !== null);
+    await bis(() => lesen.getCapabilityValue('measure_neue_post') !== null);
     assert.equal(lesen.warnung, de.hinweis.stufe_lesen);
     await lesen.onDeleted();
 
@@ -204,7 +205,7 @@ describe('Treiber und Gerät (mit Ersatz für Homey)', () => {
     await bis(() => schreiben.verfuegbar === false);
     assert.equal(schreiben.grund, de.fehler.falsche_stufe);
     assert.equal(schreiben.abfrage, null);
-    assert.equal(schreiben.getCapabilityValue('dms_neue_post'), null, 'keine Zahlen mit falscher Stufe');
+    assert.equal(schreiben.getCapabilityValue('measure_neue_post'), null, 'keine Zahlen mit falscher Stufe');
   });
 
   it('Reparieren setzt neue Zugangsdaten nach dem Verbindungstest', async () => {

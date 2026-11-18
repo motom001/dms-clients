@@ -2,6 +2,12 @@
 
 Änderungen der Homey-App je Version. Ein Release bekommt den Tag `homey-v<version>`.
 
+## 1.3.0
+
+- **Zahl auf der Kachel** (#37): In den Einstellungen des Geräts lässt sich unter **Statusanzeige** Neue Post, Zu erledigen oder Überfällig wählen; die Kachel zeigt dann die Zahl. Dafür heißen die drei Werte jetzt `measure_neue_post`, `measure_zu_erledigen` und `measure_ueberfaellig`, denn Homey bietet nur Werte mit `measure_` am Anfang als Statusanzeige an. Bestehende Geräte stellen beim Start selbst um und nehmen die letzte Zahl mit, damit kein Auslöser grundlos feuert. Flow-Karten und Tokens bleiben gleich; der Verlauf in Insights beginnt für die neuen Werte von vorn.
+- **Beschreibung im Homey App Store** (`README.txt`, `README.de.txt`): Was Ablago ist und was die App kann, dazu der Hinweis auf help.ablago.app. Bisher war die Langbeschreibung leer.
+- **Website** der App zeigt auf die Startseite des Handbuchs (help.ablago.app) statt auf die Seite zur Hausautomatisierung.
+
 ## 1.2.0
 
 Umstellung auf Ablago ohne „Anstehend“ (#14, Folge aus [motom001/dms#725](https://github.com/motom001/dms/issues/725)), weiterhin vor der ersten Veröffentlichung.

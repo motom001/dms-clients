@@ -84,7 +84,7 @@ jobs:
           HOMEY_HEADLESS: '1'
           HOMEY_PAT: ${{ secrets.HOMEY_PAT }}
         run: |
-          [ -n "$HOMEY_PAT" ] || { echo "::error::Secret HOMEY_PAT fehlt in der Umgebung homey-app-store"; exit 1; }
+          [ -n "$HOMEY_PAT" ] || { echo "::error::Secret HOMEY_PAT fehlt (Umgebung homey-app-store oder Repository)"; exit 1; }
           # Werkzeuge der Tests gehören nicht in die App (.homeyignore schließt node_modules nicht aus).
           rm -rf node_modules
           ../werkzeug/.github/homey-cli/node_modules/.bin/homey app publish

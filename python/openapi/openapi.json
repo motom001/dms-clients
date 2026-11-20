@@ -3,7 +3,7 @@
   "info": {
     "title": "Ablago API",
     "version": "1",
-    "description": "Schnittstelle von Ablago, selbst gehostet. Anmeldung mit einem API-Schlüssel aus dem Profil: `Authorization: Bearer dms_…`. Ein Schlüssel hat höchstens die Rechte seines Benutzers; Schlüssel „nur lesen“ erlauben nur GET, Schlüssel „nur Zähler“ nur GET /ich/zaehler (alles andere 403). Diese Beschreibung entsteht aus der installierten Version. Übergänge bis 1.0.0: Post mit von/an statt absender/fuer (#1042, siehe Werte).",
+    "description": "Schnittstelle von Ablago, selbst gehostet. Anmeldung mit einem API-Schlüssel aus dem Profil: `Authorization: Bearer dms_…`. Ein Schlüssel hat höchstens die Rechte seines Benutzers; Schlüssel „nur lesen“ erlauben nur GET und die Merker gesehen/ausgeblendet unter /entdecken (#1307), Schlüssel „nur Zähler“ nur GET /ich/zaehler (alles andere 403). Diese Beschreibung entsteht aus der installierten Version. Übergänge bis 1.0.0: Post mit von/an statt absender/fuer (#1042, siehe Werte).",
     "license": {
       "name": "Apache-2.0",
       "url": "https://www.apache.org/licenses/LICENSE-2.0"
@@ -150,7 +150,7 @@
           "Konto"
         ],
         "summary": "Rundgänge und Tipps für die Person (Ablago entdecken)",
-        "description": "Wie in der Oberfläche (#831, #832): nur, was die Person nutzen darf (Verwaltungsrecht, eingeschaltete Funktionen, lesbare Mappentypen, installierte Pakete), Texte in ihrer Sprache. Je Tipp Anker und Seite (bzw. Anker und Mappentyp, wenn die Stelle in einer Mappe liegt) oder Rundgang, Herkunft (ablago, paket:<id>), neu, ausgeblendet und clients – nur Tipps mit clients=true eignen sich für eine App (kein Rundgang, die Stelle gibt es dort auch). tipp ist der Tipp des Tages (höchstens einer), starten der Rundgang, der jetzt von selbst startet. Dafür genügt ein Schlüssel der Stufe „lesen“; gesehen und ausgeblendet setzen (POST, unten) braucht „schreiben“.",
+        "description": "Wie in der Oberfläche (#831, #832): nur, was die Person nutzen darf (Verwaltungsrecht, eingeschaltete Funktionen, lesbare Mappentypen, installierte Pakete), Texte in ihrer Sprache. Je Tipp Anker und Seite (bzw. Anker und Mappentyp, wenn die Stelle in einer Mappe liegt) oder Rundgang, Herkunft (ablago, paket:<id>), neu, ausgeblendet und clients – nur Tipps mit clients=true eignen sich für eine App (kein Rundgang, die Stelle gibt es dort auch). tipp ist der Tipp des Tages (höchstens einer), starten der Rundgang, der jetzt von selbst startet. Dafür genügt ein Schlüssel der Stufe „lesen“ – auch für gesehen und ausgeblendet (POST, unten, #1307).",
         "operationId": "getEntdecken",
         "responses": {
           "200": {
@@ -192,7 +192,7 @@
           "Konto"
         ],
         "summary": "Tipp gesehen, erledigt, ausblenden oder wieder einblenden",
-        "description": "Merker je Person (#832), damit sich Oberfläche und App nicht doppelt melden: gezeigt (gesehen), erledigt (heute kein Tipp mehr), ausblenden (wie das ×), einblenden. Bleibt in der eigenen Ablago, keine Telemetrie. In einer Vertretung wird nichts gemerkt.",
+        "description": "Merker je Person (#832), damit sich Oberfläche und App nicht doppelt melden: gezeigt (gesehen), erledigt (heute kein Tipp mehr), ausblenden (wie das ×), einblenden. Bleibt in der eigenen Ablago, keine Telemetrie. In einer Vertretung wird nichts gemerkt. Setzt nur Merker der eigenen Person – dafür genügt ein Schlüssel der Stufe „lesen“ (#1307); „nur Zähler“ nicht.",
         "operationId": "postEntdeckenTippsMitschluessel",
         "parameters": [
           {
@@ -268,7 +268,7 @@
           "Konto"
         ],
         "summary": "Rundgang gesehen oder später",
-        "description": "Merker je Person (#831): gesehen (startet nicht mehr von selbst) oder spaeter (bei der nächsten Anmeldung wieder).",
+        "description": "Merker je Person (#831): gesehen (startet nicht mehr von selbst) oder spaeter (bei der nächsten Anmeldung wieder). Setzt nur Merker der eigenen Person – dafür genügt ein Schlüssel der Stufe „lesen“ (#1307); „nur Zähler“ nicht. In einer Vertretung wird nichts gemerkt.",
         "operationId": "postEntdeckenRundgaengeMitschluessel",
         "parameters": [
           {
@@ -816,7 +816,7 @@
           "Ablage"
         ],
         "summary": "Mappen einer Ansicht, seitenweise",
-        "description": "Mappen eines Typs (oder von „Zu erledigen“), sortiert und seitenweise. `bezuege` enthält Titel und Typ der Mappen, auf die die gelieferten Mappen verweisen. Teile (#1031, Mappentypen mit teilVon) stehen in keiner Ansicht und nicht in der erweiterten Suche; mit sicht=typ:<Id> kommen sie wie alle Mappen. Eine Suche findet über ihre Teile die übergeordnete Mappe (ausschnitte[].teil) – nur, wenn der Schlüssel den Teil lesen darf.",
+        "description": "Mappen eines Typs (oder von „Zu erledigen“), sortiert und seitenweise. `bezuege` enthält Titel und Typ der Mappen, auf die die gelieferten Mappen verweisen oder die sie in formatierten Feldern erwähnen (#1333; nicht lesbare ohne Titel als verborgen, gelöschte fehlen). Teile (#1031, Mappentypen mit teilVon) stehen in keiner Ansicht und nicht in der erweiterten Suche; mit sicht=typ:<Id> kommen sie wie alle Mappen. Eine Suche findet über ihre Teile die übergeordnete Mappe (ausschnitte[].teil) – nur, wenn der Schlüssel den Teil lesen darf.",
         "operationId": "getMappen",
         "parameters": [
           {
@@ -1396,7 +1396,7 @@
           "Ablage"
         ],
         "summary": "Zeilen einer Tabelle an einer Mappe",
-        "description": "Feldart Tabelle (#1030): die Mappen des anderen Typs, die über das Verweisfeld der Quelle auf diese Mappe verweisen – je 50 (von blättert; gesamt vom ersten Blatt mitgeben), sortiert wie eine Trefferliste (sortierung: Spalte, absteigend: true; ohne nach Titel). Lesen an der Mappe nötig. Nur Mappen, die der Aufrufer lesen darf – auch gesamt zählt nur sie. Dazu verborgen (#1208): nur die Zahl der Zeilen ohne Leserecht, damit eine Oberfläche „3 von 7“ zeigen kann. Je Mappe nur die Werte der Spalten (spalten, ohne Passwortfelder); Verweise auf nicht lesbare Mappen in bezuege ohne Titel (verborgen). Neue Zeilen legt POST /mappen an (Verweisfeld auf diese Mappe gesetzt); der Server prüft dabei das Anlegerecht am anderen Typ und das Leserecht auf diese Mappe.",
+        "description": "Feldart Tabelle (#1030): die Mappen des anderen Typs, die über das Verweisfeld der Quelle auf diese Mappe verweisen – je 50 (von blättert; jedes Blatt zählt selbst, gesamt braucht es seit #1265 nicht mehr), sortiert wie eine Trefferliste (sortierung: Spalte, absteigend: true; ohne nach Titel). Lesen an der Mappe nötig. Nur Mappen, die der Aufrufer lesen darf – auch gesamt zählt nur sie. Dazu verborgen (#1208): nur die Zahl der Zeilen ohne Leserecht, damit eine Oberfläche „3 von 7“ zeigen kann. Je Mappe nur die Werte der Spalten (spalten, ohne Passwortfelder); Verweise und Erwähnungen (#1333) auf nicht lesbare Mappen in bezuege ohne Titel (verborgen). Neue Zeilen legt POST /mappen an (Verweisfeld auf diese Mappe gesetzt); der Server prüft dabei das Anlegerecht am anderen Typ und das Leserecht auf diese Mappe.",
         "operationId": "getMappenMitidTabelleMitfeld",
         "parameters": [
           {
@@ -1430,7 +1430,7 @@
             "name": "gesamt",
             "in": "query",
             "required": false,
-            "description": "Beim Blättern: gesamt vom ersten Blatt",
+            "description": "Nicht mehr nötig (#1265, #1335): Jedes Blatt zählt selbst, ein mitgegebener Wert wird nicht beachtet",
             "schema": {
               "type": "integer"
             }
@@ -8345,7 +8345,7 @@
           "Dokumente"
         ],
         "summary": "PDF bearbeiten: drehen, Seiten löschen, umsortieren, teilen",
-        "description": "PDF bearbeiten (#335). seiten = die Seiten des Ergebnisses in der gewünschten Reihenfolge (nr im Original ab 1, drehung zusätzlich im Uhrzeigersinn: 0/90/180/270); fehlende Seiten fallen weg. teile = Positionen in seiten (ab 0), an denen ein neuer Teil beginnt. Ohne teile: neue Version des Dokuments; ist die Versionierung des Registers aus, ersetzt das Ergebnis das Dokument nur mit bestaetigt=true (sonst 409 mit rueckfrage), das bisherige kommt in den Papierkorb. Mit teile in einer Mappe: Teil 1 wird die neue Version, die weiteren Teile werden eigene Dokumente „Name (Teil n).pdf“ im selben Register. Mit teile bei Post („Post teilen nach Seitenbereichen“): je Teil eine neue Post (Stand Neu, Betreff „… (Teil n)“); die Ausgangspost behält ihr Dokument, hat Stand Erledigt und verweist auf die neuen. Texterkennung läuft für die Ergebnisse neu. Anlagen (#998, z. B. Trennblatt mit zweitem Barcode): anlagen = Positionen in seiten, an denen eine Anlage zum vorherigen Teil beginnt (nie am Anfang eines Teils, höchstens 99 je Teil; sonst 422). Nur bei Post (sonst 409): Jeder Teil wird eine neue Post, sein Dokument bekommt dort die Anlagen „<Name> – Anlage 1.pdf“, „– Anlage 2.pdf“ …; bei nur einem Teil behält die neue Post den Betreff. Anlagen entstehen nie in anderen Mappen. Pakete brauchen dafür das Recht dms:anlagen (sonst 403). E-Mail-Postfach (#999): Post mit Kanal „E-Mail“ teilt kein Paket (teile oder anlagen: 409) – eine E-Mail bleibt eine Post; Menschen und API-Schlüssel von Personen dürfen.",
+        "description": "PDF bearbeiten (#335). seiten = die Seiten des Ergebnisses in der gewünschten Reihenfolge (nr im Original ab 1, drehung zusätzlich im Uhrzeigersinn: 0/90/180/270); fehlende Seiten fallen weg. teile = Positionen in seiten (ab 0), an denen ein neuer Teil beginnt. Ohne teile: neue Version des Dokuments; ist die Versionierung des Registers aus, ersetzt das Ergebnis das Dokument nur mit bestaetigt=true (sonst 409 mit rueckfrage), das bisherige kommt in den Papierkorb. Mit teile in einer Mappe: Teil 1 wird die neue Version, die weiteren Teile werden eigene Dokumente „Name (Teil n).pdf“ im selben Register. Mit teile bei Post („Post teilen nach Seitenbereichen“): je Teil eine neue Post (Stand Neu, Betreff „… (Teil n)“); die Ausgangspost behält ihr Dokument, hat Stand Erledigt und verweist auf die neuen. Texterkennung läuft für die Ergebnisse neu. Anlagen (#998, z. B. Trennblatt mit zweitem Barcode): anlagen = Positionen in seiten, an denen eine Anlage zum vorherigen Teil beginnt (nie am Anfang eines Teils, höchstens 99 je Teil; sonst 422). Nur bei Post (sonst 409): Jeder Teil wird eine neue Post, sein Dokument bekommt dort die Anlagen „<Name> – Anlage 1.pdf“, „– Anlage 2.pdf“ …; bei nur einem Teil behält die neue Post den Betreff. Anlagen entstehen nie in anderen Mappen. Pakete brauchen dafür das Recht dms:anlagen (sonst 403). Hat das Dokument schon Anlagen (#1303), wandern sie mit in die neue Post des ersten Teils: als Anlage 1 … n in ihrer Reihenfolge und mit ihren Namen (dieselben Dokumente mit Fassungen und Volltext), die neuen folgen dahinter; die Ausgangspost behält das Dokument ohne Anlagen. Die Grenze von 99 Anlagen gilt für bisherige und neue zusammen (sonst 422, ohne dass etwas entsteht). Ohne anlagen bleiben bisherige Anlagen, wo sie sind. E-Mail-Postfach (#999): Post mit Kanal „E-Mail“ teilt kein Paket (teile oder anlagen: 409) – eine E-Mail bleibt eine Post; Menschen und API-Schlüssel von Personen dürfen.",
         "operationId": "postDokumenteMitidSeiten",
         "parameters": [
           {
@@ -17209,7 +17209,7 @@
               "type": "integer",
               "minimum": 1
             },
-            "description": "Anlagen (#998, nur Post): Positionen in seiten, an denen eine Anlage zum vorherigen Teil beginnt; Pakete brauchen dms:anlagen"
+            "description": "Anlagen (#998, nur Post): Positionen in seiten, an denen eine Anlage zum vorherigen Teil beginnt; Pakete brauchen dms:anlagen. Bisherige Anlagen des Dokuments wandern mit in den ersten Teil (#1303)"
           },
           "bestaetigt": {
             "type": "boolean",

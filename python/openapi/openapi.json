@@ -12039,6 +12039,10 @@
                 "erkennbarAn": {
                   "type": "string",
                   "maxLength": 300
+                },
+                "mehrzahl": {
+                  "type": "string",
+                  "maxLength": 80
                 }
               }
             }
@@ -12056,6 +12060,12 @@
           },
           "name": {
             "type": "string"
+          },
+          "mehrzahl": {
+            "type": "string",
+            "maxLength": 80,
+            "example": "Verträge",
+            "description": "Mehrzahl (#1446): Listen zeigen damit „12 Verträge“ statt „12 × Vertrag“; leer = keine. Übersetzungen unter beschriftungen.<sprache>.mehrzahl. Ohne die Angabe bleibt beim Speichern die bisherige."
           },
           "schluessel": {
             "type": "string",
@@ -13008,6 +13018,8 @@
               "webdav",
               "paket",
               "eingang",
+              "email",
+              "ordner",
               "zurueckgeholt",
               "bearbeitet",
               "geschwaerzt",
@@ -13049,6 +13061,12 @@
           "originalEmail": {
             "type": "boolean",
             "description": "E-Mail-Postfach (#999): die abgeholte E-Mail selbst („Original-E-Mail“, .eml) – letzte Anlage am letzten Anhang oder, ohne Anhänge, das Hauptdokument; Erkennung und KI lassen sie weg. Fehlt sonst."
+          },
+          "eingangFuer": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true,
+            "description": "Eingangskanäle (#1489): für wen das Dokument kam – beim E-Mail-Abruf „für“ des Postfachs, beim Eingangsordner die Person des Unterordners (Id der Benutzer-Mappe); fehlt sonst"
           }
         }
       },

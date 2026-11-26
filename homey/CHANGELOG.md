@@ -2,6 +2,12 @@
 
 Änderungen der Homey-App je Version. Ein Release bekommt den Tag `homey-v<version>`.
 
+## 1.3.1
+
+Nacharbeit aus der Zertifizierung bei Athom (26.11.2026):
+- **Beschreibung ohne Adresse:** `README.txt` und `README.de.txt` nennen help.ablago.app nicht mehr. Der App Store erlaubt in der Beschreibung keine URLs; die Website steht schon im Manifest und erscheint als Knopf auf der Seite der App. Ein Test verhindert neue URLs.
+- **App-Bild:** ein Foto statt des Logos (Richtlinie 1.4: kein Logo, kein Symbol auf einfarbigem Grund).
+
 ## 1.3.0
 
 - **Zahl auf der Kachel** (#37): In den Einstellungen des Geräts lässt sich unter **Statusanzeige** Neue Post, Zu erledigen oder Überfällig wählen; die Kachel zeigt dann die Zahl. Dafür heißen die drei Werte jetzt `measure_neue_post`, `measure_zu_erledigen` und `measure_ueberfaellig`, denn Homey bietet nur Werte mit `measure_` am Anfang als Statusanzeige an. Bestehende Geräte stellen beim Start selbst um und nehmen die letzte Zahl mit, damit kein Auslöser grundlos feuert. Flow-Karten und Tokens bleiben gleich; der Verlauf in Insights beginnt für die neuen Werte von vorn.

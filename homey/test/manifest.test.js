@@ -16,6 +16,15 @@ const wurzel = path.join(__dirname, '..');
 const quelltext = ['lib/dms.js', 'lib/abfrage.js', 'lib/auswertung.js', 'drivers/dms/device.js', 'drivers/dms/driver.js', 'app.js']
   .map((f) => fs.readFileSync(path.join(wurzel, f), 'utf8')).join('\n');
 
+describe('Beschreibung im App Store (README.txt, README.de.txt)', () => {
+  it('ohne URLs und Adressen – Richtlinie 1.3 von Athom', () => {
+    for (const f of ['README.txt', 'README.de.txt']) {
+      const t = fs.readFileSync(path.join(wurzel, f), 'utf8');
+      assert.doesNotMatch(t, /https?:\/\/|www\.|\b[a-z0-9-]+\.(?:app|de|com|org|net|io)\b/i, `${f} enthält eine Adresse`);
+    }
+  });
+});
+
 describe('Manifest', () => {
   it('nur Homey Pro, gleiche Version wie package.json', () => {
     assert.deepEqual(app.platforms, ['local']);

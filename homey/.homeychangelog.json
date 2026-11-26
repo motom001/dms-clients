@@ -1,4 +1,8 @@
 {
+  "1.3.1": {
+    "en": "New app image and a shorter description without links, as required for the App Store.",
+    "de": "Neues App-Bild und Beschreibung ohne Links, wie es der App Store verlangt."
+  },
   "1.3.0": {
     "en": "Pick new mail, to do or overdue as status indicator, so the device tile shows the number. Description of Ablago in the App Store.",
     "de": "Neue Post, Zu erledigen oder Überfällig als Statusanzeige wählbar, damit die Kachel die Zahl zeigt. Beschreibung von Ablago im App Store."

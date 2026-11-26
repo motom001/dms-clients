@@ -4,4 +4,4 @@ This app brings the key numbers from your Ablago to Homey: how much new mail is 
 
 Every person sets up their own device with their own key of the level "nur Zähler" (counters only). The key can only read the numbers, never any content. The app runs on Homey Pro in your home network.
 
-More about Ablago and how to install it: help.ablago.app
+More about Ablago and how to install it: see the website link on this page.

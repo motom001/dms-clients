@@ -4,7 +4,9 @@
 
 ## 0.2.0
 
-API von Ablago 0.304.3 (automatischer Abgleich). **Achtung: Es fällt etwas weg oder ändert sich** – Aufrufer prüfen.
+API von Ablago 0.304.3 (automatischer Abgleich). Es fällt nichts weg.
+
+**Achtung:** Das Feld `herkunft` eines Dokuments kennt die neuen Werte `email` und `ordner`. Der erzeugte Teil `ablago.api` bis 0.1.2 kennt sie nicht und bricht beim Lesen solcher Dokumente ab – bitte auf 0.2.0 wechseln. Der handgeschriebene Teil (`AblagoClient`, Zähler, Gesundheit), den Home Assistant und Homey nutzen, ist nicht betroffen.
 
 **Neue Felder**
 - `Dokument`: `eingangFuer`

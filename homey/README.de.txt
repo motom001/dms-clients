@@ -4,4 +4,4 @@ Diese App holt die wichtigsten Zahlen aus deiner Ablago auf den Homey: wie viel 
 
 Jede Person richtet ein eigenes Gerät mit ihrem Schlüssel „nur Zähler“ ein. Der Schlüssel kann nur die Zahlen lesen, keine Inhalte. Die App läuft auf Homey Pro im Heimnetz.
 
-Mehr über Ablago und wie du es installierst: help.ablago.app
+Mehr über Ablago und wie du es installierst: siehe den Link zur Website auf dieser Seite.

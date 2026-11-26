@@ -1,9 +1,16 @@
 {
   "name": "homey-cli-veroeffentlichen",
   "private": true,
-  "description": "Homey-CLI nur für den Workflow „Homey: veröffentlichen“ (#12): feste Version samt aller Abhängigkeiten über package-lock.json.",
+  "description": "Homey-CLI nur für den Workflow „Homey: veröffentlichen“ (#12): feste Version samt aller Abhängigkeiten über package-lock.json. overrides: Sicherheitskorrekturen in Abhängigkeiten der CLI (sharp, tmp, uuid; got über package-json 7), solange homey sie nicht selbst anhebt.",
   "license": "Apache-2.0",
   "devDependencies": {
-    "homey": "4.6.2"
+    "homey": "4.6.3"
+  },
+  "overrides": {
+    "sharp": "0.35.5",
+    "tmp": "0.2.7",
+    "uuid": "11.1.1",
+    "package-json": "7.0.0",
+    "got": "11.8.6"
   }
 }

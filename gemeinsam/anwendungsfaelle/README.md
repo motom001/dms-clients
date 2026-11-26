@@ -4,6 +4,8 @@ Gilt für alle Clients mit Bildschirm: iPhone, iPad, Android und später weitere
 
 **Stand:** 04.11.2026 · Entwürfe, keine Zusage. Alle Namen, Firmen, Adressen und Nummern sind erfunden.
 
+Die Fälle im Browser (W1–W41) stehen in [web.md](web.md).
+
 ## Inhalt
 
 1. [Personas](#personas)

@@ -6,7 +6,7 @@
 
 Nacharbeit aus der Zertifizierung bei Athom (26.11.2026):
 - **Beschreibung ohne Adresse:** `README.txt` und `README.de.txt` nennen help.ablago.app nicht mehr. Der App Store erlaubt in der Beschreibung keine URLs; die Website steht schon im Manifest und erscheint als Knopf auf der Seite der App. Ein Test verhindert neue URLs.
-- **App-Bild:** ein Foto statt des Logos (Richtlinie 1.4: kein Logo, kein Symbol auf einfarbigem Grund).
+- **App-Bild:** ein Foto statt des Logos (Richtlinie 1.4: kein Logo, kein Symbol auf einfarbigem Grund) – Laptop mit Ablago und einer Rechnung aus den Demodaten, als JPEG ohne Metadaten.
 
 ## 1.3.0
 

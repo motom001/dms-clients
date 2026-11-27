@@ -99,7 +99,7 @@ npm run validieren  # manifest, images and Flow cards like "homey app validate -
 - Layout: `lib/` holds the logic without the Homey runtime (polling with ETag, evaluation, error mapping), `drivers/dms/` the device and setup, `locales/` the texts (de, en). The manifest is written directly in `app.json` (without Homey Compose). The values are named `measure_…` because Homey only offers such values as status indicator (#37); the driver stays `drivers/dms/`.
 - Terms, paths and icons follow the rules for all clients (see [CONTRIBUTING.en.md](../CONTRIBUTING.en.md)); the tests check them too.
 - Try it on a Homey Pro: `npx homey app run` (Homey CLI, requires signing in with Athom).
-- Images: sources as SVG in `bilder/`; the PNGs in `assets/images/` and `drivers/dms/assets/images/` are rendered from them (e.g. `rsvg-convert -w 1000 -h 700 bilder/app-bild.svg -o assets/images/xlarge.png`). The value icons in `assets/capabilities/` come from [Lucide](https://lucide.dev) (ISC license, see `LICENSE-lucide.txt`).
+- Images: the app image in `assets/images/` is a photo (Ablago with demo data, Athom guideline 1.4), in 1000×700, 500×350 and 250×175 without metadata. The device images in `drivers/dms/assets/images/` are rendered from the SVGs in `bilder/` (e.g. `rsvg-convert -w 1000 -h 700 bilder/geraet-bild.svg -o drivers/dms/assets/images/xlarge.png`). The value icons in `assets/capabilities/` come from [Lucide](https://lucide.dev) (ISC license, see `LICENSE-lucide.txt`).
 - New version: bump `version` in `package.json` and `app.json`, add to `CHANGELOG.md` and `.homeychangelog.json` (section below).
 
 ## Publishing a new version

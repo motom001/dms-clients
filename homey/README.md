@@ -97,7 +97,7 @@ npm run validieren  # Manifest, Bilder und Flow-Karten wie „homey app validate
 - Aufbau: `lib/` enthält die Logik ohne Homey-Laufzeit (Abruf mit ETag, Auswertung, Fehlerzuordnung), `drivers/dms/` das Gerät und das Einrichten, `locales/` die Texte (de, en). Das Manifest steht direkt in `app.json` (ohne Homey Compose). Die Werte heißen `measure_…`, weil Homey nur solche als Statusanzeige anbietet (#37); der Treiber heißt weiter `drivers/dms/`.
 - Begriffe, Wege und Symbole folgen den Regeln für alle Clients (siehe [CONTRIBUTING.md](../CONTRIBUTING.md)); die Tests prüfen das mit.
 - Ausprobieren auf einem Homey Pro: `npx homey app run` (Homey-CLI, Anmeldung bei Athom nötig).
-- Bilder: Quellen als SVG in `bilder/`; die PNG unter `assets/images/` und `drivers/dms/assets/images/` sind daraus gerendert (z. B. `rsvg-convert -w 1000 -h 700 bilder/app-bild.svg -o assets/images/xlarge.png`). Die Symbole der Werte in `assets/capabilities/` stammen aus [Lucide](https://lucide.dev) (ISC-Lizenz, siehe `LICENSE-lucide.txt`).
+- Bilder: Das App-Bild unter `assets/images/` ist ein Foto (Ablago mit Demodaten, Richtlinie 1.4 von Athom), in 1000×700, 500×350 und 250×175 ohne Metadaten. Die Gerätebilder unter `drivers/dms/assets/images/` sind aus den SVG in `bilder/` gerendert (z. B. `rsvg-convert -w 1000 -h 700 bilder/geraet-bild.svg -o drivers/dms/assets/images/xlarge.png`). Die Symbole der Werte in `assets/capabilities/` stammen aus [Lucide](https://lucide.dev) (ISC-Lizenz, siehe `LICENSE-lucide.txt`).
 - Neue Version: `version` in `package.json` und `app.json`, `CHANGELOG.md` und `.homeychangelog.json` ergänzen (Abschnitt unten).
 
 ## Neue Version veröffentlichen
